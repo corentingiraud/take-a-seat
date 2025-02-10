@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "prepaid_cards",
+  "info": {
+    "singularName": "prepaid-card",
+    "pluralName": "prepaid-cards",
+    "displayName": "Carte pré-payée",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "remainingBalance": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "expirationDate": {
+      "type": "date",
+      "required": false
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "PENDING",
+        "PAID"
+      ]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "prepaidCards"
+    }
+  }
+}
