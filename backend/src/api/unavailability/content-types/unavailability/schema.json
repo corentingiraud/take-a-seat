@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "unavailabilities",
+  "info": {
+    "singularName": "unavailability",
+    "pluralName": "unavailabilities",
+    "displayName": "Indisponibilité",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "startDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "endDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "coworkingSpaces": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::coworking-space.coworking-space",
+      "mappedBy": "unavailabilities"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

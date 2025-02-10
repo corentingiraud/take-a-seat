@@ -1,0 +1,173 @@
+{
+  "key": "plugin_content_manager_configuration_content_types::api::prepaid-card.prepaid-card",
+  "value": {
+    "settings": {
+      "bulkable": true,
+      "filterable": true,
+      "searchable": true,
+      "pageSize": 10,
+      "mainField": "id",
+      "defaultSortBy": "expirationDate",
+      "defaultSortOrder": "ASC"
+    },
+    "metadatas": {
+      "id": {
+        "edit": {},
+        "list": {
+          "label": "id",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "remainingBalance": {
+        "edit": {
+          "label": "Solde",
+          "description": "Solde initial de la carte. Equivaut au nombre d'heures réservables. ",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Solde",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "expirationDate": {
+        "edit": {
+          "label": "Date d'expiration",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Valide jusqu'au",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "paymentStatus": {
+        "edit": {
+          "label": "Status du paiement",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Paiement",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "user": {
+        "edit": {
+          "label": "Coworker",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "email"
+        },
+        "list": {
+          "label": "Coworker",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "createdAt": {
+        "edit": {
+          "label": "createdAt",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true
+        },
+        "list": {
+          "label": "createdAt",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "updatedAt": {
+        "edit": {
+          "label": "updatedAt",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true
+        },
+        "list": {
+          "label": "updatedAt",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "createdBy": {
+        "edit": {
+          "label": "createdBy",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true,
+          "mainField": "firstname"
+        },
+        "list": {
+          "label": "createdBy",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "updatedBy": {
+        "edit": {
+          "label": "updatedBy",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true,
+          "mainField": "firstname"
+        },
+        "list": {
+          "label": "updatedBy",
+          "searchable": true,
+          "sortable": true
+        }
+      }
+    },
+    "layouts": {
+      "edit": [
+        [
+          {
+            "name": "user",
+            "size": 12
+          }
+        ],
+        [
+          {
+            "name": "remainingBalance",
+            "size": 4
+          },
+          {
+            "name": "expirationDate",
+            "size": 4
+          },
+          {
+            "name": "paymentStatus",
+            "size": 4
+          }
+        ]
+      ],
+      "list": [
+        "user",
+        "remainingBalance",
+        "expirationDate",
+        "paymentStatus"
+      ]
+    },
+    "uid": "api::prepaid-card.prepaid-card"
+  },
+  "type": "object",
+  "environment": null,
+  "tag": null
+}

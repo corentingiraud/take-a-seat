@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "coworking_spaces",
+  "info": {
+    "singularName": "coworking-space",
+    "pluralName": "coworking-spaces",
+    "displayName": "Espace de coworking"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "unavailabilities": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::unavailability.unavailability",
+      "inversedBy": "coworkingSpaces"
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "coworkingSpace"
+    },
+    "services": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::service.service",
+      "mappedBy": "coworkingSpace"
+    }
+  }
+}

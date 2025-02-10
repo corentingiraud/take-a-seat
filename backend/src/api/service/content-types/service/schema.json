@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "services",
+  "info": {
+    "singularName": "service",
+    "pluralName": "services",
+    "displayName": "Service"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "maximumBookingsPerHour": {
+      "type": "integer"
+    },
+    "coworkingSpace": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::coworking-space.coworking-space",
+      "inversedBy": "services"
+    }
+  }
+}

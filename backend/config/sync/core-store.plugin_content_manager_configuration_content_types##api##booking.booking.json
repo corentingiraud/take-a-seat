@@ -1,0 +1,213 @@
+{
+  "key": "plugin_content_manager_configuration_content_types::api::booking.booking",
+  "value": {
+    "settings": {
+      "bulkable": true,
+      "filterable": true,
+      "searchable": true,
+      "pageSize": 10,
+      "mainField": "startDate",
+      "defaultSortBy": "startDate",
+      "defaultSortOrder": "DESC"
+    },
+    "metadatas": {
+      "id": {
+        "edit": {},
+        "list": {
+          "label": "id",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "startDate": {
+        "edit": {
+          "label": "Date de début",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Date de début",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "endDate": {
+        "edit": {
+          "label": "Date de fin",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Date de fin",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "bookingStatus": {
+        "edit": {
+          "label": "Status",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Status",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "paymentStatus": {
+        "edit": {
+          "label": "Status du paiement",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Paiement",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "user": {
+        "edit": {
+          "label": "Coworker",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "email"
+        },
+        "list": {
+          "label": "Coworker",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "coworkingSpace": {
+        "edit": {
+          "label": "Espace de coworking",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "coworkingSpace",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "createdAt": {
+        "edit": {
+          "label": "createdAt",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true
+        },
+        "list": {
+          "label": "createdAt",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "updatedAt": {
+        "edit": {
+          "label": "updatedAt",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true
+        },
+        "list": {
+          "label": "updatedAt",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "createdBy": {
+        "edit": {
+          "label": "createdBy",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true,
+          "mainField": "firstname"
+        },
+        "list": {
+          "label": "createdBy",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "updatedBy": {
+        "edit": {
+          "label": "updatedBy",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true,
+          "mainField": "firstname"
+        },
+        "list": {
+          "label": "updatedBy",
+          "searchable": true,
+          "sortable": true
+        }
+      }
+    },
+    "layouts": {
+      "edit": [
+        [
+          {
+            "name": "user",
+            "size": 6
+          },
+          {
+            "name": "coworkingSpace",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "startDate",
+            "size": 6
+          },
+          {
+            "name": "endDate",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "bookingStatus",
+            "size": 6
+          },
+          {
+            "name": "paymentStatus",
+            "size": 6
+          }
+        ]
+      ],
+      "list": [
+        "startDate",
+        "endDate",
+        "bookingStatus",
+        "paymentStatus",
+        "user"
+      ]
+    },
+    "uid": "api::booking.booking"
+  },
+  "type": "object",
+  "environment": null,
+  "tag": null
+}

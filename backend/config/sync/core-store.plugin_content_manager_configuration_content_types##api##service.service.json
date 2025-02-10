@@ -1,0 +1,154 @@
+{
+  "key": "plugin_content_manager_configuration_content_types::api::service.service",
+  "value": {
+    "settings": {
+      "bulkable": true,
+      "filterable": true,
+      "searchable": true,
+      "pageSize": 10,
+      "mainField": "name",
+      "defaultSortBy": "name",
+      "defaultSortOrder": "ASC"
+    },
+    "metadatas": {
+      "id": {
+        "edit": {},
+        "list": {
+          "label": "id",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "name": {
+        "edit": {
+          "label": "Nom",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Nom",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "maximumBookingsPerHour": {
+        "edit": {
+          "label": "Nombre max de réservation par heure",
+          "description": "Nombre maximum de réservation par heure. Lorsque ce nombre est atteint, les reservations sont impossibles.",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Nombre max de réservation par heure",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "coworkingSpace": {
+        "edit": {
+          "label": "Espace de coworking",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "Espace de coworking",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "createdAt": {
+        "edit": {
+          "label": "createdAt",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true
+        },
+        "list": {
+          "label": "createdAt",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "updatedAt": {
+        "edit": {
+          "label": "updatedAt",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true
+        },
+        "list": {
+          "label": "updatedAt",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "createdBy": {
+        "edit": {
+          "label": "createdBy",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true,
+          "mainField": "firstname"
+        },
+        "list": {
+          "label": "createdBy",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "updatedBy": {
+        "edit": {
+          "label": "updatedBy",
+          "description": "",
+          "placeholder": "",
+          "visible": false,
+          "editable": true,
+          "mainField": "firstname"
+        },
+        "list": {
+          "label": "updatedBy",
+          "searchable": true,
+          "sortable": true
+        }
+      }
+    },
+    "layouts": {
+      "edit": [
+        [
+          {
+            "name": "coworkingSpace",
+            "size": 12
+          }
+        ],
+        [
+          {
+            "name": "name",
+            "size": 12
+          },
+          {
+            "name": "maximumBookingsPerHour",
+            "size": 4
+          }
+        ]
+      ],
+      "list": [
+        "coworkingSpace",
+        "name",
+        "maximumBookingsPerHour"
+      ]
+    },
+    "uid": "api::service.service"
+  },
+  "type": "object",
+  "environment": null,
+  "tag": null
+}
