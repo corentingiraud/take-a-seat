@@ -133,7 +133,7 @@
       },
       "role": {
         "edit": {
-          "label": "role",
+          "label": "Role",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -292,7 +292,11 @@
         [
           {
             "name": "username",
-            "size": 12
+            "size": 6
+          },
+          {
+            "name": "role",
+            "size": 6
           }
         ],
         [

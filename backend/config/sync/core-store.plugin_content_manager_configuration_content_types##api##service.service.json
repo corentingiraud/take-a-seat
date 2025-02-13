@@ -62,6 +62,63 @@
           "sortable": true
         }
       },
+      "bookings": {
+        "edit": {
+          "label": "bookings",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "id"
+        },
+        "list": {
+          "label": "bookings",
+          "searchable": false,
+          "sortable": false
+        }
+      },
+      "openingTime": {
+        "edit": {
+          "label": "Heure d'ouverture",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Heure d'ouverture",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "closingTime": {
+        "edit": {
+          "label": "Heure de fermeture",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Heure de fermeture",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "minumunBookingMinutes": {
+        "edit": {
+          "label": "Nombre minimum de minutes par réservation",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Nombre minimum de minutes par réservation",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -133,17 +190,36 @@
           {
             "name": "name",
             "size": 12
+          }
+        ],
+        [
+          {
+            "name": "minumunBookingMinutes",
+            "size": 6
           },
           {
             "name": "maximumBookingsPerHour",
-            "size": 4
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "openingTime",
+            "size": 6
+          },
+          {
+            "name": "closingTime",
+            "size": 6
           }
         ]
       ],
       "list": [
         "coworkingSpace",
         "name",
-        "maximumBookingsPerHour"
+        "maximumBookingsPerHour",
+        "minumunBookingMinutes",
+        "openingTime",
+        "closingTime"
       ]
     },
     "uid": "api::service.service"

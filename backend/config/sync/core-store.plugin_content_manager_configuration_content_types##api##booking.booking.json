@@ -90,9 +90,9 @@
           "sortable": true
         }
       },
-      "coworkingSpace": {
+      "service": {
         "edit": {
-          "label": "Espace de coworking",
+          "label": "Service",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -100,7 +100,7 @@
           "mainField": "name"
         },
         "list": {
-          "label": "coworkingSpace",
+          "label": "Service",
           "searchable": true,
           "sortable": true
         }
@@ -170,10 +170,6 @@
           {
             "name": "user",
             "size": 6
-          },
-          {
-            "name": "coworkingSpace",
-            "size": 6
           }
         ],
         [
@@ -195,6 +191,12 @@
             "name": "paymentStatus",
             "size": 6
           }
+        ],
+        [
+          {
+            "name": "service",
+            "size": 6
+          }
         ]
       ],
       "list": [
@@ -202,7 +204,8 @@
         "endDate",
         "bookingStatus",
         "paymentStatus",
-        "user"
+        "user",
+        "service"
       ]
     },
     "uid": "api::booking.booking"

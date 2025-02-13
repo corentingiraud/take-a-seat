@@ -16,8 +16,7 @@
           "endDate",
           "bookingStatus",
           "paymentStatus",
-          "user",
-          "coworkingSpace"
+          "user"
         ]
       },
       "conditions": [],
@@ -52,8 +51,7 @@
           "endDate",
           "bookingStatus",
           "paymentStatus",
-          "user",
-          "coworkingSpace"
+          "user"
         ]
       },
       "conditions": [],
@@ -70,8 +68,7 @@
           "endDate",
           "bookingStatus",
           "paymentStatus",
-          "user",
-          "coworkingSpace"
+          "user"
         ]
       },
       "conditions": [],
@@ -86,7 +83,6 @@
         "fields": [
           "name",
           "unavailabilities",
-          "bookings",
           "services"
         ]
       },
@@ -120,7 +116,6 @@
         "fields": [
           "name",
           "unavailabilities",
-          "bookings",
           "services"
         ]
       },
@@ -136,7 +131,6 @@
         "fields": [
           "name",
           "unavailabilities",
-          "bookings",
           "services"
         ]
       },
@@ -297,7 +291,10 @@
         "fields": [
           "name",
           "maximumBookingsPerHour",
-          "coworkingSpace"
+          "coworkingSpace",
+          "openingTime",
+          "closingTime",
+          "minumunBookingMinutes"
         ]
       },
       "conditions": [],
@@ -330,7 +327,10 @@
         "fields": [
           "name",
           "maximumBookingsPerHour",
-          "coworkingSpace"
+          "coworkingSpace",
+          "openingTime",
+          "closingTime",
+          "minumunBookingMinutes"
         ]
       },
       "conditions": [],
@@ -345,7 +345,10 @@
         "fields": [
           "name",
           "maximumBookingsPerHour",
-          "coworkingSpace"
+          "coworkingSpace",
+          "openingTime",
+          "closingTime",
+          "minumunBookingMinutes"
         ]
       },
       "conditions": [],

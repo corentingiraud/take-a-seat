@@ -4,7 +4,8 @@
   "info": {
     "singularName": "coworking-space",
     "pluralName": "coworking-spaces",
-    "displayName": "Espace de coworking"
+    "displayName": "Espace de coworking",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -21,12 +22,6 @@
       "relation": "manyToOne",
       "target": "api::unavailability.unavailability",
       "inversedBy": "coworkingSpaces"
-    },
-    "bookings": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::booking.booking",
-      "mappedBy": "coworkingSpace"
     },
     "services": {
       "type": "relation",

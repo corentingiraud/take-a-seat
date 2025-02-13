@@ -45,10 +45,10 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "bookings"
     },
-    "coworkingSpace": {
+    "service": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::coworking-space.coworking-space",
+      "target": "api::service.service",
       "inversedBy": "bookings"
     }
   }

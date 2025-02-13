@@ -4,7 +4,8 @@
   "info": {
     "singularName": "service",
     "pluralName": "services",
-    "displayName": "Service"
+    "displayName": "Service",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -16,13 +17,30 @@
       "required": true
     },
     "maximumBookingsPerHour": {
-      "type": "integer"
+      "type": "integer",
+      "min": 1
     },
     "coworkingSpace": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::coworking-space.coworking-space",
       "inversedBy": "services"
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "service"
+    },
+    "openingTime": {
+      "type": "time",
+      "required": true,
+      "default": "08:30:00.000"
+    },
+    "closingTime": {
+      "type": "time",
+      "default": "18:30:00.000",
+      "required": true
     }
   }
 }

@@ -48,21 +48,6 @@
           "sortable": true
         }
       },
-      "bookings": {
-        "edit": {
-          "label": "bookings",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "id"
-        },
-        "list": {
-          "label": "bookings",
-          "searchable": false,
-          "sortable": false
-        }
-      },
       "services": {
         "edit": {
           "label": "services",
@@ -138,6 +123,9 @@
       }
     },
     "layouts": {
+      "list": [
+        "name"
+      ],
       "edit": [
         [
           {
@@ -145,9 +133,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "name"
       ]
     },
     "uid": "api::coworking-space.coworking-space"

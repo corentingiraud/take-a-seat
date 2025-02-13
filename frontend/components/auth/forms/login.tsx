@@ -30,7 +30,7 @@ export function LoginForm({
 
     if (token) {
       authLogin(token);
-      router.push("/home");
+      router.push("/my-bookings");
     }
   };
 

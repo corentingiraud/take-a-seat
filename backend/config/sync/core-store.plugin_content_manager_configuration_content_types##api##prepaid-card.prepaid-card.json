@@ -76,6 +76,21 @@
           "sortable": true
         }
       },
+      "bookings": {
+        "edit": {
+          "label": "bookings",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "id"
+        },
+        "list": {
+          "label": "bookings",
+          "searchable": false,
+          "sortable": false
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -136,6 +151,12 @@
       }
     },
     "layouts": {
+      "list": [
+        "user",
+        "remainingBalance",
+        "expirationDate",
+        "paymentStatus"
+      ],
       "edit": [
         [
           {
@@ -156,13 +177,13 @@
             "name": "paymentStatus",
             "size": 4
           }
+        ],
+        [
+          {
+            "name": "bookings",
+            "size": 6
+          }
         ]
-      ],
-      "list": [
-        "user",
-        "remainingBalance",
-        "expirationDate",
-        "paymentStatus"
       ]
     },
     "uid": "api::prepaid-card.prepaid-card"

@@ -32,14 +32,6 @@ export const NavbarDesktop = () => {
           );
         })}
       </div>
-
-      <Button
-        className="ml-auto"
-        variant="default"
-        onClick={() => router.push("/login")}
-      >
-        Se connecter
-      </Button>
     </div>
   );
 };

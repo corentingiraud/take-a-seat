@@ -23,41 +23,42 @@ export const NavbarMobile = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button className="md:hidden" size="icon" variant="ghost">
-          <MenuIcon />
-        </Button>
-      </SheetTrigger>
+    <div className="md:hidden">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button size="icon" variant="ghost">
+            <MenuIcon />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left">
+          <SheetHeader>
+            <SheetTitle />
+            <SheetDescription />
+          </SheetHeader>
+          <div className="flex flex-col items-start">
+            {siteConfig.navItems.map((item, index) => {
+              const isActive = pathname === item.href;
 
-      <SheetContent side="left">
-        <SheetHeader>
-          <SheetTitle />
-          <SheetDescription />
-        </SheetHeader>
-        <div className="flex flex-col items-start">
-          {siteConfig.navItems.map((item, index) => {
-            const isActive = pathname === item.href;
-
-            return (
-              <Button
-                key={index}
-                className={cn(
-                  "text-muted-foreground hover:text-primary",
-                  isActive && "text-primary font-bold",
-                )}
-                variant="link"
-                onClick={() => {
-                  setOpen(false);
-                  router.push(item.href);
-                }}
-              >
-                {item.label}
-              </Button>
-            );
-          })}
-        </div>
-      </SheetContent>
-    </Sheet>
+              return (
+                <Button
+                  key={index}
+                  className={cn(
+                    "text-muted-foreground hover:text-primary",
+                    isActive && "text-primary font-bold",
+                  )}
+                  variant="link"
+                  onClick={() => {
+                    setOpen(false);
+                    router.push(item.href);
+                  }}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };

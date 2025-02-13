@@ -1,17 +1,20 @@
 "use client";
 
-import { API_URL } from "@/config/site";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
+import { API_URL } from "@/config/site";
+import { User } from "@/models/user";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  getToken: () => string | null;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -20,7 +23,11 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
+
+const JWT_LOCAL_STORAGE_KEY = "jwt";
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -48,8 +55,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const getToken = () => {
+    return localStorage.getItem(JWT_LOCAL_STORAGE_KEY);
+  };
+
   const login = (token: string) => {
-    localStorage.setItem("jwt", token);
+    localStorage.setItem(JWT_LOCAL_STORAGE_KEY, token);
     setIsAuthenticated(true);
     const fetchUser = async () => {
       const res = await fetch(`${API_URL}/users/me`, {
@@ -66,13 +77,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem(JWT_LOCAL_STORAGE_KEY);
     setIsAuthenticated(false);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, getToken, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
