@@ -4,5 +4,4 @@ export const AVAILABLE_DURATION = {
   ONE_HOUR: moment.duration(1, "hours"),
   HALF_DAY: moment.duration(4, "hours"),
   DAY: moment.duration(1, "day"),
-  MONTH: moment.duration(moment().endOf("month").diff(moment())),
 };

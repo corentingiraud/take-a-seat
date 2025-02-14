@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFetchContentType } from "@/hooks/use-fetch-content-type";
+import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Service } from "@/models/service";
 import { CoworkingSpace } from "@/models/coworking-space";
 
@@ -25,7 +25,7 @@ export const ServiceFormStep = ({
 }: ServiceFormStepProps) => {
   const [services, setServices] = useState<Service[]>([]);
 
-  const { fetchAll } = useFetchContentType();
+  const { fetchAll } = useStrapiAPI();
 
   useEffect(() => {
     fetchAll<Service>({

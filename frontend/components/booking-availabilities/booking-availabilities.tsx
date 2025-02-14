@@ -1,7 +1,13 @@
 "use client";
 
-import { DialogTitle, DialogDescription } from "@radix-ui/react-dialog";
+import {
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@radix-ui/react-dialog";
 import { Duration, Moment } from "moment";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { DialogHeader, DialogFooter, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -13,6 +19,8 @@ import { Service } from "@/models/service";
 import { Time } from "@/models/time";
 import { HalfDay } from "@/models/half-day";
 import { useBookingAvailabilities } from "@/hooks/use-booking-availabilities";
+import { useStrapiAPI } from "@/hooks/use-strapi-api";
+import { Booking } from "@/models/booking";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
@@ -31,6 +39,9 @@ export const BookingAvailabilities = ({
   startTime,
   duration,
 }: BookingAvailabilitiesProps) => {
+  const { create } = useStrapiAPI();
+  const router = useRouter();
+
   const { availableBookings, unavailableBookings } = useBookingAvailabilities({
     service,
     startDay,
@@ -38,6 +49,20 @@ export const BookingAvailabilities = ({
     startTime,
     duration,
   });
+
+  async function createAvailableBookings() {
+    for (const booking of availableBookings) {
+      await create({
+        ...Booking.strapiAPIParams,
+        object: booking,
+      }).then(() => {
+        toast(
+          "Votre réservation a bien été enregistrée. Elle doit néanmoins être validée par un administrateur.",
+        );
+        router.push("/my-bookings");
+      });
+    }
+  }
 
   return (
     <DialogContent>
@@ -61,9 +86,11 @@ export const BookingAvailabilities = ({
         </div>
       </ScrollArea>
       <DialogFooter>
-        <Button type="submit">
-          Réserver les créneaux disponibles ({availableBookings.length})
-        </Button>
+        <DialogClose asChild>
+          <Button onClick={async () => await createAvailableBookings()}>
+            Réserver les créneaux disponibles ({availableBookings.length})
+          </Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   );

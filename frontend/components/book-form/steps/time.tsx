@@ -31,7 +31,7 @@ export const TimeFormStep = ({ service, onTimeChange }: TimeFormStepProps) => {
         </SelectTrigger>
         <SelectContent>
           {service.getTimeSlot().map((timeSlot, i) => (
-            <SelectItem key={i} value={i.toString()}>
+            <SelectItem key={i} value={timeSlot.toString()}>
               {timeSlot.toString()}
             </SelectItem>
           ))}

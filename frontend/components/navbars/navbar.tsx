@@ -10,9 +10,11 @@ export const Navbar = () => {
       <div className="flex h-14 items-center px-4 max-w-7xl w-full">
         <NavbarDesktop />
         <NavbarMobile />
-        <AuthMenu />
-        <div className="ml-2">
-          <ThemeModeToggle />
+        <div className="ml-auto flex">
+          <AuthMenu />
+          <div className="ml-2">
+            <ThemeModeToggle />
+          </div>
         </div>
       </div>
     </header>

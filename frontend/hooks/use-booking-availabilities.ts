@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import moment, { Duration, Moment } from "moment";
 
-import { useFetchContentType } from "./use-fetch-content-type";
+import { useStrapiAPI } from "./use-strapi-api";
 
 import { Booking } from "@/models/booking";
 import { Service } from "@/models/service";
@@ -26,7 +26,7 @@ export function useBookingAvailabilities({
   halfDay,
   duration,
 }: UseBookingAvailabilitiesParams) {
-  const { fetchAll } = useFetchContentType();
+  const { fetchAll } = useStrapiAPI();
   const { user } = useAuth();
 
   const { startDate, endDate } = computeDateRange();
@@ -37,7 +37,7 @@ export function useBookingAvailabilities({
 
   useEffect(() => {
     fetchAll({
-      ...Booking.fetchParams,
+      ...Booking.strapiAPIParams,
       queryParams: {
         filters: {
           service: {
@@ -84,26 +84,6 @@ export function useBookingAvailabilities({
       endDate = startDate.clone().hour(service.closingTime.hour);
     }
 
-    if (duration === AVAILABLE_DURATION.MONTH) {
-      startDate = startDay.hour(service.openingTime.hour);
-
-      const lastDayOfMonth = startDay.clone().endOf("month");
-
-      // Check if the last day of the month is a weekend
-      if (lastDayOfMonth.day() === 0) {
-        // Sunday
-        endDate = lastDayOfMonth.subtract(2, "days"); // Move to Friday
-      } else if (lastDayOfMonth.day() === 6) {
-        // Saturday
-        endDate = lastDayOfMonth.subtract(1, "days"); // Move to Friday
-      } else {
-        endDate = lastDayOfMonth;
-      }
-
-      // Set the hour for the endDate
-      endDate.hour(service.closingTime.hour);
-    }
-
     return { startDate, endDate };
   }
 
@@ -112,7 +92,7 @@ export function useBookingAvailabilities({
 
     let currentStartDate = startDate.clone();
 
-    while (currentStartDate <= endDate) {
+    while (currentStartDate < endDate) {
       const nextStartDate = currentStartDate
         .clone()
         .add(MINIMUM_BOOKING_DURATION);

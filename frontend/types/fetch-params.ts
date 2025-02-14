@@ -9,3 +9,9 @@ export type FetchAllParams<T extends StrapiData> = {
 export type FetchOneParams<T extends StrapiData> = FetchAllParams<T> & {
   id: string;
 };
+
+export type CreateParams<T extends StrapiData> = {
+  contentType: string;
+  factory: FactoryStrapiData<T>;
+  object: T;
+};

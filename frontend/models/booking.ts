@@ -58,11 +58,30 @@ export class Booking implements StrapiData {
     });
   }
 
-  static get fetchParams(): FetchAllParams<Booking> {
+  static get strapiAPIParams(): FetchAllParams<Booking> {
     return {
       contentType: "bookings",
       factory: Booking.fromJson,
     };
+  }
+
+  toJson(): any {
+    const json: any = {
+      startDate: this.startDate.format(),
+      endDate: this.endDate.format(),
+      bookingStatus: this.bookingStatus,
+      paymentStatus: this.paymentStatus,
+    };
+
+    if (this.user?.id) {
+      json.user = this.user.documentId;
+    }
+
+    if (this.service?.id) {
+      json.service = this.service.documentId;
+    }
+
+    return json;
   }
 
   toString() {

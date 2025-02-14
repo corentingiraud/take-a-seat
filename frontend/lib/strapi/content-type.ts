@@ -3,7 +3,6 @@ import qs from "qs";
 import { API_URL } from "@/config/site";
 import { FactoryStrapiData, StrapiData } from "@/models/utils/strapi-data";
 
-// General fetch utility
 async function fetchFromStrapi<T>(
   url: string,
   headers: HeadersInit = {},
@@ -19,7 +18,6 @@ async function fetchFromStrapi<T>(
   return response.json();
 }
 
-// Fetch all entities of a type
 async function fetchAll<T extends StrapiData>(
   contentType: string,
   factory: FactoryStrapiData<T>,
@@ -33,12 +31,10 @@ async function fetchAll<T extends StrapiData>(
 
     return jsonData.data ? jsonData.data.map(factory) : [];
   } catch (error) {
-    console.error("FetchContentTypeError", error);
     throw error;
   }
 }
 
-// Fetch a single entity by ID
 async function fetchOne<T extends StrapiData>(
   contentType: string,
   id: string | number,
@@ -53,9 +49,34 @@ async function fetchOne<T extends StrapiData>(
 
     return jsonData.data ? factory(jsonData.data) : null;
   } catch (error) {
-    console.error("FetchEntityError", error);
     throw error;
   }
 }
 
-export default { fetchAll, fetchOne };
+async function create<T extends StrapiData>(
+  contentType: string,
+  factory: FactoryStrapiData<T>,
+  object: T,
+  headers: HeadersInit = {},
+): Promise<T | null> {
+  try {
+    const url = `${API_URL}/${contentType}`;
+
+    const body = {
+      data: object.toJson(),
+    };
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+    const jsonResponse = await response.json();
+
+    return jsonResponse.data ? factory(jsonResponse.data) : null;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { fetchAll, fetchOne, create };

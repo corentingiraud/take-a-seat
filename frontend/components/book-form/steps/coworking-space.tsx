@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CoworkingSpace } from "@/models/coworking-space";
-import { useFetchContentType } from "@/hooks/use-fetch-content-type";
+import { useStrapiAPI } from "@/hooks/use-strapi-api";
 
 interface CoworkingSpaceFormStepProps {
   onCoworkingSpaceChange: (coworkingSpace: CoworkingSpace) => void;
@@ -21,7 +21,7 @@ export const CoworkingSpaceFormStep = ({
   onCoworkingSpaceChange,
 }: CoworkingSpaceFormStepProps) => {
   const [coworkingSpaces, setCoworkingSpaces] = useState<CoworkingSpace[]>([]);
-  const { fetchAll } = useFetchContentType();
+  const { fetchAll } = useStrapiAPI();
 
   useEffect(() => {
     fetchAll<CoworkingSpace>(CoworkingSpace.fetchParams).then(

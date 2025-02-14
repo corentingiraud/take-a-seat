@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AVAILABLE_DURATION } from "@/models/duration";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface DurationFormStepProps {
   onDurationChange: (duration: Duration) => void;
@@ -35,7 +36,7 @@ export const DurationFormStep = ({
         <SelectContent>
           {Object.entries(AVAILABLE_DURATION).map((entry) => (
             <SelectItem key={entry[0]} value={entry[0]}>
-              {entry[1].toISOString()}
+              {capitalizeFirstLetter(entry[1].humanize())}
             </SelectItem>
           ))}
         </SelectContent>
