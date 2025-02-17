@@ -3,10 +3,6 @@
 import { useEffect, useState } from "react";
 import { Duration, Moment } from "moment";
 
-import { Button } from "../ui/button";
-import { Dialog, DialogTrigger } from "../ui/dialog";
-import { BookingAvailabilities } from "../booking-availabilities/booking-availabilities";
-
 import { CoworkingSpaceFormStep } from "./steps/coworking-space";
 import { ServiceFormStep } from "./steps/service";
 import { DateFormStep } from "./steps/date";
@@ -19,8 +15,11 @@ import { Service } from "@/models/service";
 import { Time } from "@/models/time";
 import { HalfDay } from "@/models/half-day";
 import { AVAILABLE_DURATION } from "@/models/duration";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { BookingAvailabilities } from "@/components/bookings/availabilities/availabilities";
+import { Button } from "@/components/ui/button";
 
-export const BookForm = () => {
+export const CreateBookingForm = () => {
   const [coworkingSpace, setCoworkingSpace] = useState<
     CoworkingSpace | undefined
   >(undefined);
@@ -51,11 +50,7 @@ export const BookForm = () => {
       return;
     }
 
-    if (
-      (duration === AVAILABLE_DURATION.DAY ||
-        duration === AVAILABLE_DURATION.MONTH) &&
-      !startDay
-    ) {
+    if (duration === AVAILABLE_DURATION.DAY && !startDay) {
       setFormIsValid(false);
 
       return;
@@ -65,7 +60,7 @@ export const BookForm = () => {
   }, [coworkingSpace, duration, startDay, startTime, halfDay]);
 
   return (
-    <div>
+    <div className="mt-5 m-auto max-w-xl flex flex-col gap-5">
       <CoworkingSpaceFormStep
         onCoworkingSpaceChange={(value) => {
           setCoworkingSpace(value);
@@ -105,23 +100,25 @@ export const BookForm = () => {
         />
       )}
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button className="mt-3" disabled={!formIsValid}>
-            Voir les disponibilités
-          </Button>
-        </DialogTrigger>
-        {formIsValid && (
-          <BookingAvailabilities
-            coworkingSpace={coworkingSpace!}
-            duration={duration!}
-            halfDay={halfDay}
-            service={service!}
-            startDay={startDay!}
-            startTime={startTime}
-          />
-        )}
-      </Dialog>
+      <div className="mt-5 flex justify-end">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="mt-3" disabled={!formIsValid}>
+              Voir les disponibilités
+            </Button>
+          </DialogTrigger>
+          {formIsValid && (
+            <BookingAvailabilities
+              coworkingSpace={coworkingSpace!}
+              duration={duration!}
+              halfDay={halfDay}
+              service={service!}
+              startDay={startDay!}
+              startTime={startTime}
+            />
+          )}
+        </Dialog>
+      </div>
     </div>
   );
 };

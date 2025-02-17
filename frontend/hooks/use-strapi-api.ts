@@ -3,7 +3,12 @@ import { useContext } from "react";
 import { AuthContext } from "@/contexts/auth-context";
 import { StrapiData } from "@/models/utils/strapi-data";
 import contentType from "@/lib/strapi/content-type";
-import { CreateParams, FetchAllParams, FetchOneParams } from "@/types/fetch-params";
+import {
+  CreateParams,
+  FetchAllParams,
+  FetchOneParams,
+  UpdateParams,
+} from "@/types/strapi-api-params";
 
 export function useStrapiAPI() {
   const auth = useContext(AuthContext);
@@ -59,5 +64,21 @@ export function useStrapiAPI() {
     return response;
   }
 
-  return { create, fetchAll, fetchOne };
+  async function update<T extends StrapiData>(params: UpdateParams<T>) {
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    const response = await contentType.update<T>(
+      params.contentType,
+      params.factory,
+      params.object,
+      params.fieldsToUpdate,
+      headers,
+    );
+
+    return response;
+  }
+
+  return { create, fetchAll, fetchOne, update };
 }

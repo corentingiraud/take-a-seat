@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const { login: authLogin } = useAuth();
-  const { login, isLoading, error } = useLogin();
+  const { login, isLoading } = useLogin();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -26,11 +27,17 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = await login(email, password);
+    try {
+      const token = await login(email, password);
 
-    if (token) {
+      if (!token) {
+        throw new Error();
+      }
       authLogin(token);
+      toast.success("Connexion réussie");
       router.push("/my-bookings");
+    } catch {
+      toast.error("Echec de la connexion. Veuillez essayer de nouveau.");
     }
   };
 
@@ -46,7 +53,6 @@ export function LoginForm({
                   Connecte toi à ton espace de reservation
                 </p>
               </div>
-              {error && <p className="text-red-500 text-center">{error}</p>}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

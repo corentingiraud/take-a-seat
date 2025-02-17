@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import clsx from "clsx";
+import moment from "moment";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
@@ -43,7 +44,9 @@ export default function RootLayout({
               </main>
               <footer className="w-full flex items-center justify-center py-3">
                 <div className="flex items-center gap-1 text-current">
-                  <span className="text-default-600">Pied de page</span>
+                  <span className="text-default-600">
+                    © Take a Seat - {moment().format("YYYY")}
+                  </span>
                 </div>
               </footer>
             </div>

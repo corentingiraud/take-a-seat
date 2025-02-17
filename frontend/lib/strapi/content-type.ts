@@ -79,4 +79,31 @@ async function create<T extends StrapiData>(
   }
 }
 
-export default { fetchAll, fetchOne, create };
+async function update<T extends StrapiData>(
+  contentType: string,
+  factory: FactoryStrapiData<T>,
+  object: T,
+  fieldsToUpdate: Array<keyof T>,
+  headers: HeadersInit = {},
+): Promise<T | null> {
+  try {
+    const url = `${API_URL}/${contentType}/${object.documentId}`;
+
+    const body = {
+      data: object.toJson(),
+    };
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(body),
+    });
+    const jsonResponse = await response.json();
+
+    return jsonResponse.data ? factory(jsonResponse.data) : null;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { fetchAll, fetchOne, create, update };

@@ -1,6 +1,17 @@
 import { Time } from "./time";
 
-import { FetchAllParams } from "@/types/fetch-params";
+import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
+import { FetchAllParams } from "@/types/strapi-api-params";
+
+interface ServiceInterface {
+  id?: number;
+  documentId?: string;
+  name: string;
+  openingTime: Time;
+  closingTime: Time;
+  maximumBookingsPerHour: number;
+  minimumBookingMinutes: number;
+}
 
 export class Service {
   id!: number;
@@ -11,34 +22,34 @@ export class Service {
   maximumBookingsPerHour!: number;
   minimumBookingMinutes!: number;
 
-  constructor(
-    id: number,
-    documentId: string,
-    name: string,
-    openingTime: string,
-    closingTime: string,
-    maximumBookingsPerHour: number,
-    minimumBookingMinutes: number,
-  ) {
+  constructor({
+    id = UNDEFINED_ID,
+    documentId = UNDEFINED_DOCUMENT_ID,
+    name,
+    openingTime,
+    closingTime,
+    maximumBookingsPerHour,
+    minimumBookingMinutes,
+  }: ServiceInterface) {
     this.id = id;
     this.documentId = documentId;
     this.name = name;
-    this.openingTime = Time.fromString(openingTime);
-    this.closingTime = Time.fromString(closingTime);
+    this.openingTime = openingTime;
+    this.closingTime = closingTime;
     this.maximumBookingsPerHour = maximumBookingsPerHour;
     this.minimumBookingMinutes = minimumBookingMinutes;
   }
 
   static fromJson(json: any): Service {
-    return new Service(
-      json.id,
-      json.documentId,
-      json.name,
-      json.openingTime,
-      json.closingTime,
-      json.maximumBookingsPerHour,
-      json.minimumBookingMinutes,
-    );
+    return new Service({
+      id: json.id,
+      documentId: json.documentId,
+      name: json.name,
+      openingTime: Time.fromString(json.openingTime),
+      closingTime: Time.fromString(json.closingTime),
+      maximumBookingsPerHour: json.maximumBookingsPerHour,
+      minimumBookingMinutes: json.minimumBookingMinutes,
+    });
   }
 
   static get fetchParams(): FetchAllParams<Service> {
@@ -46,6 +57,10 @@ export class Service {
       contentType: "services",
       factory: Service.fromJson,
     };
+  }
+
+  toJson() {
+    return {};
   }
 
   getTimeSlot(): Time[] {

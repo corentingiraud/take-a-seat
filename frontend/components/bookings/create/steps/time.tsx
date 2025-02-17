@@ -1,7 +1,5 @@
 "use client";
 
-import { Time } from "../../../models/time";
-
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -11,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Service } from "@/models/service";
+import { Time } from "@/models/time";
 
 interface TimeFormStepProps {
   service: Service;

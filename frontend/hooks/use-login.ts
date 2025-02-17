@@ -4,11 +4,9 @@ import { API_URL } from "@/config/site";
 
 export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    setError(null);
 
     try {
       const res = await fetch(`${API_URL}/auth/local`, {
@@ -30,14 +28,10 @@ export function useLogin() {
 
       return data.jwt;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      setError("Échec de la connexion. Veuillez vérifier vos identifiants.");
-
-      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { login, isLoading, error };
+  return { login, isLoading };
 }

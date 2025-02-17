@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
+    const token = window.localStorage.getItem("jwt");
 
     if (token) {
       const fetchUser = async () => {
@@ -56,11 +56,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const getToken = () => {
-    return localStorage.getItem(JWT_LOCAL_STORAGE_KEY);
+    return window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY);
   };
 
   const login = (token: string) => {
-    localStorage.setItem(JWT_LOCAL_STORAGE_KEY, token);
+    window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, token);
     setIsAuthenticated(true);
     const fetchUser = async () => {
       const res = await fetch(`${API_URL}/users/me`, {
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem(JWT_LOCAL_STORAGE_KEY);
+    window.localStorage.removeItem(JWT_LOCAL_STORAGE_KEY);
     setIsAuthenticated(false);
     setUser(null);
   };

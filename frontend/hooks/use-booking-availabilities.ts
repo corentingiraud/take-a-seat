@@ -19,6 +19,8 @@ interface UseBookingAvailabilitiesParams {
   halfDay?: HalfDay;
 }
 
+type UnavailableBooking = { cause: string; booking: Booking };
+
 export function useBookingAvailabilities({
   service,
   startDay,
@@ -33,12 +35,15 @@ export function useBookingAvailabilities({
   const desiredBookings = computeDesiredBookings();
 
   const [availableBookings, setAvailableBookings] = useState<Booking[]>([]);
-  const [unavailableBookings, setUnavailableBookings] = useState<Booking[]>([]);
+  const [unavailableBookings, setUnavailableBookings] = useState<
+    UnavailableBooking[]
+  >([]);
 
   useEffect(() => {
     fetchAll({
       ...Booking.strapiAPIParams,
       queryParams: {
+        populate: ["user"],
         filters: {
           service: {
             id: {
@@ -46,10 +51,10 @@ export function useBookingAvailabilities({
             },
           },
           startDate: {
-            $gt: startDate.toDate(),
+            $gte: startDate.toDate(),
           },
           endDate: {
-            $gt: endDate.toDate(),
+            $lte: endDate.toDate(),
           },
         },
       },
@@ -62,8 +67,8 @@ export function useBookingAvailabilities({
     let startDate = startDay.clone();
     let endDate = moment();
 
-    if (duration === AVAILABLE_DURATION.ONE_HOUR) {
-      startDate.hour(startTime!.hour);
+    if (duration === AVAILABLE_DURATION.ONE_HOUR && startTime) {
+      startDate.hour(startTime.hour);
       endDate = startDate.clone().add(AVAILABLE_DURATION.ONE_HOUR);
     }
 
@@ -120,7 +125,43 @@ export function useBookingAvailabilities({
   }
 
   function computeAvailableBooking(existingBookings: Booking[]) {
-    setAvailableBookings(desiredBookings);
+    const availableBookings: Booking[] = [];
+    const unavailableBookings: UnavailableBooking[] = [];
+
+    for (const desiredBooking of desiredBookings) {
+      if (desiredBooking.endDate.isBefore(moment())) continue;
+
+      const existingBookingsAtSameTime = existingBookings.filter(
+        (booking) =>
+          desiredBooking.startDate.isSameOrAfter(booking.startDate) &&
+          desiredBooking.endDate.isSameOrBefore(booking.endDate),
+      );
+
+      if (existingBookingsAtSameTime.length >= service.maximumBookingsPerHour) {
+        unavailableBookings.push({
+          booking: desiredBooking,
+          cause: "Plus de place disponible",
+        });
+        break;
+      }
+
+      const maybeExistingBookingForUser = existingBookingsAtSameTime.find(
+        (booking) => booking.user?.id === user?.id,
+      );
+
+      if (maybeExistingBookingForUser) {
+        unavailableBookings.push({
+          booking: desiredBooking,
+          cause: "Vous avez déjà réserver ce créneau",
+        });
+        break;
+      }
+
+      availableBookings.push(desiredBooking);
+    }
+
+    setAvailableBookings(availableBookings);
+    setUnavailableBookings(unavailableBookings);
   }
 
   return {

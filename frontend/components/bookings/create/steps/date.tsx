@@ -1,9 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import moment, { Moment } from "moment";
+import { useState } from "react";
 
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -20,7 +19,8 @@ interface DateFormStepProps {
 }
 
 export const DateFormStep = ({ onDateChange }: DateFormStepProps) => {
-  const [date, setDate] = React.useState<Date | undefined>();
+  const [date, setDate] = useState<Date | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
   const onValueChange = (date: Date | undefined) => {
     setDate(date);
@@ -33,21 +33,22 @@ export const DateFormStep = ({ onDateChange }: DateFormStepProps) => {
     <div className="flex flex-col mt-2">
       <Label htmlFor="date">Quand ?</Label>
       <div className="mt-2">
-        <Popover>
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
             <Button
-              className={cn(
-                "w-[240px] justify-start text-left font-normal",
-                !date && "text-muted-foreground",
-              )}
+              className={cn("w-full", !date && "text-muted-foreground")}
               name="date"
               variant={"outline"}
             >
               <CalendarIcon />
-              {date ? format(date, "PPP") : <span>Choisir une date</span>}
+              {date ? (
+                moment(date).format("D MMMM YYYY")
+              ) : (
+                <span>Choisir une date</span>
+              )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-auto p-0">
+          <PopoverContent align="center" className="w-auto p-0">
             <Calendar
               initialFocus
               disabled={(date) => {
@@ -60,6 +61,7 @@ export const DateFormStep = ({ onDateChange }: DateFormStepProps) => {
               }}
               mode="single"
               selected={date}
+              onDayClick={() => setCalendarOpen(false)}
               onSelect={onValueChange}
             />
           </PopoverContent>

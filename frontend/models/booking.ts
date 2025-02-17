@@ -6,11 +6,12 @@ import { Service } from "./service";
 import { User } from "./user";
 import { StrapiData } from "./utils/strapi-data";
 
-import { FetchAllParams } from "@/types/fetch-params";
-import { UNDEFINED_ID } from "@/config/constants";
+import { FetchAllParams } from "@/types/strapi-api-params";
+import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 
 interface BookingInterface {
   id?: number;
+  documentId?: string;
   startDate: Moment;
   endDate: Moment;
   user?: User;
@@ -21,6 +22,7 @@ interface BookingInterface {
 
 export class Booking implements StrapiData {
   id: number;
+  documentId: string;
   startDate: Moment;
   endDate: Moment;
   bookingStatus: BookingStatus;
@@ -30,6 +32,7 @@ export class Booking implements StrapiData {
 
   constructor({
     id = UNDEFINED_ID,
+    documentId = UNDEFINED_DOCUMENT_ID,
     startDate,
     endDate,
     bookingStatus = BookingStatus.PENDING,
@@ -38,6 +41,7 @@ export class Booking implements StrapiData {
     service,
   }: BookingInterface) {
     this.id = id;
+    this.documentId = documentId;
     this.startDate = startDate;
     this.endDate = endDate;
     this.bookingStatus = bookingStatus;
@@ -49,6 +53,7 @@ export class Booking implements StrapiData {
   static fromJson(json: any): Booking {
     return new Booking({
       id: json.id,
+      documentId: json.documentId,
       startDate: moment(json.startDate),
       endDate: moment(json.endDate),
       bookingStatus: json.bookingStatus,
@@ -65,7 +70,7 @@ export class Booking implements StrapiData {
     };
   }
 
-  toJson(): any {
+  toJson(): object {
     const json: any = {
       startDate: this.startDate.format(),
       endDate: this.endDate.format(),
