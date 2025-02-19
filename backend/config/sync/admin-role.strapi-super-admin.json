@@ -820,42 +820,6 @@
       "locale": null
     },
     {
-      "documentId": "v7asi9wfn6yc321plyy2y1ue",
-      "action": "plugin::documentation.read",
-      "actionParameters": {},
-      "subject": null,
-      "properties": {},
-      "conditions": [],
-      "locale": null
-    },
-    {
-      "documentId": "pfqq8uojugruqyjilwzja1dq",
-      "action": "plugin::documentation.settings.read",
-      "actionParameters": {},
-      "subject": null,
-      "properties": {},
-      "conditions": [],
-      "locale": null
-    },
-    {
-      "documentId": "wu8j2kz2t1hljthv8gmk58yv",
-      "action": "plugin::documentation.settings.regenerate",
-      "actionParameters": {},
-      "subject": null,
-      "properties": {},
-      "conditions": [],
-      "locale": null
-    },
-    {
-      "documentId": "can308i8ysf3td4n9few1d3z",
-      "action": "plugin::documentation.settings.update",
-      "actionParameters": {},
-      "subject": null,
-      "properties": {},
-      "conditions": [],
-      "locale": null
-    },
-    {
       "documentId": "ulql3hwg65v573vzn1tchza3",
       "action": "plugin::email.settings.read",
       "actionParameters": {},
