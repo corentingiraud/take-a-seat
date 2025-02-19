@@ -289,7 +289,7 @@
       "locale": null
     },
     {
-      "documentId": "qosvjhpzuh0xcbq7s1c8icko",
+      "documentId": "vay1ufvutilnan0tj5ehzdy3",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::service.service",
@@ -300,8 +300,7 @@
           "coworkingSpace",
           "bookings",
           "openingTime",
-          "closingTime",
-          "minumunBookingMinutes"
+          "closingTime"
         ]
       },
       "conditions": [],
@@ -326,7 +325,7 @@
       "locale": null
     },
     {
-      "documentId": "bjeoma7t7nloc47hji38d918",
+      "documentId": "bvzcadjs3kw4xb1jsdm5ja00",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::service.service",
@@ -337,15 +336,14 @@
           "coworkingSpace",
           "bookings",
           "openingTime",
-          "closingTime",
-          "minumunBookingMinutes"
+          "closingTime"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "tpyxi99k12kxpdwk7ewie056",
+      "documentId": "b0kn5ud1yn9463d5r10hjfdy",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::service.service",
@@ -356,8 +354,7 @@
           "coworkingSpace",
           "bookings",
           "openingTime",
-          "closingTime",
-          "minumunBookingMinutes"
+          "closingTime"
         ]
       },
       "conditions": [],
@@ -816,6 +813,42 @@
     {
       "documentId": "mus0b7gv79bn5jm3h6sybb3n",
       "action": "plugin::content-type-builder.read",
+      "actionParameters": {},
+      "subject": null,
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "v7asi9wfn6yc321plyy2y1ue",
+      "action": "plugin::documentation.read",
+      "actionParameters": {},
+      "subject": null,
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "pfqq8uojugruqyjilwzja1dq",
+      "action": "plugin::documentation.settings.read",
+      "actionParameters": {},
+      "subject": null,
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "wu8j2kz2t1hljthv8gmk58yv",
+      "action": "plugin::documentation.settings.regenerate",
+      "actionParameters": {},
+      "subject": null,
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "can308i8ysf3td4n9few1d3z",
+      "action": "plugin::documentation.settings.update",
       "actionParameters": {},
       "subject": null,
       "properties": {},

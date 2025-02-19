@@ -12,13 +12,14 @@ import {
 
 export function useStrapiAPI() {
   const auth = useContext(AuthContext);
-  const token = auth?.getToken();
 
   const headers = new Headers({
     "Content-Type": "application/json",
   });
 
   async function fetchAll<T extends StrapiData>(params: FetchAllParams<T>) {
+    const token = auth?.getToken();
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -34,6 +35,8 @@ export function useStrapiAPI() {
   }
 
   async function fetchOne<T extends StrapiData>(params: FetchOneParams<T>) {
+    const token = auth?.getToken();
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -50,6 +53,8 @@ export function useStrapiAPI() {
   }
 
   async function create<T extends StrapiData>(params: CreateParams<T>) {
+    const token = auth?.getToken();
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -65,6 +70,8 @@ export function useStrapiAPI() {
   }
 
   async function update<T extends StrapiData>(params: UpdateParams<T>) {
+    const token = auth?.getToken();
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }

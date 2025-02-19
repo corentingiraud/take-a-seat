@@ -293,8 +293,7 @@
           "maximumBookingsPerHour",
           "coworkingSpace",
           "openingTime",
-          "closingTime",
-          "minumunBookingMinutes"
+          "closingTime"
         ]
       },
       "conditions": [],
@@ -329,8 +328,7 @@
           "maximumBookingsPerHour",
           "coworkingSpace",
           "openingTime",
-          "closingTime",
-          "minumunBookingMinutes"
+          "closingTime"
         ]
       },
       "conditions": [],
@@ -347,8 +345,7 @@
           "maximumBookingsPerHour",
           "coworkingSpace",
           "openingTime",
-          "closingTime",
-          "minumunBookingMinutes"
+          "closingTime"
         ]
       },
       "conditions": [],

@@ -8,13 +8,13 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
+import moment from "moment";
 
 import { useAuth } from "./auth-context";
 
 import { Booking } from "@/models/booking";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { BookingStatus } from "@/models/booking-status";
-import moment from "moment";
 
 interface BookingContextType {
   bookings: Booking[];
@@ -51,7 +51,7 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
           },
           endDate: {
             $gt: moment().toDate(),
-          }
+          },
         },
       },
     }).then((bookings) => {

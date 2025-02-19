@@ -1,37 +1,6 @@
 services:
-  take-a-seat:
-    container_name: take-a-seat
-    build: .
-    image: take-a-seat:latest
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      DATABASE_CLIENT: ${DATABASE_CLIENT}
-      DATABASE_HOST: take-a-seatDB
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PORT: ${DATABASE_PORT}
-      JWT_SECRET: ${JWT_SECRET}
-      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      NODE_ENV: ${NODE_ENV}
-    volumes:
-      - ./config:/opt/app/config
-      - ./src:/opt/app/src
-      - ./package.json:/opt/package.json
-      - ./package-lock.json:/opt/package-lock.json
-
-      - ./.env:/opt/app/.env
-      - ./public/uploads:/opt/app/public/uploads
-    ports:
-      - '1337:1337'
-    networks:
-      - take-a-seat
-    depends_on:
-      - take-a-seatDB
-      
-  take-a-seatDB:
-    container_name: take-a-seatDB
+  take-a-seat-database:
+    container_name: take-a-seat-database
     platform: linux/amd64 #for platform error on Apple M1 chips
     restart: unless-stopped
     env_file: .env
@@ -41,26 +10,51 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - take-a-seat-data:/var/lib/postgresql/data/ #using a volume
-      #- ./data:/var/lib/postgresql/data/ # if you want to use a bind folder
-
+      - take-a-seat-data:/var/lib/postgresql/data/
     ports:
       - '5432:5432'
     networks:
       - take-a-seat
-      
-  take-a-seatAdminer:
-    container_name: take-a-seatAdminer
-    image: adminer
+
+  take-a-seat-mailcatcher:
+    container_name: take-a-seat-mailcatcher
+    image: sj26/mailcatcher
     restart: unless-stopped
     ports:
-      - '9090:8080'
-    environment:
-      - ADMINER_DEFAULT_SERVER=take-a-seatDB
-    networks:
-      - take-a-seat
-    depends_on:
-      - take-a-seatDB
+      - '1080:1080'
+      - '1025:1025'
+
+  # take-a-seat:
+  #   container_name: take-a-seat
+  #   build: .
+  #   image: take-a-seat:latest
+  #   restart: unless-stopped
+  #   env_file: .env
+  #   environment:
+  #     DATABASE_CLIENT: ${DATABASE_CLIENT}
+  #     DATABASE_HOST: take-a-seatDB
+  #     DATABASE_NAME: ${DATABASE_NAME}
+  #     DATABASE_USERNAME: ${DATABASE_USERNAME}
+  #     DATABASE_PORT: ${DATABASE_PORT}
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  #     NODE_ENV: ${NODE_ENV}
+  #   volumes:
+  #     - ./config:/opt/app/config
+  #     - ./src:/opt/app/src
+  #     - ./package.json:/opt/package.json
+  #     - ./package-lock.json:/opt/package-lock.json
+
+  #     - ./.env:/opt/app/.env
+  #     - ./public/uploads:/opt/app/public/uploads
+  #   ports:
+  #     - '1337:1337'
+  #   networks:
+  #     - take-a-seat
+  #   depends_on:
+  #     - take-a-seat-database
+  #     - take-a-seat-mailcatcher
 
 volumes:
   take-a-seat-data:

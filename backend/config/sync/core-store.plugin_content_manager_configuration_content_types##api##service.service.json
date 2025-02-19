@@ -105,20 +105,6 @@
           "sortable": true
         }
       },
-      "minumunBookingMinutes": {
-        "edit": {
-          "label": "Nombre minimum de minutes par réservation",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true
-        },
-        "list": {
-          "label": "Nombre minimum de minutes par réservation",
-          "searchable": true,
-          "sortable": true
-        }
-      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -179,6 +165,13 @@
       }
     },
     "layouts": {
+      "list": [
+        "coworkingSpace",
+        "name",
+        "openingTime",
+        "closingTime",
+        "maximumBookingsPerHour"
+      ],
       "edit": [
         [
           {
@@ -194,10 +187,6 @@
         ],
         [
           {
-            "name": "minumunBookingMinutes",
-            "size": 6
-          },
-          {
             "name": "maximumBookingsPerHour",
             "size": 6
           }
@@ -212,14 +201,6 @@
             "size": 6
           }
         ]
-      ],
-      "list": [
-        "coworkingSpace",
-        "name",
-        "maximumBookingsPerHour",
-        "minumunBookingMinutes",
-        "openingTime",
-        "closingTime"
       ]
     },
     "uid": "api::service.service"

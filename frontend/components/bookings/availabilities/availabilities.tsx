@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 import { DialogHeader, DialogFooter, DialogContent } from "../../ui/dialog";
 import { Button } from "../../ui/button";
-import { ScrollArea, ScrollBar } from "../../ui/scroll-area";
+import { ScrollArea } from "../../ui/scroll-area";
 import { Separator } from "../../ui/separator";
 
 import { CoworkingSpace } from "@/models/coworking-space";
@@ -74,18 +74,20 @@ export const BookingAvailabilities = ({
         <DialogTitle className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">
           {coworkingSpace.name} - {service.name}
         </DialogTitle>
-        <DialogDescription>Disponibilités des réservations</DialogDescription>
+        <DialogDescription className="text-lg text-gray-600">
+          Disponibilités des réservations
+        </DialogDescription>
       </DialogHeader>
       {unavailableBookings.length > 0 && (
         <div>
-          <h4 className="mb-4 text-sm font-medium leading-none">
-            Créneaux indisponibles
+          <h4 className="mb-4 text-sm font-medium leading-none text-gray-500">
+            Créneaux indisponibles :
           </h4>
           <ScrollArea className="rounded-md border h-32">
             <div className="p-4">
               {unavailableBookings.map((unavailableBooking, i) => (
                 <div key={i}>
-                  <div className="text-sm">
+                  <div className="text-sm text-gray-700">
                     {unavailableBooking.booking.toString()}:{" "}
                     {unavailableBooking.cause}
                   </div>
@@ -98,14 +100,16 @@ export const BookingAvailabilities = ({
       )}
       {availableBookings.length > 0 && (
         <div>
-          <h4 className="mb-4 text-sm font-medium leading-none">
-            Créneaux disponibles
+          <h4 className="mb-4 text-sm font-medium leading-none text-gray-500">
+            Créneaux disponibles :
           </h4>
           <ScrollArea className="rounded-md border h-32">
             <div className="p-4">
               {availableBookings.map((booking, i) => (
                 <div key={i}>
-                  <div className="text-sm">{booking.toString()}</div>
+                  <div className="text-sm text-gray-300">
+                    {booking.toString()}
+                  </div>
                   <Separator className="my-2" />
                 </div>
               ))}
