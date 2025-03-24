@@ -14,6 +14,7 @@ import { AVAILABLE_DURATION } from "@/models/duration";
 interface UseBookingAvailabilitiesParams {
   service: Service;
   startDay: Moment;
+  endDay?: Moment;
   duration: Duration;
   startTime?: Time;
   halfDay?: HalfDay;
@@ -24,6 +25,7 @@ type UnavailableBooking = { cause: string; booking: Booking };
 export function useBookingAvailabilities({
   service,
   startDay,
+  endDay,
   startTime,
   halfDay,
   duration,
@@ -67,15 +69,19 @@ export function useBookingAvailabilities({
     let startDate = startDay.clone();
     let endDate = moment();
 
-    if (duration === AVAILABLE_DURATION.ONE_HOUR && startTime) {
+    if (duration === AVAILABLE_DURATION.ONE_HOUR.getDuration() && startTime) {
       startDate.hour(startTime.hour);
-      endDate = startDate.clone().add(AVAILABLE_DURATION.ONE_HOUR);
+      endDate = startDate
+        .clone()
+        .add(AVAILABLE_DURATION.ONE_HOUR.getDuration());
     }
 
-    if (duration === AVAILABLE_DURATION.HALF_DAY) {
+    if (duration === AVAILABLE_DURATION.HALF_DAY.getDuration()) {
       if (halfDay === HalfDay.Morning) {
         startDate.hour(service.openingTime.hour);
-        endDate = startDate.clone().add(AVAILABLE_DURATION.HALF_DAY);
+        endDate = startDate
+          .clone()
+          .add(AVAILABLE_DURATION.HALF_DAY.getDuration());
       }
 
       if (halfDay === HalfDay.Afternoon) {
@@ -84,9 +90,9 @@ export function useBookingAvailabilities({
       }
     }
 
-    if (duration === AVAILABLE_DURATION.DAY) {
+    if (duration === null && endDay) {
       startDate.hour(service.openingTime.hour);
-      endDate = startDate.clone().hour(service.closingTime.hour);
+      endDate = endDay.clone().hour(service.closingTime.hour);
     }
 
     return { startDate, endDate };

@@ -14,7 +14,7 @@ import { AVAILABLE_DURATION } from "@/models/duration";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface DurationFormStepProps {
-  onDurationChange: (duration: Duration) => void;
+  onDurationChange: (duration: Duration | null) => void;
 }
 
 export const DurationFormStep = ({
@@ -22,7 +22,9 @@ export const DurationFormStep = ({
 }: DurationFormStepProps) => {
   const onValueChange = (value: string) => {
     onDurationChange(
-      AVAILABLE_DURATION[value as keyof typeof AVAILABLE_DURATION],
+      AVAILABLE_DURATION[
+        value as keyof typeof AVAILABLE_DURATION
+      ].getDuration(),
     );
   };
 

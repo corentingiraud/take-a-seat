@@ -27,6 +27,7 @@ interface BookingAvailabilitiesProps {
   service: Service;
   duration: Duration;
   startDay: Moment;
+  endDay?: Moment;
   startTime?: Time;
   halfDay?: HalfDay;
 }
@@ -35,6 +36,7 @@ export const BookingAvailabilities = ({
   coworkingSpace,
   service,
   startDay,
+  endDay,
   halfDay,
   startTime,
   duration,
@@ -45,6 +47,7 @@ export const BookingAvailabilities = ({
   const { availableBookings, unavailableBookings } = useBookingAvailabilities({
     service,
     startDay,
+    endDay,
     halfDay,
     startTime,
     duration,
