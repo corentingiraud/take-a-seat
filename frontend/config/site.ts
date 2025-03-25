@@ -1,3 +1,6 @@
+"use client";
+
+import { env } from "next-runtime-env";
 import moment from "moment";
 moment.locale("fr");
 
@@ -15,6 +18,6 @@ export const siteConfig = {
 };
 
 export const API_URL =
-  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337/api";
+  env("NEXT_PUBLIC_STRAPI_API_URL") || "http://localhost:1337/api";
 
 export const MINIMUM_BOOKING_DURATION = moment.duration("1", "hours");

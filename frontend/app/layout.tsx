@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import clsx from "clsx";
 import moment from "moment";
+import { PublicEnvScript } from "next-runtime-env";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
@@ -27,8 +28,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
-      <head />
+    <html suppressHydrationWarning lang="fr">
+      <head>
+        <PublicEnvScript />
+      </head>
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",
