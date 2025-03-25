@@ -24,38 +24,6 @@ services:
       - '1080:1080'
       - '1025:1025'
 
-  # take-a-seat:
-  #   container_name: take-a-seat
-  #   build: .
-  #   image: take-a-seat:latest
-  #   restart: unless-stopped
-  #   env_file: .env
-  #   environment:
-  #     DATABASE_CLIENT: ${DATABASE_CLIENT}
-  #     DATABASE_HOST: take-a-seatDB
-  #     DATABASE_NAME: ${DATABASE_NAME}
-  #     DATABASE_USERNAME: ${DATABASE_USERNAME}
-  #     DATABASE_PORT: ${DATABASE_PORT}
-  #     JWT_SECRET: ${JWT_SECRET}
-  #     ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
-  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-  #     NODE_ENV: ${NODE_ENV}
-  #   volumes:
-  #     - ./config:/opt/app/config
-  #     - ./src:/opt/app/src
-  #     - ./package.json:/opt/package.json
-  #     - ./package-lock.json:/opt/package-lock.json
-
-  #     - ./.env:/opt/app/.env
-  #     - ./public/uploads:/opt/app/public/uploads
-  #   ports:
-  #     - '1337:1337'
-  #   networks:
-  #     - take-a-seat
-  #   depends_on:
-  #     - take-a-seat-database
-  #     - take-a-seat-mailcatcher
-
 volumes:
   take-a-seat-data:
 
