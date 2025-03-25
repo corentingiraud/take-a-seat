@@ -17,7 +17,7 @@ services:
 
   take-a-seat-backend:
     container_name: take-a-seat-backend
-    image: take-a-seat-backend:latest
+    image: ghcr.io/corentingiraud/take-a-seat:backend-latest
     restart: unless-stopped
     env_file: .env
     environment:
@@ -39,7 +39,7 @@ services:
   
   take-a-seat-frontend:
     container_name: take-a-seat-frontend
-    image: take-a-seat-frontend:latest
+    image: ghcr.io/corentingiraud/take-a-seat:frontend-latest
     restart: unless-stopped
     ports:
       - '3000:3000'
