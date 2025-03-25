@@ -1,0 +1,65 @@
+services:
+  take-a-seat-database:
+    container_name: take-a-seat-database
+    restart: unless-stopped
+    env_file: .env
+    image: postgres:14.5-alpine
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - take-a-seat-data:/var/lib/postgresql/data/
+    ports:
+      - '5432:5432'
+    networks:
+      - take-a-seat
+
+  take-a-seat-backend:
+    container_name: take-a-seat-backend
+    image: take-a-seat-backend:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_HOST: take-a-seatDB
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PORT: ${DATABASE_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./config:/opt/app/config
+      - ./src:/opt/app/src
+      - ./package.json:/opt/package.json
+      - ./package-lock.json:/opt/package-lock.json
+
+      - ./.env:/opt/app/.env
+      - ./public/uploads:/opt/app/public/uploads
+    ports:
+      - '1337:1337'
+    networks:
+      - take-a-seat
+    depends_on:
+      - take-a-seat-database
+  
+  take-a-seat-frontend:
+    container_name: take-a-seat-frontend
+    image: take-a-seat-frontend:latest
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    networks:
+      - take-a-seat
+    depends_on:
+      - take-a-seat-backend
+
+volumes:
+  take-a-seat-data:
+
+networks:
+  take-a-seat:
+    name: Take-a-seat
+    driver: bridge

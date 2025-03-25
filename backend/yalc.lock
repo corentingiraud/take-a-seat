@@ -1,9 +1,0 @@
-{
-  "version": "v1",
-  "packages": {
-    "bulk-edit": {
-      "signature": "bd31c0fe8dcf4245e353eebf0496efef",
-      "link": true
-    }
-  }
-}
