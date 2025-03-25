@@ -41,8 +41,9 @@ services:
     container_name: take-a-seat-frontend
     image: ghcr.io/corentingiraud/take-a-seat:frontend-latest
     restart: unless-stopped
+    env_file: .env
     environment:
-      NEXT_PUBLIC_STRAPI_API_URL: https://api.take-a-seat.giraud.dev/api
+      NEXT_PUBLIC_STRAPI_API_URL: ${NEXT_PUBLIC_STRAPI_API_URL}
     ports:
       - '3000:3000'
     networks:
