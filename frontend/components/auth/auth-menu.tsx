@@ -9,14 +9,17 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuItem,
+  DropdownMenuLabel,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 
 import { useAuth } from "@/contexts/auth-context";
+import { ROLE_TYPE } from "@/models/role";
+import { LogOut } from "lucide-react";
 
 export const AuthMenu = () => {
   const router = useRouter();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, hasRole } = useAuth();
 
   if (!isAuthenticated) {
     return (
@@ -45,6 +48,19 @@ export const AuthMenu = () => {
         <DropdownMenuItem onClick={() => router.push("/my-prepaid-cards")}>
           Mes cartes pré-payées
         </DropdownMenuItem>
+        {/* Admin Section */}
+        {hasRole(ROLE_TYPE.SUPER_ADMIN) && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-muted-foreground">
+              Admin
+            </DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => router.push("/admin/bookings")}>
+              Gérer les réservations
+            </DropdownMenuItem>
+            {/* Add other admin links here if needed */}
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
@@ -52,6 +68,7 @@ export const AuthMenu = () => {
             router.push("/");
           }}
         >
+          <LogOut className="mr-2 h-4 w-4" />
           Deconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,0 +1,94 @@
+{
+  "documentId": "qy9oo23a33t1d1gy5efnc3i0",
+  "name": "Coworker",
+  "description": "Default role given to authenticated user.",
+  "type": "coworker",
+  "locale": null,
+  "permissions": [
+    {
+      "documentId": "tidj6el3clljqrnwskp827vz",
+      "action": "api::booking.booking.create",
+      "locale": null
+    },
+    {
+      "documentId": "cjsgmn4taprwvbs934gway7u",
+      "action": "api::booking.booking.find",
+      "locale": null
+    },
+    {
+      "documentId": "bva3ian7ci3oxayg5gbjfw0h",
+      "action": "api::booking.booking.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "jpzaqtesryh06l6a47nyrnqu",
+      "action": "api::booking.booking.update",
+      "locale": null
+    },
+    {
+      "documentId": "c69qs4xxcofz9a73evnfdlkh",
+      "action": "api::coworking-space.coworking-space.find",
+      "locale": null
+    },
+    {
+      "documentId": "wiwv3lfk05zk47icdeh45vl9",
+      "action": "api::coworking-space.coworking-space.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "vhrlljxhl2su37n64xzu0w7i",
+      "action": "api::prepaid-card.prepaid-card.find",
+      "locale": null
+    },
+    {
+      "documentId": "vt3wtj5qwfnothcmpwachds6",
+      "action": "api::prepaid-card.prepaid-card.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "lybgqksryds08f3gvi5qg07u",
+      "action": "api::service.service.find",
+      "locale": null
+    },
+    {
+      "documentId": "lk1ufiia0u6maxs7mhn9yw6p",
+      "action": "api::service.service.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "od5vqkidy0ka8ishu8lkow79",
+      "action": "api::unavailability.unavailability.find",
+      "locale": null
+    },
+    {
+      "documentId": "wliva4p7txb7wjm0nbqmgczs",
+      "action": "api::unavailability.unavailability.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "ktg2fgxp5n65do8lf3kmvgxk",
+      "action": "plugin::users-permissions.auth.changePassword",
+      "locale": null
+    },
+    {
+      "documentId": "rfv7unqfxr27u8ho9q9osuby",
+      "action": "plugin::users-permissions.role.find",
+      "locale": null
+    },
+    {
+      "documentId": "bapp5lueyk11vdlezz65wzio",
+      "action": "plugin::users-permissions.user.find",
+      "locale": null
+    },
+    {
+      "documentId": "emedt0wmt3ske8ri6rq4ix9i",
+      "action": "plugin::users-permissions.user.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "b9woqeazwyoka5a32tf5bsy7",
+      "action": "plugin::users-permissions.user.me",
+      "locale": null
+    }
+  ]
+}

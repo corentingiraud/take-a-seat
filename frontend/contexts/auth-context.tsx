@@ -17,6 +17,7 @@ interface AuthContextType {
   getToken: () => string | null;
   login: (token: string) => void;
   logout: () => void;
+  hasRole: (role: string) => boolean;
 }
 
 interface AuthProviderProps {
@@ -38,7 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (token) {
       const fetchUser = async () => {
-        const res = await fetch(`${API_URL}/users/me`, {
+        const res = await fetch(`${API_URL}/users/me?populate=role`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -46,7 +47,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const data = await res.json();
 
         if (data.id) {
-          setUser(data);
+          const user = User.fromJson(data);
+
+          setUser(user);
           setIsAuthenticated(true);
         }
       };
@@ -82,9 +85,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
   };
 
+  const hasRole = (role: string) => {
+    if (!user) return false;
+
+    return user.role?.type === role;
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, getToken, login, logout }}
+      value={{ user, isAuthenticated, getToken, login, logout, hasRole }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,87 +1,97 @@
 {
-  "documentId": "qy9oo23a33t1d1gy5efnc3i0",
-  "name": "Authenticated",
-  "description": "Default role given to authenticated user.",
-  "type": "authenticated",
+  "documentId": "sbxpm115dk24eyy1ey60f9da",
+  "name": "Super administrateur",
+  "description": "Rôle pour les administrateurs",
+  "type": "super_admin",
   "locale": null,
   "permissions": [
     {
-      "documentId": "tidj6el3clljqrnwskp827vz",
+      "documentId": "x3lxu0cz0nhmoiz62wru6azg",
       "action": "api::booking.booking.create",
       "locale": null
     },
     {
-      "documentId": "cjsgmn4taprwvbs934gway7u",
+      "documentId": "us450swvxttznq5y1y75ic9w",
+      "action": "api::booking.booking.delete",
+      "locale": null
+    },
+    {
+      "documentId": "ygp7difi3d0rl8txvny6y49u",
       "action": "api::booking.booking.find",
       "locale": null
     },
     {
-      "documentId": "bva3ian7ci3oxayg5gbjfw0h",
+      "documentId": "v6tqmnlk81jt5plx73790yuv",
       "action": "api::booking.booking.findOne",
       "locale": null
     },
     {
-      "documentId": "jpzaqtesryh06l6a47nyrnqu",
+      "documentId": "rdat7x7n86ngfbw8jo3a3nkx",
       "action": "api::booking.booking.update",
       "locale": null
     },
     {
-      "documentId": "c69qs4xxcofz9a73evnfdlkh",
+      "documentId": "ntgo3coxyauxwvlhpehctxfu",
       "action": "api::coworking-space.coworking-space.find",
       "locale": null
     },
     {
-      "documentId": "wiwv3lfk05zk47icdeh45vl9",
+      "documentId": "ohu15dyuf0yl4ttonhcu3xq5",
       "action": "api::coworking-space.coworking-space.findOne",
       "locale": null
     },
     {
-      "documentId": "vhrlljxhl2su37n64xzu0w7i",
+      "documentId": "mb5bqo7o22n6vn8kl6qn6ioo",
       "action": "api::prepaid-card.prepaid-card.find",
       "locale": null
     },
     {
-      "documentId": "vt3wtj5qwfnothcmpwachds6",
+      "documentId": "urx3ocowlooc5wb1to9cjn95",
       "action": "api::prepaid-card.prepaid-card.findOne",
       "locale": null
     },
     {
-      "documentId": "lybgqksryds08f3gvi5qg07u",
+      "documentId": "sjnbzs6k0m5qu8l2v0j3ha7v",
       "action": "api::service.service.find",
       "locale": null
     },
     {
-      "documentId": "lk1ufiia0u6maxs7mhn9yw6p",
+      "documentId": "g0o1dt2ybtlmqw894mbns4jd",
       "action": "api::service.service.findOne",
       "locale": null
     },
     {
-      "documentId": "od5vqkidy0ka8ishu8lkow79",
+      "documentId": "wnfuu5sh8s02as78pl6iezw5",
       "action": "api::unavailability.unavailability.find",
       "locale": null
     },
     {
-      "documentId": "wliva4p7txb7wjm0nbqmgczs",
+      "documentId": "tik019svfoo4yitsuzf23f1m",
       "action": "api::unavailability.unavailability.findOne",
       "locale": null
     },
     {
-      "documentId": "ktg2fgxp5n65do8lf3kmvgxk",
+      "documentId": "r1hdtqhlvh0g8igfa3byzcyi",
       "action": "plugin::users-permissions.auth.changePassword",
       "locale": null
     },
     {
-      "documentId": "bapp5lueyk11vdlezz65wzio",
+      "documentId": "fdkkva82sf00nympo1hjc6pz",
+      "action": "plugin::users-permissions.role.find",
+      "locale": null
+    },
+    {
+      "documentId": "tqk0mx870gdadnfdcnbfhswl",
       "action": "plugin::users-permissions.user.find",
       "locale": null
     },
     {
-      "documentId": "emedt0wmt3ske8ri6rq4ix9i",
+      "documentId": "pku9zdhuq6d9a8bgz81ey694",
       "action": "plugin::users-permissions.user.findOne",
       "locale": null
     },
     {
-      "documentId": "b9woqeazwyoka5a32tf5bsy7",
+      "documentId": "mfk9qcjd83fjc5r0wuad1zsg",
       "action": "plugin::users-permissions.user.me",
       "locale": null
     }

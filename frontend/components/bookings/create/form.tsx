@@ -62,8 +62,7 @@ export const CreateBookingForm = () => {
 
     if (
       duration === AVAILABLE_DURATION.DAYS.getDuration() &&
-      !startDay &&
-      !endDay
+      (!startDay || !endDay || startDay?.isAfter(endDay))
     ) {
       setFormIsValid(false);
 
