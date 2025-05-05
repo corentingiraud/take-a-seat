@@ -29,7 +29,13 @@ async function fetchAll<T extends StrapiData>(
     const url = `${API_URL}/${contentType}?${qs.stringify(queryParams)}`;
     const jsonData = await fetchFromStrapi<{ data: any[] }>(url, headers);
 
-    return jsonData.data ? jsonData.data.map(factory) : [];
+    if (jsonData.data) return jsonData.data.map(factory);
+
+    if (Array.isArray(jsonData)) return jsonData.map(factory);
+
+    if (typeof jsonData === "object") return [factory(jsonData)];
+
+    return [];
   } catch (error) {
     throw error;
   }

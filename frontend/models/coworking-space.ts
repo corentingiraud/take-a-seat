@@ -1,7 +1,7 @@
 import { StrapiData } from "./utils/strapi-data";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
-import { FetchAllParams } from "@/types/strapi-api-params";
+import { GeneralParams } from "@/types/strapi-api-params";
 
 interface CoworkingSpaceInterface {
   id?: number;
@@ -13,6 +13,8 @@ export class CoworkingSpace implements StrapiData {
   id!: number;
   documentId!: string;
   name!: string;
+
+  static contentType = "coworking-spaces";
 
   constructor({
     id = UNDEFINED_ID,
@@ -32,9 +34,9 @@ export class CoworkingSpace implements StrapiData {
     });
   }
 
-  static get fetchParams(): FetchAllParams<CoworkingSpace> {
+  static get strapiAPIParams(): GeneralParams<CoworkingSpace> {
     return {
-      contentType: "coworking-spaces",
+      contentType: this.contentType,
       factory: CoworkingSpace.fromJson,
     };
   }

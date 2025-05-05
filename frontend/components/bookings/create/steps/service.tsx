@@ -29,7 +29,7 @@ export const ServiceFormStep = ({
 
   useEffect(() => {
     fetchAll<Service>({
-      ...Service.fetchParams,
+      ...Service.strapiAPIParams,
       queryParams: {
         filters: {
           coworkingSpace: {

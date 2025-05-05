@@ -6,7 +6,7 @@ import { Service } from "./service";
 import { User } from "./user";
 import { StrapiData } from "./utils/strapi-data";
 
-import { FetchAllParams } from "@/types/strapi-api-params";
+import { GeneralParams } from "@/types/strapi-api-params";
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 
 interface BookingInterface {
@@ -29,6 +29,8 @@ export class Booking implements StrapiData {
   paymentStatus: PaymentStatus;
   user: User | null;
   service: Service | null;
+
+  static readonly contentType = "bookings";
 
   constructor({
     id = UNDEFINED_ID,
@@ -63,9 +65,9 @@ export class Booking implements StrapiData {
     });
   }
 
-  static get strapiAPIParams(): FetchAllParams<Booking> {
+  static get strapiAPIParams(): GeneralParams<Booking> {
     return {
-      contentType: "bookings",
+      contentType: this.contentType,
       factory: Booking.fromJson,
     };
   }

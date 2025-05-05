@@ -24,7 +24,7 @@ export const CoworkingSpaceFormStep = ({
   const { fetchAll } = useStrapiAPI();
 
   useEffect(() => {
-    fetchAll<CoworkingSpace>(CoworkingSpace.fetchParams).then(
+    fetchAll<CoworkingSpace>(CoworkingSpace.strapiAPIParams).then(
       (coworkingSpaces) => {
         setCoworkingSpaces(coworkingSpaces);
       },

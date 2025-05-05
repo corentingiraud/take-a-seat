@@ -1,9 +1,9 @@
 import { StrapiData } from "./utils/strapi-data";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
-import { FetchAllParams } from "@/types/strapi-api-params";
+import { GeneralParams } from "@/types/strapi-api-params";
 
-export enum ROLE_TYPE {
+export enum RoleType {
   SUPER_ADMIN = "super_admin",
   COWORKER = "coworker",
 }
@@ -12,14 +12,16 @@ interface RoleInterface {
   id?: number;
   documentId?: string;
   name: string;
-  type: ROLE_TYPE;
+  type: RoleType;
 }
 
 export class Role implements StrapiData {
   id!: number;
   documentId!: string;
   name!: string;
-  type!: ROLE_TYPE;
+  type!: RoleType;
+
+  static readonly contentType = "roles";
 
   constructor({
     id = UNDEFINED_ID,
@@ -42,9 +44,9 @@ export class Role implements StrapiData {
     });
   }
 
-  static get fetchParams(): FetchAllParams<Role> {
+  static get strapiAPIParams(): GeneralParams<Role> {
     return {
-      contentType: "roles",
+      contentType: this.contentType,
       factory: Role.fromJson,
     };
   }

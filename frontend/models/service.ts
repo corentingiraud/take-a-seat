@@ -1,7 +1,7 @@
 import { Time } from "./time";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
-import { FetchAllParams } from "@/types/strapi-api-params";
+import { GeneralParams } from "@/types/strapi-api-params";
 
 interface ServiceInterface {
   id?: number;
@@ -21,6 +21,8 @@ export class Service {
   closingTime!: Time;
   maximumBookingsPerHour!: number;
   minimumBookingMinutes!: number;
+
+  static readonly contentType = "services";
 
   constructor({
     id = UNDEFINED_ID,
@@ -52,9 +54,9 @@ export class Service {
     });
   }
 
-  static get fetchParams(): FetchAllParams<Service> {
+  static get strapiAPIParams(): GeneralParams<Service> {
     return {
-      contentType: "services",
+      contentType: this.contentType,
       factory: Service.fromJson,
     };
   }

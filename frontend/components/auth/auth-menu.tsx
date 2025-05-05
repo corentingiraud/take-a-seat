@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -14,8 +15,7 @@ import {
 import { Button } from "../ui/button";
 
 import { useAuth } from "@/contexts/auth-context";
-import { ROLE_TYPE } from "@/models/role";
-import { LogOut } from "lucide-react";
+import { RoleType } from "@/models/role";
 
 export const AuthMenu = () => {
   const router = useRouter();
@@ -49,7 +49,7 @@ export const AuthMenu = () => {
           Mes cartes pré-payées
         </DropdownMenuItem>
         {/* Admin Section */}
-        {hasRole(ROLE_TYPE.SUPER_ADMIN) && (
+        {hasRole(RoleType.SUPER_ADMIN) && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-muted-foreground">

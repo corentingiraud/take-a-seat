@@ -1,8 +1,9 @@
 import { StrapiData } from "./utils/strapi-data";
 import { Role } from "./role";
+import { Booking } from "./booking";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
-import { FetchAllParams } from "@/types/strapi-api-params";
+import { GeneralParams } from "@/types/strapi-api-params";
 
 interface UserInterface {
   id?: number;
@@ -16,7 +17,8 @@ interface UserInterface {
   firstName: string;
   lastName: string;
   phone: string;
-  role: Role;
+  role?: Role;
+  bookings?: Booking[];
 }
 
 export class User implements StrapiData {
@@ -31,7 +33,10 @@ export class User implements StrapiData {
   firstName!: string;
   lastName!: string;
   phone!: string;
-  role!: Role;
+  role?: Role;
+  bookings?: Booking[];
+
+  static readonly contentType = "users";
 
   constructor({
     id = UNDEFINED_ID,
@@ -46,6 +51,7 @@ export class User implements StrapiData {
     lastName,
     phone,
     role,
+    bookings,
   }: UserInterface) {
     this.id = id;
     this.documentId = documentId;
@@ -59,6 +65,11 @@ export class User implements StrapiData {
     this.lastName = lastName;
     this.phone = phone;
     this.role = role;
+    this.bookings = bookings;
+  }
+
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
   }
 
   static fromJson(json: any): User {
@@ -74,13 +85,14 @@ export class User implements StrapiData {
       firstName: json.firstName,
       lastName: json.lastName,
       phone: json.phone,
-      role: Role.fromJson(json.role),
+      role: json.role ? Role.fromJson(json.role) : undefined,
+      bookings: json.bookings ? json.bookings?.map(Booking.fromJson) : [],
     });
   }
 
-  static get fetchParams(): FetchAllParams<User> {
+  static get strapiAPIParams(): GeneralParams<User> {
     return {
-      contentType: "users",
+      contentType: this.contentType,
       factory: User.fromJson,
     };
   }
