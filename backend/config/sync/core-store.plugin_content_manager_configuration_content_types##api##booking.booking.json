@@ -97,7 +97,7 @@
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "name"
+          "mainField": "id"
         },
         "list": {
           "label": "Service",
@@ -165,6 +165,14 @@
       }
     },
     "layouts": {
+      "list": [
+        "startDate",
+        "endDate",
+        "bookingStatus",
+        "paymentStatus",
+        "user",
+        "service"
+      ],
       "edit": [
         [
           {
@@ -198,14 +206,6 @@
             "size": 6
           }
         ]
-      ],
-      "list": [
-        "startDate",
-        "endDate",
-        "bookingStatus",
-        "paymentStatus",
-        "user",
-        "service"
       ]
     },
     "uid": "api::booking.booking"

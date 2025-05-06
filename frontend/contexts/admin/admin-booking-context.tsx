@@ -38,7 +38,6 @@ export const AdminBookingContext = createContext<
 export const AdminBookingProvider: React.FC<AdminBookingProviderProps> = ({
   children,
 }) => {
-  const { user } = useAuth();
   const { fetchAll, update } = useStrapiAPI();
   const [usersWithUnconfirmedBookings, setUsersWithUnconfirmedBookings] =
     useState<User[]>([]);
@@ -47,8 +46,6 @@ export const AdminBookingProvider: React.FC<AdminBookingProviderProps> = ({
   >([]);
 
   const reload = () => {
-    if (!user) return;
-
     const now = moment().toDate();
 
     const makeQueryParams = (
@@ -94,7 +91,7 @@ export const AdminBookingProvider: React.FC<AdminBookingProviderProps> = ({
     }).then(setUsersWithUnpaidBookings);
   };
 
-  useEffect(reload, [user]);
+  useEffect(reload, []);
 
   const cancel = (bookings: Booking[]) => {
     const promises = [];

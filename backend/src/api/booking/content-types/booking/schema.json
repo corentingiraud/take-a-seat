@@ -48,7 +48,7 @@
     "service": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::service.service",
+      "target": "api::prepaid-card.prepaid-card",
       "inversedBy": "bookings"
     }
   }

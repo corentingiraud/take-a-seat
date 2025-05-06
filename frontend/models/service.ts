@@ -14,13 +14,13 @@ interface ServiceInterface {
 }
 
 export class Service {
-  id!: number;
-  documentId!: string;
-  name!: string;
-  openingTime!: Time;
-  closingTime!: Time;
-  maximumBookingsPerHour!: number;
-  minimumBookingMinutes!: number;
+  id: number;
+  documentId: string;
+  name: string;
+  openingTime: Time;
+  closingTime: Time;
+  maximumBookingsPerHour: number;
+  minimumBookingMinutes: number;
 
   static readonly contentType = "services";
 

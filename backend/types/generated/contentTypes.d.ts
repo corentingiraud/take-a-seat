@@ -399,7 +399,10 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'PENDING'>;
     publishedAt: Schema.Attribute.DateTime;
-    service: Schema.Attribute.Relation<'manyToOne', 'api::service.service'>;
+    service: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::prepaid-card.prepaid-card'
+    >;
     startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -471,7 +474,9 @@ export interface ApiPrepaidCardPrepaidCard extends Struct.CollectionTypeSchema {
       'api::prepaid-card.prepaid-card'
     > &
       Schema.Attribute.Private;
-    paymentStatus: Schema.Attribute.Enumeration<['PENDING', 'PAID']>;
+    paymentStatus: Schema.Attribute.Enumeration<['PENDING', 'PAID']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'PENDING'>;
     publishedAt: Schema.Attribute.DateTime;
     remainingBalance: Schema.Attribute.Integer &
       Schema.Attribute.Required &

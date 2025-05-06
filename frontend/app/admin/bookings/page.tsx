@@ -4,7 +4,7 @@ import { AdminUnconfirmedBookingsList } from "@/components/bookings/admin/unconf
 import { AdminUnpaidBookingsList } from "@/components/bookings/admin/unpaid/list";
 import { AdminBookingProvider } from "@/contexts/admin/admin-booking-context";
 
-export default function BookPage() {
+export default function AdminBookingsPage() {
   return (
     <AdminBookingProvider>
       <div>
