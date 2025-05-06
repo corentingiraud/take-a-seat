@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { User } from "@/models/user";
 import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
@@ -15,14 +15,14 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-interface UnconfirmedBookingsDetailsDrawerProps {
+interface UnpaidBookingsDetailsDrawerProps {
   user: User | null;
 }
 
-export function UnconfirmedBookingsDetailsDrawer({
+export function UnpaidBookingsDetailsDrawer({
   user,
-}: UnconfirmedBookingsDetailsDrawerProps) {
-  const { cancel, confirm } = useAdminBooking();
+}: UnpaidBookingsDetailsDrawerProps) {
+  const { markAsPaid } = useAdminBooking();
 
   if (!user) return null;
 
@@ -31,7 +31,7 @@ export function UnconfirmedBookingsDetailsDrawer({
       <DrawerHeader className="flex justify-between">
         <div>
           <DrawerTitle>{user.fullName}</DrawerTitle>
-          <DrawerDescription>Réservations à confirmer</DrawerDescription>
+          <DrawerDescription>Réservations impayées</DrawerDescription>
         </div>
         <DrawerClose asChild>
           <Button size="icon" variant="ghost">
@@ -52,15 +52,8 @@ export function UnconfirmedBookingsDetailsDrawer({
                     <div className="flex-1 text-muted-foreground">
                       {booking.toString()}
                     </div>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => cancel([booking])}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" onClick={() => confirm([booking])}>
-                      <Check className="w-4 h-4" />
+                    <Button size="sm" onClick={() => markAsPaid([booking])}>
+                      Marquer comme payée
                     </Button>
                   </div>
                 </div>

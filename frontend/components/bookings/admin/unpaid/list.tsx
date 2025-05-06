@@ -25,7 +25,7 @@ export function AdminUnpaidBookingsList() {
         <TableHeader>
           <TableRow>
             <TableHead>Coworker</TableHead>
-            <TableHead>Nombre de réservation impayée.s</TableHead>
+            <TableHead>Nombre de réservations impayées</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
