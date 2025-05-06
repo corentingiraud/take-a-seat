@@ -10,14 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/contexts/auth-context";
 import { useLogin } from "@/hooks/use-login";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login: authLogin } = useAuth();
   const { login, isLoading } = useLogin();
   const router = useRouter();
 
@@ -26,19 +24,8 @@ export function LoginForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const token = await login(email, password);
-
-      if (!token) {
-        throw new Error();
-      }
-      authLogin(token);
-      toast.success("Connexion réussie");
-      router.push("/my-bookings");
-    } catch {
-      toast.error("Echec de la connexion. Veuillez essayer de nouveau.");
-    }
+    await login(email, password);
+    router.push("/my-bookings");
   };
 
   return (

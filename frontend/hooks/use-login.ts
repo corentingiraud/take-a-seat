@@ -1,33 +1,16 @@
 import { useState } from "react";
 
-import { API_URL } from "@/config/site";
+import { useAuth } from "@/contexts/auth-context";
 
 export function useLogin() {
+  const { login: authLogin } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/auth/local`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: email,
-          password,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Identifiants invalides");
-      }
-
-      const data = await res.json();
-
-      return data.jwt;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      await authLogin(email, password);
     } finally {
       setIsLoading(false);
     }

@@ -21,6 +21,8 @@ export const AuthMenu = () => {
   const router = useRouter();
   const { isAuthenticated, user, logout, hasRole } = useAuth();
 
+  console.log(isAuthenticated);
+
   if (!isAuthenticated) {
     return (
       <Button variant="default" onClick={() => router.push("/login")}>

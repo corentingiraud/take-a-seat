@@ -7,6 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { toast } from "sonner";
 
 import { API_URL } from "@/config/site";
 import { User } from "@/models/user";
@@ -14,8 +15,8 @@ import { User } from "@/models/user";
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  getToken: () => string | null;
-  login: (token: string) => void;
+  getJWT: () => string | null;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   hasRole: (role: string) => boolean;
 }
@@ -34,49 +35,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  useEffect(() => {
-    const token = window.localStorage.getItem("jwt");
+  const fetchUser = async () => {
+    const token = getJWT();
 
-    if (token) {
-      const fetchUser = async () => {
-        const res = await fetch(`${API_URL}/users/me?populate=role`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
+    if (!token) logout();
 
-        if (data.id) {
-          const user = User.fromJson(data);
+    const res = await fetch(`${API_URL}/users/me?populate=role`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
 
-          setUser(user);
-          setIsAuthenticated(true);
-        }
-      };
+    if (data.id) {
+      const user = User.fromJson(data);
 
-      fetchUser();
+      setUser(user);
+      setIsAuthenticated(true);
     }
-  }, []);
-
-  const getToken = () => {
-    return window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY);
   };
 
-  const login = (token: string) => {
-    window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, token);
-    setIsAuthenticated(true);
-    const fetchUser = async () => {
-      const res = await fetch(`${API_URL}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-
-      setUser(data);
-    };
-
+  useEffect(() => {
     fetchUser();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const res = await fetch(`${API_URL}/auth/local`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        identifier: email,
+        password,
+      }),
+    });
+
+    if (!res.ok) {
+      toast.error("Echec de la connexion. Veuillez essayer de nouveau.");
+    }
+
+    const data = await res.json();
+
+    window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, data.jwt);
+
+    await fetchUser();
+
+    toast.success("Connexion réussie.");
+  };
+
+  const getJWT = () => {
+    return window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY);
   };
 
   const logout = () => {
@@ -93,7 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, getToken, login, logout, hasRole }}
+      value={{ user, isAuthenticated, getJWT, login, logout, hasRole }}
     >
       {children}
     </AuthContext.Provider>
