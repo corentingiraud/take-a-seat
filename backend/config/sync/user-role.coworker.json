@@ -6,8 +6,8 @@
   "locale": null,
   "permissions": [
     {
-      "documentId": "tidj6el3clljqrnwskp827vz",
-      "action": "api::booking.booking.create",
+      "documentId": "hb25pmjaj0ki8vzkas4oeaba",
+      "action": "api::booking.booking.bulkCreate",
       "locale": null
     },
     {

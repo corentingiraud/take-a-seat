@@ -7,3 +7,5 @@ export interface StrapiData {
 }
 
 export type FactoryStrapiData<T extends StrapiData> = (data: any) => T;
+
+export const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";

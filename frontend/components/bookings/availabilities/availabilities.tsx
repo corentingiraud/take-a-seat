@@ -6,7 +6,6 @@ import {
   DialogClose,
 } from "@radix-ui/react-dialog";
 import { Duration, Moment } from "moment";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { DialogHeader, DialogFooter, DialogContent } from "../../ui/dialog";
@@ -20,7 +19,6 @@ import { Time } from "@/models/time";
 import { HalfDay } from "@/models/half-day";
 import { useBookingAvailabilities } from "@/hooks/use-booking-availabilities";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
-import { Booking } from "@/models/booking";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
@@ -44,7 +42,11 @@ export const BookingAvailabilities = ({
   const { create } = useStrapiAPI();
   const router = useRouter();
 
-  const { availableBookings, unavailableBookings } = useBookingAvailabilities({
+  const {
+    availableBookings,
+    unavailableBookings,
+    bulkCreateAvailableBookings,
+  } = useBookingAvailabilities({
     service,
     startDay,
     endDay,
@@ -54,20 +56,7 @@ export const BookingAvailabilities = ({
   });
 
   async function createAvailableBookings() {
-    for (const booking of availableBookings) {
-      await create({
-        ...Booking.strapiAPIParams,
-        object: booking,
-      });
-    }
-    let message =
-      "Votre réservation a bien été enregistrée. Elle doit néanmoins être validée par un administrateur.";
-
-    if (availableBookings.length > 1) {
-      message =
-        "Vos réservations ont bien été enregistrées. Elles doivent néanmoins être validées par un administrateur.";
-    }
-    toast.success(message);
+    await bulkCreateAvailableBookings();
     router.push("/my-bookings");
   }
 
@@ -126,7 +115,7 @@ export const BookingAvailabilities = ({
             disabled={availableBookings.length === 0}
             onClick={async () => await createAvailableBookings()}
           >
-            Réserver les créneaux disponibles ({availableBookings.length})
+            Réserver les {availableBookings.length} créneaux disponibles
           </Button>
         </DialogClose>
       </DialogFooter>

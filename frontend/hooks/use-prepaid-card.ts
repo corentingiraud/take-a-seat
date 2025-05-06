@@ -5,6 +5,7 @@ import { useStrapiAPI } from "./use-strapi-api";
 
 import { useAuth } from "@/contexts/auth-context";
 import { PrepaidCard } from "@/models/prepaid-card";
+import { DEFAULT_DATE_FORMAT } from "@/models/utils/strapi-data";
 
 export function usePrepaidCard() {
   const { user } = useAuth();
@@ -24,7 +25,7 @@ export function usePrepaidCard() {
             },
           },
           expirationDate: {
-            $gt: moment().toDate(),
+            $gt: moment().format(DEFAULT_DATE_FORMAT),
           },
         },
       },

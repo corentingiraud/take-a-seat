@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import moment, { Duration, Moment } from "moment";
+import { toast } from "sonner";
 
 import { useStrapiAPI } from "./use-strapi-api";
 
@@ -7,9 +8,10 @@ import { Booking } from "@/models/booking";
 import { Service } from "@/models/service";
 import { HalfDay } from "@/models/half-day";
 import { Time } from "@/models/time";
-import { MINIMUM_BOOKING_DURATION } from "@/config/site";
+import { API_URL, MINIMUM_BOOKING_DURATION } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 import { AVAILABLE_DURATION } from "@/models/duration";
+import { DEFAULT_DATE_FORMAT } from "@/models/utils/strapi-data";
 
 interface UseBookingAvailabilitiesParams {
   service: Service;
@@ -31,7 +33,7 @@ export function useBookingAvailabilities({
   duration,
 }: UseBookingAvailabilitiesParams) {
   const { fetchAll } = useStrapiAPI();
-  const { user } = useAuth();
+  const { user, getJWT } = useAuth();
 
   const { startDate, endDate } = computeDateRange();
   const desiredBookings = computeDesiredBookings();
@@ -64,6 +66,46 @@ export function useBookingAvailabilities({
       computeAvailableBooking(bookings);
     });
   }, [service, startDay, startTime, halfDay]);
+
+  async function bulkCreateAvailableBookings() {
+    try {
+      const url = `${API_URL}/${Booking.contentType}/bulk-create`;
+      const headers = new Headers({
+        "Content-Type": "application/json",
+      });
+
+      const body = availableBookings.map((booking) => ({
+        startDate: booking.startDate.format(),
+        endDate: booking.endDate.format(),
+        service: booking.service?.documentId,
+      }));
+
+      const token = getJWT();
+
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+      });
+      const jsonResponse = await response.json();
+
+      let message =
+        "Votre réservation a bien été enregistrée. Elle doit néanmoins être validée par un administrateur.";
+
+      if (availableBookings.length > 1) {
+        message =
+          "Vos réservations ont bien été enregistrées. Elles doivent néanmoins être validées par un administrateur.";
+      }
+      toast.success(message);
+    } catch (error) {
+      toast.error("Une erreur est survennue, merci d'éssayer à nouveau");
+      throw error;
+    }
+  }
 
   function computeDateRange(): { startDate: Moment; endDate: Moment } {
     let startDate = startDay.clone();
@@ -173,5 +215,6 @@ export function useBookingAvailabilities({
   return {
     availableBookings,
     unavailableBookings,
+    bulkCreateAvailableBookings,
   };
 }
