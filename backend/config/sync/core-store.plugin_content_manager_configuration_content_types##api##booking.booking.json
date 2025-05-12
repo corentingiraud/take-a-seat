@@ -90,6 +90,21 @@
           "sortable": true
         }
       },
+      "prepaidCard": {
+        "edit": {
+          "label": "Carte prépayée",
+          "description": "Si une carte prépayée a été utilisé pour la réservation.",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "id"
+        },
+        "list": {
+          "label": "prepaidCard",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "service": {
         "edit": {
           "label": "Service",
@@ -97,10 +112,10 @@
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "id"
+          "mainField": "name"
         },
         "list": {
-          "label": "Service",
+          "label": "service",
           "searchable": true,
           "sortable": true
         }
@@ -165,14 +180,6 @@
       }
     },
     "layouts": {
-      "list": [
-        "startDate",
-        "endDate",
-        "bookingStatus",
-        "paymentStatus",
-        "user",
-        "service"
-      ],
       "edit": [
         [
           {
@@ -202,10 +209,21 @@
         ],
         [
           {
+            "name": "prepaidCard",
+            "size": 6
+          },
+          {
             "name": "service",
             "size": 6
           }
         ]
+      ],
+      "list": [
+        "startDate",
+        "endDate",
+        "bookingStatus",
+        "paymentStatus",
+        "user"
       ]
     },
     "uid": "api::booking.booking"

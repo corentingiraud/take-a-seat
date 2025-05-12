@@ -7,6 +7,7 @@ import { PaymentStatus } from "./payment-status";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface PrepaidCardInterface {
   id?: number;
@@ -68,5 +69,9 @@ export class PrepaidCard implements StrapiData {
 
   toJson() {
     return {};
+  }
+
+  toString() {
+    return `Carte N°${this.id} (${this.remainingBalance} heures restantes)`;
   }
 }

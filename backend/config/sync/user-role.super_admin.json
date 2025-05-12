@@ -6,6 +6,11 @@
   "locale": null,
   "permissions": [
     {
+      "documentId": "h4mlizfaeogiv0rzgjobeq55",
+      "action": "api::booking.booking.bulkCreate",
+      "locale": null
+    },
+    {
       "documentId": "x3lxu0cz0nhmoiz62wru6azg",
       "action": "api::booking.booking.create",
       "locale": null

@@ -43,7 +43,10 @@ export function AdminUnconfirmedBookingActionMenu({
           <DropdownMenuItem onClick={handleViewDetails}>
             Voir le détail
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => confirm(user.bookings!)}>
+          <DropdownMenuItem
+            className="text-green-600"
+            onClick={() => confirm(user.bookings!)}
+          >
             Tout confirmer
           </DropdownMenuItem>
           <DropdownMenuItem

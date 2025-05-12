@@ -6,7 +6,7 @@
   "locale": null,
   "permissions": [
     {
-      "documentId": "pfncfkzkoxemvwqckjwrm4tn",
+      "documentId": "zpwumwp4lcx3b8zxnub6l3po",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::booking.booking",
@@ -17,6 +17,7 @@
           "bookingStatus",
           "paymentStatus",
           "user",
+          "prepaidCard",
           "service"
         ]
       },
@@ -42,7 +43,7 @@
       "locale": null
     },
     {
-      "documentId": "fssp34fz0x0ehsujqetfb78k",
+      "documentId": "yaec63od0gntwceg87ec06i6",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::booking.booking",
@@ -53,6 +54,7 @@
           "bookingStatus",
           "paymentStatus",
           "user",
+          "prepaidCard",
           "service"
         ]
       },
@@ -60,7 +62,7 @@
       "locale": null
     },
     {
-      "documentId": "wgfmxj7yx6xxnrcf61yuvqjv",
+      "documentId": "l3pfmxjuzlhp1ln34xiephs2",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::booking.booking",
@@ -71,6 +73,7 @@
           "bookingStatus",
           "paymentStatus",
           "user",
+          "prepaidCard",
           "service"
         ]
       },

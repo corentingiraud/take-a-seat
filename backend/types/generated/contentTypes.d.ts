@@ -398,11 +398,12 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
     paymentStatus: Schema.Attribute.Enumeration<['PENDING', 'PAID']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'PENDING'>;
-    publishedAt: Schema.Attribute.DateTime;
-    service: Schema.Attribute.Relation<
+    prepaidCard: Schema.Attribute.Relation<
       'manyToOne',
       'api::prepaid-card.prepaid-card'
     >;
+    publishedAt: Schema.Attribute.DateTime;
+    service: Schema.Attribute.Relation<'manyToOne', 'api::service.service'>;
     startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

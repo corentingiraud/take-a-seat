@@ -11,7 +11,7 @@ import { Time } from "@/models/time";
 import { API_URL, MINIMUM_BOOKING_DURATION } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 import { AVAILABLE_DURATION } from "@/models/duration";
-import { DEFAULT_DATE_FORMAT } from "@/models/utils/strapi-data";
+import { PrepaidCard } from "@/models/prepaid-card";
 
 interface UseBookingAvailabilitiesParams {
   service: Service;
@@ -67,18 +67,23 @@ export function useBookingAvailabilities({
     });
   }, [service, startDay, startTime, halfDay]);
 
-  async function bulkCreateAvailableBookings() {
+  async function bulkCreateAvailableBookings(
+    prepaidCard: PrepaidCard | undefined,
+  ) {
     try {
       const url = `${API_URL}/${Booking.contentType}/bulk-create`;
       const headers = new Headers({
         "Content-Type": "application/json",
       });
 
-      const body = availableBookings.map((booking) => ({
-        startDate: booking.startDate.format(),
-        endDate: booking.endDate.format(),
-        service: booking.service?.documentId,
-      }));
+      const body = {
+        prepaidCard: prepaidCard?.documentId,
+        bookings: availableBookings.map((booking) => ({
+          startDate: booking.startDate.format(),
+          endDate: booking.endDate.format(),
+          service: booking.service?.documentId,
+        })),
+      };
 
       const token = getJWT();
 
@@ -86,12 +91,11 @@ export function useBookingAvailabilities({
         headers.set("Authorization", `Bearer ${token}`);
       }
 
-      const response = await fetch(url, {
+      await fetch(url, {
         method: "POST",
         headers,
         body: JSON.stringify(body),
       });
-      const jsonResponse = await response.json();
 
       let message =
         "Votre réservation a bien été enregistrée. Elle doit néanmoins être validée par un administrateur.";

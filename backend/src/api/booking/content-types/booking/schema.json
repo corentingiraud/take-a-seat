@@ -45,10 +45,16 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "bookings"
     },
-    "service": {
+    "prepaidCard": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::prepaid-card.prepaid-card",
+      "inversedBy": "bookings"
+    },
+    "service": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::service.service",
       "inversedBy": "bookings"
     }
   }
