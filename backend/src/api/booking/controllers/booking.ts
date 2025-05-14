@@ -70,7 +70,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           },
         });
       }
-    
+
       ctx.body = createdBookings;
     } catch (err) {
       console.error('Bulk create error:', err);
@@ -103,5 +103,48 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
 
     // Else proceed with the update
     return await super.update(ctx);
+  },
+
+  async find(ctx) {
+    const user = ctx.state.user;
+
+    if (user?.role?.type !== ADMIN_ROLE_TYPE) {
+      const filters = ctx.query?.filters && typeof ctx.query.filters === 'object'
+        ? ctx.query.filters
+        : {};
+
+      ctx.query = {
+        ...ctx.query,
+        filters: {
+          ...filters,
+          user: user.id,
+        },
+      };
+    }
+
+    return await super.find(ctx);
+  },
+
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    const user = ctx.state.user;
+
+    const booking = await strapi.documents('api::booking.booking').findOne({
+      documentId: id,
+      populate: ['user'],
+    });
+
+    if (!booking) {
+      return ctx.notFound('Booking not found');
+    }
+
+    const isOwner = booking.user?.id === user?.id;
+    const isAdmin = user?.role?.type === ADMIN_ROLE_TYPE;
+
+    if (!isOwner && !isAdmin) {
+      return ctx.unauthorized('You are not allowed to view this booking');
+    }
+
+    return booking;
   },
 }));

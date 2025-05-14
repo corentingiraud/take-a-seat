@@ -497,45 +497,6 @@ export interface ApiPrepaidCardPrepaidCard extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiPricingPricing extends Struct.SingleTypeSchema {
-  collectionName: 'pricings';
-  info: {
-    description: '';
-    displayName: 'Prix';
-    pluralName: 'pricings';
-    singularName: 'pricing';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    Description: Schema.Attribute.RichText &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::pricing.pricing'
-    >;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiServiceService extends Struct.CollectionTypeSchema {
   collectionName: 'services';
   info: {
@@ -1138,7 +1099,6 @@ declare module '@strapi/strapi' {
       'api::booking.booking': ApiBookingBooking;
       'api::coworking-space.coworking-space': ApiCoworkingSpaceCoworkingSpace;
       'api::prepaid-card.prepaid-card': ApiPrepaidCardPrepaidCard;
-      'api::pricing.pricing': ApiPricingPricing;
       'api::service.service': ApiServiceService;
       'api::unavailability.unavailability': ApiUnavailabilityUnavailability;
       'plugin::content-releases.release': PluginContentReleasesRelease;
