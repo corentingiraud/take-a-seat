@@ -16,6 +16,7 @@ import { Button } from "../ui/button";
 
 import { useAuth } from "@/contexts/auth-context";
 import { RoleType } from "@/models/role";
+import { API_URL } from "@/config/site";
 
 export const AuthMenu = () => {
   const router = useRouter();
@@ -58,7 +59,13 @@ export const AuthMenu = () => {
             <DropdownMenuItem onClick={() => router.push("/admin/bookings")}>
               Gérer les réservations
             </DropdownMenuItem>
-            {/* Add other admin links here if needed */}
+            <DropdownMenuItem
+              onClick={() =>
+                window.open(API_URL.replace("/api", "/admin"), "_blank")
+              }
+            >
+              Accéder à la console Strapi
+            </DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />
