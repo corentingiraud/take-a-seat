@@ -13,21 +13,21 @@ import { DialogHeader, DialogFooter, DialogContent } from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Separator } from "../../ui/separator";
-import { Checkbox } from "../../ui/checkbox"; // make sure you have this component
-import { Label } from "../../ui/label"; // for the checkbox label
+import { Checkbox } from "../../ui/checkbox";
+import { Label } from "../../ui/label";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "../../ui/select"; // custom select components
+} from "../../ui/select";
 
 import { CoworkingSpace } from "@/models/coworking-space";
 import { Service } from "@/models/service";
 import { Time } from "@/models/time";
 import { HalfDay } from "@/models/half-day";
-import { useBookingAvailabilities } from "@/hooks/use-booking-availabilities";
+import { useBookingAvailabilities } from "@/hooks/booking/use-booking-availabilities";
 import { usePrepaidCard } from "@/hooks/use-prepaid-card";
 import { PrepaidCard } from "@/models/prepaid-card";
 
@@ -64,6 +64,7 @@ export const BookingAvailabilities = ({
     startTime,
     duration,
   });
+
   const { prepaidCards } = usePrepaidCard();
 
   const [useCard, setUseCard] = useState(false);
@@ -125,16 +126,18 @@ export const BookingAvailabilities = ({
       )}
 
       <div className="mt-6 space-y-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            checked={useCard}
-            id="use-card"
-            onCheckedChange={() => setUseCard(!useCard)}
-          />
-          <Label htmlFor="use-card">Utiliser une carte prépayée</Label>
-        </div>
+        {prepaidCards.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              checked={useCard}
+              id="use-card"
+              onCheckedChange={() => setUseCard(!useCard)}
+            />
+            <Label htmlFor="use-card">Utiliser une carte prépayée</Label>
+          </div>
+        )}
 
-        {useCard && prepaidCards.length > 0 && (
+        {useCard && (
           <Select
             onValueChange={(val) => {
               const card = prepaidCards.find((c) => c.documentId === val);
