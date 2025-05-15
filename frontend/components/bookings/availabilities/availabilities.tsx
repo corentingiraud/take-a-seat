@@ -30,6 +30,7 @@ import { HalfDay } from "@/models/half-day";
 import { useBookingAvailabilities } from "@/hooks/booking/use-booking-availabilities";
 import { usePrepaidCard } from "@/hooks/use-prepaid-card";
 import { PrepaidCard } from "@/models/prepaid-card";
+import { siteConfig } from "@/config/site";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
@@ -72,7 +73,7 @@ export const BookingAvailabilities = ({
 
   async function createAvailableBookings() {
     await bulkCreateAvailableBookings(selectedPrepaidCard);
-    router.push("/my-bookings");
+    router.push(siteConfig.path.myBookings.href);
   }
 
   return (

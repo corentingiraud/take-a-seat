@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { siteConfig } from "@/config/site";
 
 export function SignupForm({
   className,
@@ -73,7 +74,10 @@ export function SignupForm({
               </Button>
               <div className="text-center text-sm">
                 Déjà un compte ?{" "}
-                <Link className="underline underline-offset-4" href="/login">
+                <Link
+                  className="underline underline-offset-4"
+                  href={siteConfig.path.login}
+                >
                   Se connecter
                 </Link>
               </div>

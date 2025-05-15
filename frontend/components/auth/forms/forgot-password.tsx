@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { siteConfig } from "@/config/site";
 
 export function ForgotPasswordForm({
   className,
@@ -37,7 +38,10 @@ export function ForgotPasswordForm({
               </Button>
               <div className="text-center text-sm">
                 Tu te souviens de ton mot de passe ?{" "}
-                <Link className="underline underline-offset-4" href="/login">
+                <Link
+                  className="underline underline-offset-4"
+                  href={siteConfig.path.login}
+                >
                   Se connecter
                 </Link>
               </div>

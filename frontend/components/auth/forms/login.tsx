@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,13 +10,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/use-login";
+import { useAuth } from "@/contexts/auth-context";
+import { siteConfig } from "@/config/site";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login, isLoading } = useLogin();
+  const { user } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push(siteConfig.path.myBookings.href);
+    }
+  }, [user, router]);
+
+  const { login, isLoading } = useLogin();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +34,7 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(email, password);
-    router.push("/my-bookings");
+    router.push(siteConfig.path.myBookings.href);
   };
 
   return (
@@ -56,7 +65,7 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
                   <Link
                     className="ml-auto text-sm underline-offset-2 hover:underline"
-                    href="/forgot-password"
+                    href={siteConfig.path.forgotPassword}
                   >
                     Mot de passe oublié ?
                   </Link>
@@ -74,7 +83,10 @@ export function LoginForm({
               </Button>
               <div className="text-center text-sm">
                 Pas encore de compte ?{" "}
-                <Link className="underline underline-offset-4" href="/signup">
+                <Link
+                  className="underline underline-offset-4"
+                  href={siteConfig.path.signup}
+                >
                   Créer un compte
                 </Link>
               </div>

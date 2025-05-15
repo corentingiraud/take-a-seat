@@ -16,7 +16,7 @@ import { Button } from "../ui/button";
 
 import { useAuth } from "@/contexts/auth-context";
 import { RoleType } from "@/models/role";
-import { API_URL } from "@/config/site";
+import { siteConfig } from "@/config/site";
 
 export const AuthMenu = () => {
   const router = useRouter();
@@ -24,7 +24,10 @@ export const AuthMenu = () => {
 
   if (!isAuthenticated) {
     return (
-      <Button variant="default" onClick={() => router.push("/")}>
+      <Button
+        variant="default"
+        onClick={() => router.push(siteConfig.path.login.href)}
+      >
         Se connecter
       </Button>
     );
@@ -38,30 +41,38 @@ export const AuthMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuItem onClick={() => router.push("/my-information")}>
+        <DropdownMenuItem
+          onClick={() => router.push(siteConfig.path.myInformation.href)}
+        >
           Mes informations
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push("/my-bookings")}>
+        <DropdownMenuItem
+          onClick={() => router.push(siteConfig.path.myBookings.href)}
+        >
           Mes réservations
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push("/my-prepaid-cards")}>
+        <DropdownMenuItem
+          onClick={() => router.push(siteConfig.path.myPrepaidCards.href)}
+        >
           Mes cartes pré-payées
         </DropdownMenuItem>
-        {/* Admin Section */}
+
         {hasRole(RoleType.SUPER_ADMIN) && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-muted-foreground">
               Admin
             </DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => router.push("/admin/bookings")}>
+            <DropdownMenuItem
+              onClick={() => router.push(siteConfig.path.adminBookings.href)}
+            >
               Gérer les réservations
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
-                window.open(API_URL.replace("/api", "/admin"), "_blank")
+                window.open(siteConfig.path.strapiAdmin.href, "_blank")
               }
             >
               Accéder à la console Strapi
@@ -72,11 +83,11 @@ export const AuthMenu = () => {
         <DropdownMenuItem
           onClick={() => {
             logout();
-            router.push("/");
+            router.push(siteConfig.path.home.href);
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          Deconnexion
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
