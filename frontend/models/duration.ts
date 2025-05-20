@@ -32,7 +32,7 @@ class DurationWrapper {
       return "un ou plusieurs jours";
     }
 
-    return this.duration!.humanize(); // we know duration is defined for fixed
+    return this.duration!.humanize();
   }
 }
 

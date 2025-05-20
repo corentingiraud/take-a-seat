@@ -17,17 +17,17 @@
       "required": true,
       "unique": true
     },
-    "unavailabilities": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::unavailability.unavailability",
-      "inversedBy": "coworkingSpaces"
-    },
     "services": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::service.service",
       "mappedBy": "coworkingSpace"
+    },
+    "unavailabilities": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::unavailability.unavailability",
+      "mappedBy": "coworking_spaces"
     }
   }
 }

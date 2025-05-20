@@ -281,7 +281,6 @@
         "fields": [
           "startDate",
           "endDate",
-          "coworkingSpaces",
           "name"
         ]
       },
@@ -315,7 +314,6 @@
         "fields": [
           "startDate",
           "endDate",
-          "coworkingSpaces",
           "name"
         ]
       },
@@ -331,7 +329,6 @@
         "fields": [
           "startDate",
           "endDate",
-          "coworkingSpaces",
           "name"
         ]
       },

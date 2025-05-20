@@ -76,8 +76,8 @@ export const CreateBookingForm = () => {
     <div className="mt-5 m-auto max-w-xl flex flex-col gap-5">
       <CoworkingSpaceFormStep
         onCoworkingSpaceChange={(value) => {
-          setCoworkingSpace(value);
           setService(undefined);
+          setCoworkingSpace(value);
         }}
       />
       {coworkingSpace && (
@@ -90,22 +90,40 @@ export const CreateBookingForm = () => {
       {service && (
         <DurationFormStep
           key={`service-${service.id}-duration`}
-          onDurationChange={(value) => setDuration(value)}
+          onDurationChange={(value) => {
+            setStartDay(undefined);
+            setEndDay(undefined);
+            setHalfDay(undefined);
+            setStartTime(undefined);
+            setFormIsValid(false);
+            setDuration(value);
+          }}
         />
       )}
       {service &&
+        duration &&
         duration !== undefined &&
         duration !== AVAILABLE_DURATION.DAYS.getDuration() && (
           <DateFormStep
             key={`duration-${duration}-date`}
-            onDateChange={(value) => setStartDay(value)}
+            closingTime={service.closingTime}
+            duration={duration}
+            openingTime={service.openingTime}
+            unavailabilities={service.coworkingSpace?.unavailabilities || []}
+            onDateChange={(value) => {
+              setHalfDay(undefined);
+              setStartTime(undefined);
+              setFormIsValid(false);
+              setStartDay(value);
+            }}
           />
         )}
       {service &&
         startDay &&
         duration === AVAILABLE_DURATION.ONE_HOUR.getDuration() && (
           <TimeFormStep
-            key={`service-${service.id}-time`}
+            key={`service-${service.id}-time-${startDay?.format("YYYY-MM-DD")}`}
+            date={startDay}
             service={service}
             onTimeChange={(value) => setStartTime(value)}
           />
@@ -114,13 +132,18 @@ export const CreateBookingForm = () => {
         startDay &&
         duration === AVAILABLE_DURATION.HALF_DAY.getDuration() && (
           <HalfDayFormStep
-            key={`service-${service.id}-half-day`}
+            key={`service-${service.id}-half-day-${startDay?.format("YYYY-MM-DD")}`}
+            closingTime={service.closingTime}
+            date={startDay}
+            openingTime={service.openingTime}
+            unavailabilities={service.coworkingSpace?.unavailabilities || []}
             onHalfDayChange={(value) => setHalfDay(value)}
           />
         )}
       {service && duration === AVAILABLE_DURATION.DAYS.getDuration() && (
         <DateRangeFormStep
           key={`duration-${duration}-date-range`}
+          unavailabilities={service.coworkingSpace?.unavailabilities || []}
           onDateRangeChange={(range) => {
             setStartDay(range.from);
             setEndDay(range.to);
@@ -139,8 +162,8 @@ export const CreateBookingForm = () => {
             <BookingAvailabilities
               coworkingSpace={coworkingSpace!}
               duration={duration!}
-              endDay={endDay!}
-              halfDay={halfDay}
+              endDay={endDay}
+              halfDay={halfDay!}
               service={service!}
               startDay={startDay!}
               startTime={startTime}

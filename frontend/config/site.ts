@@ -1,5 +1,3 @@
-"use client";
-
 import { env } from "next-runtime-env";
 import moment from "moment";
 moment.locale("fr");

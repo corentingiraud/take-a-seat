@@ -24,11 +24,14 @@ export const CoworkingSpaceFormStep = ({
   const { fetchAll } = useStrapiAPI();
 
   useEffect(() => {
-    fetchAll<CoworkingSpace>(CoworkingSpace.strapiAPIParams).then(
-      (coworkingSpaces) => {
-        setCoworkingSpaces(coworkingSpaces);
+    fetchAll<CoworkingSpace>({
+      ...CoworkingSpace.strapiAPIParams,
+      queryParams: {
+        populate: ["unavailabilities"],
       },
-    );
+    }).then((coworkingSpaces) => {
+      setCoworkingSpaces(coworkingSpaces);
+    });
   }, []);
 
   const onValueChange = (i: string) => {

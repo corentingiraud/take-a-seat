@@ -44,8 +44,8 @@
         },
         "list": {
           "label": "unavailabilities",
-          "searchable": true,
-          "sortable": true
+          "searchable": false,
+          "sortable": false
         }
       },
       "services": {

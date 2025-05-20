@@ -443,7 +443,7 @@ export interface ApiCoworkingSpaceCoworkingSpace
     publishedAt: Schema.Attribute.DateTime;
     services: Schema.Attribute.Relation<'oneToMany', 'api::service.service'>;
     unavailabilities: Schema.Attribute.Relation<
-      'manyToOne',
+      'manyToMany',
       'api::unavailability.unavailability'
     >;
     updatedAt: Schema.Attribute.DateTime;
@@ -557,8 +557,8 @@ export interface ApiUnavailabilityUnavailability
     draftAndPublish: false;
   };
   attributes: {
-    coworkingSpaces: Schema.Attribute.Relation<
-      'oneToMany',
+    coworking_spaces: Schema.Attribute.Relation<
+      'manyToMany',
       'api::coworking-space.coworking-space'
     >;
     createdAt: Schema.Attribute.DateTime;

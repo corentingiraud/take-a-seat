@@ -1,4 +1,10 @@
+import { Metadata } from "next";
+
 import { ForgotPasswordForm } from "@/components/auth/forms/forgot-password";
+
+export const metadata: Metadata = {
+  title: "Connexion",
+};
 
 export default function LoginPage() {
   return (

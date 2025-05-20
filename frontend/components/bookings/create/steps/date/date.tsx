@@ -1,8 +1,10 @@
 "use client";
 
 import { CalendarIcon } from "lucide-react";
-import moment, { Moment } from "moment";
+import moment, { Duration, Moment } from "moment";
 import { useState } from "react";
+
+import { shouldDisableDate } from "../utils/should-disable-date";
 
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -13,12 +15,24 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Unavailability } from "@/models/unavailability";
+import { Time } from "@/models/time";
 
 interface DateFormStepProps {
+  unavailabilities: Unavailability[];
+  openingTime: Time;
+  closingTime: Time;
+  duration: Duration;
   onDateChange: (date: Moment) => void;
 }
 
-export const DateFormStep = ({ onDateChange }: DateFormStepProps) => {
+export const DateFormStep = ({
+  unavailabilities,
+  openingTime,
+  closingTime,
+  duration,
+  onDateChange,
+}: DateFormStepProps) => {
   const [date, setDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
@@ -51,14 +65,15 @@ export const DateFormStep = ({ onDateChange }: DateFormStepProps) => {
           <PopoverContent align="center" className="w-auto p-0">
             <Calendar
               initialFocus
-              disabled={(date) => {
-                const newDate = moment(date);
-
-                if (newDate <= moment().subtract(1, "day")) return true;
-                if (newDate.day() === 0 || newDate.day() === 6) return true;
-
-                return false;
-              }}
+              disabled={(date) =>
+                shouldDisableDate({
+                  date,
+                  unavailabilities,
+                  openingTime,
+                  closingTime,
+                  duration,
+                })
+              }
               mode="single"
               selected={date}
               onDayClick={() => setCalendarOpen(false)}

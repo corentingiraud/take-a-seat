@@ -40,6 +40,9 @@ export const ServiceFormStep = ({
         },
       },
     }).then((services) => {
+      services.map((service) => {
+        service.coworkingSpace = coworkingSpace;
+      });
       setServices(services);
     });
   }, [coworkingSpace]);

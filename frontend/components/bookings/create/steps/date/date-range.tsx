@@ -14,6 +14,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Unavailability } from "@/models/unavailability";
+import { shouldDisableDate } from "../utils/should-disable-date";
 
 interface DateRange {
   from: Moment | undefined;
@@ -21,10 +23,12 @@ interface DateRange {
 }
 
 interface DateRangeFormStepProps {
+  unavailabilities: Unavailability[];
   onDateRangeChange: (dateRange: DateRange) => void;
 }
 
 export const DateRangeFormStep = ({
+  unavailabilities,
   onDateRangeChange,
 }: DateRangeFormStepProps) => {
   const [dateRange, setDateRange] = useState<
@@ -64,14 +68,12 @@ export const DateRangeFormStep = ({
           <PopoverContent align="center" className="w-auto p-0">
             <Calendar
               initialFocus
-              disabled={(date) => {
-                const newDate = moment(date);
-
-                if (newDate <= moment().subtract(1, "day")) return true;
-                if (newDate.day() === 0 || newDate.day() === 6) return true;
-
-                return false;
-              }}
+              disabled={(date) =>
+                shouldDisableDate({
+                  date,
+                  unavailabilities,
+                })
+              }
               mode="range"
               selected={dateRange}
               onSelect={onValueChange}

@@ -20,15 +20,15 @@
       "type": "datetime",
       "required": true
     },
-    "coworkingSpaces": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::coworking-space.coworking-space",
-      "mappedBy": "unavailabilities"
-    },
     "name": {
       "type": "string",
       "required": true
+    },
+    "coworking_spaces": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::coworking-space.coworking-space",
+      "inversedBy": "unavailabilities"
     }
   }
 }

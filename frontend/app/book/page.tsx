@@ -1,4 +1,10 @@
+import { Metadata } from "next";
+
 import { CreateBookingForm } from "@/components/bookings/create/form";
+
+export const metadata: Metadata = {
+  title: "Nouvelle réservation",
+};
 
 export default function BookPage() {
   return (

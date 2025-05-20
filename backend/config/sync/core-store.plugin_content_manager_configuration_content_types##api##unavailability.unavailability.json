@@ -47,21 +47,6 @@
           "sortable": true
         }
       },
-      "coworkingSpaces": {
-        "edit": {
-          "label": "coworkingSpaces",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "name"
-        },
-        "list": {
-          "label": "coworkingSpaces",
-          "searchable": false,
-          "sortable": false
-        }
-      },
       "name": {
         "edit": {
           "label": "Nom",
@@ -74,6 +59,21 @@
           "label": "Nom",
           "searchable": true,
           "sortable": true
+        }
+      },
+      "coworking_spaces": {
+        "edit": {
+          "label": "coworking_spaces",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "coworking_spaces",
+          "searchable": false,
+          "sortable": false
         }
       },
       "createdAt": {
@@ -136,14 +136,16 @@
       }
     },
     "layouts": {
+      "list": [
+        "name",
+        "startDate",
+        "endDate",
+        "coworking_spaces"
+      ],
       "edit": [
         [
           {
             "name": "name",
-            "size": 6
-          },
-          {
-            "name": "coworkingSpaces",
             "size": 6
           }
         ],
@@ -156,13 +158,13 @@
             "name": "endDate",
             "size": 6
           }
+        ],
+        [
+          {
+            "name": "coworking_spaces",
+            "size": 6
+          }
         ]
-      ],
-      "list": [
-        "name",
-        "startDate",
-        "endDate",
-        "coworkingSpaces"
       ]
     },
     "uid": "api::unavailability.unavailability"

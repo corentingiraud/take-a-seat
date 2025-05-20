@@ -1,5 +1,7 @@
 "use client";
 
+import { Moment } from "moment";
+
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -13,10 +15,15 @@ import { Time } from "@/models/time";
 
 interface TimeFormStepProps {
   service: Service;
+  date: Moment;
   onTimeChange: (time: Time) => void;
 }
 
-export const TimeFormStep = ({ service, onTimeChange }: TimeFormStepProps) => {
+export const TimeFormStep = ({
+  service,
+  date,
+  onTimeChange,
+}: TimeFormStepProps) => {
   return (
     <div>
       <Label htmlFor="service">A quelle heure ?</Label>
@@ -29,7 +36,7 @@ export const TimeFormStep = ({ service, onTimeChange }: TimeFormStepProps) => {
           <SelectValue placeholder="Sélectionner une heure" />
         </SelectTrigger>
         <SelectContent>
-          {service.getTimeSlot().map((timeSlot, i) => (
+          {service.getTimeSlot(date).map((timeSlot, i) => (
             <SelectItem key={i} value={timeSlot.toString()}>
               {timeSlot.toString()}
             </SelectItem>

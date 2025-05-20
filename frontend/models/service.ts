@@ -1,7 +1,11 @@
+import { Moment } from "moment";
+
 import { Time } from "./time";
+import { CoworkingSpace } from "./coworking-space";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
+import { MINIMUM_BOOKING_DURATION } from "@/config/site";
 
 interface ServiceInterface {
   id?: number;
@@ -11,6 +15,7 @@ interface ServiceInterface {
   closingTime: Time;
   maximumBookingsPerHour: number;
   minimumBookingMinutes: number;
+  coworkingSpace?: CoworkingSpace;
 }
 
 export class Service {
@@ -21,6 +26,7 @@ export class Service {
   closingTime: Time;
   maximumBookingsPerHour: number;
   minimumBookingMinutes: number;
+  coworkingSpace: CoworkingSpace | null;
 
   static readonly contentType = "services";
 
@@ -32,6 +38,7 @@ export class Service {
     closingTime,
     maximumBookingsPerHour,
     minimumBookingMinutes,
+    coworkingSpace,
   }: ServiceInterface) {
     this.id = id;
     this.documentId = documentId;
@@ -40,6 +47,7 @@ export class Service {
     this.closingTime = closingTime;
     this.maximumBookingsPerHour = maximumBookingsPerHour;
     this.minimumBookingMinutes = minimumBookingMinutes;
+    this.coworkingSpace = coworkingSpace ?? null;
   }
 
   static fromJson(json: any): Service {
@@ -51,6 +59,9 @@ export class Service {
       closingTime: Time.fromString(json.closingTime),
       maximumBookingsPerHour: json.maximumBookingsPerHour,
       minimumBookingMinutes: json.minimumBookingMinutes,
+      coworkingSpace: json.coworkingSpace
+        ? CoworkingSpace.fromJson(json.coworkingSpace)
+        : undefined,
     });
   }
 
@@ -65,18 +76,36 @@ export class Service {
     return {};
   }
 
-  getTimeSlot(): Time[] {
-    let slots: Time[] = [];
-    const currentTime = new Time(0, 0);
+  getTimeSlot(date: Moment): Time[] {
+    const unavailabilities = this.coworkingSpace?.unavailabilities ?? [];
+    const slots: Time[] = [];
 
-    currentTime.hour =
-      this.openingTime.minute === 0
-        ? this.openingTime.hour
-        : this.openingTime.hour + 1;
+    const current = date
+      .clone()
+      .hour(this.openingTime.hour)
+      .minute(this.openingTime.minute)
+      .second(0);
+    const endOfDay = date
+      .clone()
+      .hour(this.closingTime.hour)
+      .minute(this.closingTime.minute)
+      .second(0);
 
-    while (currentTime.hour < this.closingTime.hour) {
-      slots.push(new Time(currentTime.hour, 0));
-      currentTime.hour += 1;
+    while (current.isBefore(endOfDay)) {
+      const slotStart = current.clone();
+      const slotEnd = slotStart.clone().add(MINIMUM_BOOKING_DURATION);
+
+      const overlaps = unavailabilities.some((unav) => {
+        return (
+          slotEnd.isAfter(unav.startDate) && slotStart.isBefore(unav.endDate)
+        );
+      });
+
+      if (!overlaps) {
+        slots.push(new Time(slotStart.hour(), slotStart.minute()));
+      }
+
+      current.add(MINIMUM_BOOKING_DURATION);
     }
 
     return slots;

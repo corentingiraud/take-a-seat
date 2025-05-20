@@ -81,15 +81,15 @@
       "locale": null
     },
     {
-      "documentId": "piap45mz3acke8g3mlucvkj6",
+      "documentId": "q2jygdvnfqe9znj7jjeck6re",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
       "properties": {
         "fields": [
           "name",
-          "unavailabilities",
-          "services"
+          "services",
+          "unavailabilities"
         ]
       },
       "conditions": [],
@@ -114,30 +114,30 @@
       "locale": null
     },
     {
-      "documentId": "lb3r96xcpdx22awf1hvc6jdb",
+      "documentId": "caok40q20e4tyq6miz2eqgqt",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
       "properties": {
         "fields": [
           "name",
-          "unavailabilities",
-          "services"
+          "services",
+          "unavailabilities"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "pfioysa4exsu9sx6dlk3adp5",
+      "documentId": "rr3sq0s954etqe622b5wwts7",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
       "properties": {
         "fields": [
           "name",
-          "unavailabilities",
-          "services"
+          "services",
+          "unavailabilities"
         ]
       },
       "conditions": [],
@@ -285,7 +285,7 @@
       "locale": null
     },
     {
-      "documentId": "f8r8wy5m8k2sgkkmlpbbsbio",
+      "documentId": "eq8biibydnytnokkjijhgrnb",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::unavailability.unavailability",
@@ -293,8 +293,8 @@
         "fields": [
           "startDate",
           "endDate",
-          "coworkingSpaces",
-          "name"
+          "name",
+          "coworking_spaces"
         ]
       },
       "conditions": [],
@@ -319,7 +319,7 @@
       "locale": null
     },
     {
-      "documentId": "bitqpemlfwkphhlfbzizens8",
+      "documentId": "ke0f0ox5tiegb3o46hicx0kz",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::unavailability.unavailability",
@@ -327,15 +327,15 @@
         "fields": [
           "startDate",
           "endDate",
-          "coworkingSpaces",
-          "name"
+          "name",
+          "coworking_spaces"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "amslr06vw1liom94sru1xj0a",
+      "documentId": "ptrbllqw390zwsrohf6fp7y9",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::unavailability.unavailability",
@@ -343,8 +343,8 @@
         "fields": [
           "startDate",
           "endDate",
-          "coworkingSpaces",
-          "name"
+          "name",
+          "coworking_spaces"
         ]
       },
       "conditions": [],

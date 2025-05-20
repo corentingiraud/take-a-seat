@@ -60,8 +60,8 @@ export class Booking implements StrapiData {
       endDate: moment(json.endDate),
       bookingStatus: json.bookingStatus,
       paymentStatus: json.paymentStatus,
-      user: json.user,
-      service: json.service,
+      user: json.user ? User.fromJson(json.user) : undefined,
+      service: json.service ? Service.fromJson(json.service) : undefined,
     });
   }
 
