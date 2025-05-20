@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 
 import { Time } from "./time";
 import { CoworkingSpace } from "./coworking-space";
@@ -80,11 +80,24 @@ export class Service {
     const unavailabilities = this.coworkingSpace?.unavailabilities ?? [];
     const slots: Time[] = [];
 
-    const current = date
-      .clone()
-      .hour(this.openingTime.hour)
-      .minute(this.openingTime.minute)
-      .second(0);
+    const now = moment(); // current real time
+    const isToday = date.isSame(now, "day");
+
+    const current = date.clone();
+
+    if (isToday) {
+      // Start from the next full hour
+      const nextHour = now.clone().add(1, "hour").startOf("hour");
+
+      current.hour(Math.max(this.openingTime.hour, nextHour.hour()));
+      current.minute(nextHour.minute());
+    } else {
+      // Use coworking opening time
+      current.hour(this.openingTime.hour).minute(this.openingTime.minute);
+    }
+
+    current.second(0);
+
     const endOfDay = date
       .clone()
       .hour(this.closingTime.hour)
