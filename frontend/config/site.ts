@@ -22,7 +22,7 @@ export const siteConfig = {
       href: "/signup",
     },
     login: {
-      href: "/login",
+      href: "/",
     },
     // COWORKER PAGES
     myInformation: {
