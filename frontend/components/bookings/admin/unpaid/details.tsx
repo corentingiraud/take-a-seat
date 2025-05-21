@@ -14,6 +14,8 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useConfirm } from "@/contexts/confirm-dialog-context";
+import { Booking } from "@/models/booking";
 
 interface UnpaidBookingsDetailsDrawerProps {
   user: User | null;
@@ -23,8 +25,23 @@ export function UnpaidBookingsDetailsDrawer({
   user,
 }: UnpaidBookingsDetailsDrawerProps) {
   const { markAsPaid } = useAdminBooking();
+  const askConfirm = useConfirm();
 
   if (!user) return null;
+
+  const handleMarkAsPaid = async (booking: Booking) => {
+    const confirmed = await askConfirm({
+      title: "Marquer la réservation comme payée ?",
+      description:
+        "Cette action enregistrera la réservation comme payée. Es-tu sûr ?",
+      confirmText: "Oui, marquer comme payée",
+      cancelText: "Annuler",
+    });
+
+    if (confirmed) {
+      markAsPaid([booking]);
+    }
+  };
 
   return (
     <DrawerContent className="h-full w-full max-w-xl mx-auto max-h-[90vh]">
@@ -52,7 +69,7 @@ export function UnpaidBookingsDetailsDrawer({
                     <div className="flex-1 text-muted-foreground">
                       {booking.toString()}
                     </div>
-                    <Button size="sm" onClick={() => markAsPaid([booking])}>
+                    <Button size="sm" onClick={() => handleMarkAsPaid(booking)}>
                       Marquer comme payée
                     </Button>
                   </div>

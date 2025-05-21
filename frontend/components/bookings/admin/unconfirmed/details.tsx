@@ -14,6 +14,8 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useConfirm } from "@/contexts/confirm-dialog-context";
+import { Booking } from "@/models/booking";
 
 interface UnconfirmedBookingsDetailsDrawerProps {
   user: User | null;
@@ -23,8 +25,36 @@ export function UnconfirmedBookingsDetailsDrawer({
   user,
 }: UnconfirmedBookingsDetailsDrawerProps) {
   const { cancel, confirm } = useAdminBooking();
+  const askConfirm = useConfirm(); // renamed to avoid conflict
 
   if (!user) return null;
+
+  const handleCancel = async (booking: Booking) => {
+    const confirmed = await askConfirm({
+      title: "Annuler la réservation ?",
+      description:
+        "Es-tu sûr de vouloir annuler cette réservation ? Cette action est irréversible.",
+      confirmText: "Oui, annuler",
+      cancelText: "Non, revenir",
+    });
+
+    if (confirmed) {
+      cancel([booking]);
+    }
+  };
+
+  const handleConfirm = async (booking: Booking) => {
+    const confirmed = await askConfirm({
+      title: "Confirmer la réservation ?",
+      description: "Souhaites-tu vraiment confirmer cette réservation ?",
+      confirmText: "Oui, confirmer",
+      cancelText: "Annuler",
+    });
+
+    if (confirmed) {
+      confirm([booking]);
+    }
+  };
 
   return (
     <DrawerContent className="h-full w-full max-w-xl mx-auto max-h-[90vh]">
@@ -55,11 +85,11 @@ export function UnconfirmedBookingsDetailsDrawer({
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => cancel([booking])}
+                      onClick={() => handleCancel(booking)}
                     >
                       <X className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" onClick={() => confirm([booking])}>
+                    <Button size="sm" onClick={() => handleConfirm(booking)}>
                       <Check className="w-4 h-4" />
                     </Button>
                   </div>

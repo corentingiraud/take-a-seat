@@ -13,6 +13,7 @@ import {
 import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
 import { User } from "@/models/user";
 import { Drawer } from "@/components/ui/drawer";
+import { useConfirm } from "@/contexts/confirm-dialog-context";
 
 interface AdminUnpaidBookingActionMenuProps {
   user: User;
@@ -22,6 +23,7 @@ export function AdminUnpaidBookingActionMenu({
   user,
 }: AdminUnpaidBookingActionMenuProps) {
   const { markAsPaid } = useAdminBooking();
+  const askConfirm = useConfirm();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -30,6 +32,19 @@ export function AdminUnpaidBookingActionMenu({
   const handleViewDetails = () => {
     setSelectedUser(user);
     setIsDrawerOpen(true);
+  };
+
+  const handleMarkAllAsPaid = async () => {
+    const confirmed = await askConfirm({
+      title: "Tout marquer comme payé ?",
+      description: `Tu es sur le point de marquer ${user.bookings!.length} réservation(s) comme payée(s).`,
+      confirmText: "Oui, marquer comme payé",
+      cancelText: "Annuler",
+    });
+
+    if (confirmed) {
+      markAsPaid(user.bookings!);
+    }
   };
 
   return (
@@ -44,7 +59,10 @@ export function AdminUnpaidBookingActionMenu({
           <DropdownMenuItem onClick={handleViewDetails}>
             Voir le détail
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => markAsPaid(user.bookings!)}>
+          <DropdownMenuItem
+            className="text-green-600"
+            onClick={handleMarkAllAsPaid}
+          >
             Tout marquer comme payé
           </DropdownMenuItem>
         </DropdownMenuContent>

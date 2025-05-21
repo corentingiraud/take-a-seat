@@ -13,6 +13,8 @@ import {
 import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
 import { User } from "@/models/user";
 import { Drawer } from "@/components/ui/drawer";
+import { useConfirm } from "@/contexts/confirm-dialog-context";
+
 interface AdminUnconfirmedBookingActionMenuProps {
   user: User;
 }
@@ -21,6 +23,7 @@ export function AdminUnconfirmedBookingActionMenu({
   user,
 }: AdminUnconfirmedBookingActionMenuProps) {
   const { cancel, confirm } = useAdminBooking();
+  const askConfirm = useConfirm();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -29,6 +32,32 @@ export function AdminUnconfirmedBookingActionMenu({
   const handleViewDetails = () => {
     setSelectedUser(user);
     setIsDrawerOpen(true);
+  };
+
+  const handleConfirmAll = async () => {
+    const confirmed = await askConfirm({
+      title: "Confirmer toutes les réservations ?",
+      description: `Tu es sur le point de confirmer ${user.bookings!.length} réservation(s).`,
+      confirmText: "Oui, confirmer tout",
+      cancelText: "Annuler",
+    });
+
+    if (confirmed) {
+      confirm(user.bookings!);
+    }
+  };
+
+  const handleCancelAll = async () => {
+    const confirmed = await askConfirm({
+      title: "Annuler toutes les réservations ?",
+      description: `Tu es sur le point d'annuler ${user.bookings!.length} réservation(s). Cette action est irréversible.`,
+      confirmText: "Oui, tout annuler",
+      cancelText: "Revenir",
+    });
+
+    if (confirmed) {
+      cancel(user.bookings!);
+    }
   };
 
   return (
@@ -45,14 +74,11 @@ export function AdminUnconfirmedBookingActionMenu({
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-green-600"
-            onClick={() => confirm(user.bookings!)}
+            onClick={handleConfirmAll}
           >
             Tout confirmer
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-red-600"
-            onClick={() => cancel(user.bookings!)}
-          >
+          <DropdownMenuItem className="text-red-600" onClick={handleCancelAll}>
             Tout annuler
           </DropdownMenuItem>
         </DropdownMenuContent>

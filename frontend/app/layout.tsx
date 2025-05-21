@@ -10,6 +10,7 @@ import { Navbar } from "@/components/navbars/navbar";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ConfirmDialogProvider } from "@/contexts/confirm-dialog-context";
 
 export const metadata: Metadata = {
   title: {
@@ -40,20 +41,22 @@ export default function RootLayout({
       >
         <ThemeProvider enableSystem attribute="class" defaultTheme="dark">
           <AuthProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="container mx-auto max-w-7xl pt-8 md:pt-16 px-4 flex-grow">
-                {children}
-              </main>
-              <footer className="w-full flex items-center justify-center py-3">
-                <div className="flex items-center gap-1 text-current">
-                  <span className="text-default-600">
-                    © Take a Seat - {moment().format("YYYY")}
-                  </span>
-                </div>
-              </footer>
-            </div>
-            <Toaster closeButton richColors />
+            <ConfirmDialogProvider>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="container mx-auto max-w-7xl pt-8 md:pt-16 px-4 flex-grow">
+                  {children}
+                </main>
+                <footer className="w-full flex items-center justify-center py-3">
+                  <div className="flex items-center gap-1 text-current">
+                    <span className="text-default-600">
+                      © Take a Seat - {moment().format("YYYY")}
+                    </span>
+                  </div>
+                </footer>
+              </div>
+              <Toaster closeButton richColors />
+            </ConfirmDialogProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
