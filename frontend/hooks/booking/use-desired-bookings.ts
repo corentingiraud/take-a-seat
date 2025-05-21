@@ -35,9 +35,9 @@ export function useDesiredBookings(
         currentStart.add(1, "day").hour(service.openingTime.hour).minute(0);
       }
 
-      // Skip Sunday (day 6 is Saturday, day 0 is Sunday)
-      if (currentStart.day() === 0) {
-        currentStart.add(1, "day").hour(service.openingTime.hour).minute(0);
+      // Skip Saturday & Sunday
+      if (currentStart.day() === 6) {
+        currentStart.add(2, "day").hour(service.openingTime.hour).minute(0);
       }
     }
 
