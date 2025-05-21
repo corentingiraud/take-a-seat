@@ -21,7 +21,7 @@
       },
       "startDate": {
         "edit": {
-          "label": "startDate",
+          "label": "Date de début",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -35,7 +35,7 @@
       },
       "endDate": {
         "edit": {
-          "label": "endDate",
+          "label": "Date de fin",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -63,7 +63,7 @@
       },
       "coworking_spaces": {
         "edit": {
-          "label": "coworking_spaces",
+          "label": "Espace de coworking",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -136,16 +136,14 @@
       }
     },
     "layouts": {
-      "list": [
-        "name",
-        "startDate",
-        "endDate",
-        "coworking_spaces"
-      ],
       "edit": [
         [
           {
             "name": "name",
+            "size": 6
+          },
+          {
+            "name": "coworking_spaces",
             "size": 6
           }
         ],
@@ -158,13 +156,13 @@
             "name": "endDate",
             "size": 6
           }
-        ],
-        [
-          {
-            "name": "coworking_spaces",
-            "size": 6
-          }
         ]
+      ],
+      "list": [
+        "name",
+        "startDate",
+        "endDate",
+        "coworking_spaces"
       ]
     },
     "uid": "api::unavailability.unavailability"

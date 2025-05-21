@@ -1062,7 +1062,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
-    phone: Schema.Attribute.String;
+    phone: Schema.Attribute.String & Schema.Attribute.Private;
     prepaidCards: Schema.Attribute.Relation<
       'oneToMany',
       'api::prepaid-card.prepaid-card'

@@ -79,7 +79,8 @@
     },
     "phone": {
       "type": "string",
-      "required": false
+      "required": false,
+      "private": true
     },
     "firstName": {
       "type": "string"

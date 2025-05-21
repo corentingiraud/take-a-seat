@@ -33,10 +33,10 @@ export function useFetchBookings(
                 },
               },
               startDate: {
-                $gte: startDate.toDate(),
+                $gte: startDate.toISOString(),
               },
               endDate: {
-                $lte: endDate.toDate(),
+                $lte: endDate.toISOString(),
               },
             },
           },

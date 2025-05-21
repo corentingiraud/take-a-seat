@@ -4,77 +4,112 @@ import { ADMIN_ROLE_TYPE } from '../../constants';
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
   async bulkCreate(ctx) {
     const user = ctx.state.user;
-    const prepaidCard = ctx.request.body.prepaidCard;
-    const bookings = ctx.request.body.bookings;
-
+    const { prepaidCardDocumentId, serviceDocumentId, bookings } = ctx.request.body;
 
     if (!Array.isArray(bookings)) {
       return ctx.badRequest('Body should be an array of bookings');
     }
 
     try {
-      let card;
-      if (prepaidCard) {
-        card = await strapi.documents('api::prepaid-card.prepaid-card').findOne({
-          documentId: prepaidCard,
+      const service = await strapi.documents('api::service.service').findOne({
+        documentId: serviceDocumentId,
+        populate: ['coworkingSpace', 'coworkingSpace.unavailabilities']
+      });
+
+      if (!service) {
+        return ctx.badRequest(`Service with ID ${serviceDocumentId} not found`);
+      }
+
+      let prepaidCard;
+      if (prepaidCardDocumentId) {
+        prepaidCard = await strapi.documents('api::prepaid-card.prepaid-card').findOne({
+          documentId: prepaidCardDocumentId,
           populate: ['user']
         });
 
-        if (!card || card.user.id !== user.id) {
+        if (!prepaidCard || prepaidCard.user.id !== user.id) {
           return ctx.badRequest('Invalid prepaid card or not owned by the user');
         }
 
-        if (card.remainingBalance < bookings.length) {
+        if (prepaidCard.remainingBalance < bookings.length) {
           return ctx.badRequest('Not enough balance on the prepaid card');
         }
       }
 
-      const createdBookings = [];
+      const bookingsToCreate = [];
 
       for (const booking of bookings) {
-        const { startDate, endDate, service } = booking;
+        const { startDate, endDate } = booking;
 
-        if (!startDate || !endDate || !service) {
+        if (!startDate || !endDate) {
           return ctx.badRequest('Missing required fields (startDate, endDate, service)');
         }
 
-        if (new Date(startDate) >= new Date(endDate)) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (start >= end) {
           return ctx.badRequest('startDate must be before endDate');
         }
 
-        const existingService = await strapi.documents('api::service.service').findOne({
-          documentId: service
+        const coworkingUnavailabilities = service.coworkingSpace.unavailabilities;
+
+        const isUnavailable = coworkingUnavailabilities.some(unavailability => {
+          const unStart = new Date(unavailability.startDate);
+          const unEnd = new Date(unavailability.endDate);
+          return start < unEnd && end > unStart;
         });
-        if (!existingService) {
-          return ctx.badRequest(`Service with ID ${service} not found`);
+
+        if (isUnavailable) {
+          return ctx.badRequest('Slot overlaps with coworking space unavailability');
         }
 
-        const created = await strapi.service('api::booking.booking').create({
-          data: {
-            ...booking,
-            service: existingService.id,
-            user: user.id,
-            paymentStatus: card ? 'PAID' : 'PENDING',
-            prepaidCard: card ? card.id : null,
-          },
+        const overlappingBookings = await strapi.documents('api::booking.booking').findMany({
+          filters: {
+            service: {
+              documentId: service.documentId
+            },
+            startDate: { $lte: end },
+            endDate: { $gte: start }
+          }
         });
 
-        createdBookings.push(created);
+        if (overlappingBookings.length >= service.maximumBookingsPerHour) {
+          return ctx.badRequest(`Slot exceeds maximum bookings (${service.maximumBookingsPerHour})`);
+        }
+
+        bookingsToCreate.push({
+          ...booking,
+          service: service.id,
+          user: user.id,
+          paymentStatus: prepaidCard ? 'PAID' : 'PENDING',
+          prepaidCard: prepaidCard ? prepaidCard.id : null
+        })
       }
 
-      if (card) {
-        await strapi.documents('api::prepaid-card.prepaid-card').update({
-          documentId: card.documentId,
-          data: {
-            remainingBalance: card.remainingBalance - bookings.length,
-          },
-        });
-      }
+      await strapi.db.transaction(async () => {
+        for (const booking of bookingsToCreate) {
+          console.log(booking);
+          await strapi.documents('api::booking.booking').create({
+            data: booking
+          });
+        }
 
-      ctx.body = createdBookings;
+        if (prepaidCard) {
+          await strapi.documents('api::prepaid-card.prepaid-card').update({
+            documentId: prepaidCard.documentId,
+            data: {
+              remainingBalance: prepaidCard.remainingBalance - bookings.length
+            }
+          });
+        }
+      });
+
+      ctx.body = {
+        count: bookings.length,
+      };
     } catch (err) {
-      console.error('Bulk create error:', err);
-      ctx.badRequest('Failed to create bookings', { error: err.message });
+      console.error('Bulk create error:', JSON.stringify(err));
+      return ctx.badRequest('Failed to create bookings', { error: err.message });
     }
   },
 
@@ -103,26 +138,6 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
 
     // Else proceed with the update
     return await super.update(ctx);
-  },
-
-  async find(ctx) {
-    const user = ctx.state.user;
-
-    if (user?.role?.type !== ADMIN_ROLE_TYPE) {
-      const filters = ctx.query?.filters && typeof ctx.query.filters === 'object'
-        ? ctx.query.filters
-        : {};
-
-      ctx.query = {
-        ...ctx.query,
-        filters: {
-          ...filters,
-          user: user.id,
-        },
-      };
-    }
-
-    return await super.find(ctx);
   },
 
   async findOne(ctx) {

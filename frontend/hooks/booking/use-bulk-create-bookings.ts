@@ -29,11 +29,11 @@ export function useBulkCreateBookings(bookings: Booking[]) {
       }
 
       const body = {
-        prepaidCard: prepaidCard?.documentId,
+        prepaidCardDocumentId: prepaidCard?.documentId,
+        serviceDocumentId: bookings[0].service?.documentId,
         bookings: bookings.map((booking) => ({
           startDate: booking.startDate.toISOString(),
           endDate: booking.endDate.toISOString(),
-          service: booking.service?.documentId,
         })),
       };
 

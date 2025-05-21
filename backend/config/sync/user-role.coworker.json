@@ -76,12 +76,12 @@
       "locale": null
     },
     {
-      "documentId": "bapp5lueyk11vdlezz65wzio",
+      "documentId": "cfb6t52ikbp6mlgbdiffrced",
       "action": "plugin::users-permissions.user.find",
       "locale": null
     },
     {
-      "documentId": "emedt0wmt3ske8ri6rq4ix9i",
+      "documentId": "meox2r4w2xgoqelcdnozmmvp",
       "action": "plugin::users-permissions.user.findOne",
       "locale": null
     },
