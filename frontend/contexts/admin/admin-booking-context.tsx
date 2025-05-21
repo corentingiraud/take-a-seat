@@ -10,8 +10,6 @@ import {
 import { toast } from "sonner";
 import moment from "moment";
 
-import { useAuth } from "../auth-context";
-
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { BookingStatus } from "@/models/booking-status";
 import { User } from "@/models/user";

@@ -7,7 +7,6 @@ import { PaymentStatus } from "./payment-status";
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
-import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface PrepaidCardInterface {
   id?: number;

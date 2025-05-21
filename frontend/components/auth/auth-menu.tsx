@@ -83,7 +83,7 @@ export const AuthMenu = () => {
         <DropdownMenuItem
           onClick={() => {
             logout();
-            router.push(siteConfig.path.home.href);
+            router.push(siteConfig.path.login.href);
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />

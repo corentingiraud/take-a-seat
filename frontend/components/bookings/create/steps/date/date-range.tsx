@@ -5,6 +5,8 @@ import moment, { Moment } from "moment";
 import { useState } from "react";
 import { DateRange as ReactDayPickerDateRange } from "react-day-picker";
 
+import { shouldDisableDate } from "../utils/should-disable-date";
+
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,7 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Unavailability } from "@/models/unavailability";
-import { shouldDisableDate } from "../utils/should-disable-date";
 
 interface DateRange {
   from: Moment | undefined;
