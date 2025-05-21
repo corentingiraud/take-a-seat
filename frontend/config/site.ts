@@ -11,9 +11,6 @@ export const siteConfig = {
   name: "Take a seat",
   description: "Réservez votre espace de travail en toute simplicité.",
   path: {
-    home: {
-      href: "/",
-    },
     // AUTHENTICATION
     forgotPassword: {
       href: "/forgot-password",

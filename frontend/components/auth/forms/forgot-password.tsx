@@ -40,7 +40,7 @@ export function ForgotPasswordForm({
                 Tu te souviens de ton mot de passe ?{" "}
                 <Link
                   className="underline underline-offset-4"
-                  href={siteConfig.path.login}
+                  href={siteConfig.path.login.href}
                 >
                   Se connecter
                 </Link>

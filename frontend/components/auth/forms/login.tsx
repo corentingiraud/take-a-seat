@@ -65,7 +65,7 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
                   <Link
                     className="ml-auto text-sm underline-offset-2 hover:underline"
-                    href={siteConfig.path.forgotPassword}
+                    href={siteConfig.path.forgotPassword.href}
                   >
                     Mot de passe oublié ?
                   </Link>
@@ -85,7 +85,7 @@ export function LoginForm({
                 Pas encore de compte ?{" "}
                 <Link
                   className="underline underline-offset-4"
-                  href={siteConfig.path.signup}
+                  href={siteConfig.path.signup.href}
                 >
                   Créer un compte
                 </Link>

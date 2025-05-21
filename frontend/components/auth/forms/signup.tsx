@@ -76,7 +76,7 @@ export function SignupForm({
                 Déjà un compte ?{" "}
                 <Link
                   className="underline underline-offset-4"
-                  href={siteConfig.path.login}
+                  href={siteConfig.path.login.href}
                 >
                   Se connecter
                 </Link>
