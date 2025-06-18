@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarIcon } from "lucide-react";
-import moment, { Duration, Moment } from "moment";
+import moment, { Moment } from "moment";
 import { useState } from "react";
 
 import { shouldDisableDate } from "../utils/should-disable-date";
@@ -17,22 +17,23 @@ import {
 } from "@/components/ui/popover";
 import { Unavailability } from "@/models/unavailability";
 import { Time } from "@/models/time";
+import { DurationWrapper } from "@/models/duration";
 
-interface DateFormStepProps {
+interface SingleDateFormStepProps {
   unavailabilities: Unavailability[];
   openingTime: Time;
   closingTime: Time;
-  duration: Duration;
+  duration: DurationWrapper;
   onDateChange: (date: Moment) => void;
 }
 
-export const DateFormStep = ({
+export const SingleDateFormStep = ({
   unavailabilities,
   openingTime,
   closingTime,
   duration,
   onDateChange,
-}: DateFormStepProps) => {
+}: SingleDateFormStepProps) => {
   const [date, setDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
@@ -71,7 +72,7 @@ export const DateFormStep = ({
                   unavailabilities,
                   openingTime,
                   closingTime,
-                  duration,
+                  duration: duration.getDuration(),
                 })
               }
               mode="single"

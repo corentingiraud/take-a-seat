@@ -25,10 +25,10 @@ interface DateRange {
 
 interface DateRangeFormStepProps {
   unavailabilities: Unavailability[];
-  onDateRangeChange: (dateRange: DateRange) => void;
+  onDateRangeChange: (dateRange?: DateRange) => void;
 }
 
-export const DateRangeFormStep = ({
+export const RangeOfDatesFormStep = ({
   unavailabilities,
   onDateRangeChange,
 }: DateRangeFormStepProps) => {
@@ -44,7 +44,10 @@ export const DateRangeFormStep = ({
         from: moment(dateRange.from),
         to: moment(dateRange.to),
       });
+
+      return;
     }
+    onDateRangeChange(undefined);
   };
 
   return (

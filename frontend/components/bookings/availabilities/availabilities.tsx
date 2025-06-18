@@ -5,7 +5,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "@radix-ui/react-dialog";
-import { Duration, Moment } from "moment";
+import { Moment } from "moment";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -31,13 +31,15 @@ import { useBookingAvailabilities } from "@/hooks/booking/use-booking-availabili
 import { usePrepaidCard } from "@/hooks/use-prepaid-card";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { siteConfig } from "@/config/site";
+import { AVAILABLE_DURATION, DurationWrapper } from "@/models/duration";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
   service: Service;
-  duration: Duration;
+  duration: DurationWrapper;
   startDay: Moment;
   endDay?: Moment;
+  multipleDays?: Moment[];
   startTime?: Time;
   halfDay?: HalfDay;
 }
@@ -47,6 +49,7 @@ export const BookingAvailabilities = ({
   service,
   startDay,
   endDay,
+  multipleDays,
   halfDay,
   startTime,
   duration,
@@ -61,6 +64,7 @@ export const BookingAvailabilities = ({
     service,
     startDay,
     endDay,
+    multipleDays,
     halfDay,
     startTime,
     duration,

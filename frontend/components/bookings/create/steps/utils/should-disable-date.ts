@@ -12,7 +12,7 @@ interface DisableDateOptions {
   unavailabilities: Unavailability[];
   openingTime?: Time;
   closingTime?: Time;
-  duration?: Duration;
+  duration?: Duration | null;
 }
 
 export function shouldDisableDate({

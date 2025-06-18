@@ -1,8 +1,8 @@
 import moment from "moment";
 
-type DurationType = "fixed" | "days";
+type DurationType = "time" | "multipleDates" | "rangeOfDates";
 
-class DurationWrapper {
+export class DurationWrapper {
   private kind: DurationType;
   private duration: moment.Duration | null;
 
@@ -11,25 +11,50 @@ class DurationWrapper {
     this.duration = duration || null;
   }
 
+  equals(other: DurationWrapper): boolean {
+    if (this.kind !== other.kind) return false;
+
+    if (this.kind === "time") {
+      return (
+        this.duration!.asMilliseconds() === other.duration!.asMilliseconds()
+      );
+    }
+
+    // For "multipleDates" and "rangeOfDates", just comparing kind is enough
+    return true;
+  }
+
   getDuration() {
     return this.duration;
   }
 
+  get isSingleDay() {
+    return this.kind === "time";
+  }
+
   static oneHour() {
-    return new DurationWrapper("fixed", moment.duration(1, "hours"));
+    return new DurationWrapper("time", moment.duration(1, "hours"));
   }
 
   static halfDay() {
-    return new DurationWrapper("fixed", moment.duration(4, "hours"));
+    return new DurationWrapper("time", moment.duration(4, "hours"));
   }
 
-  static days() {
-    return new DurationWrapper("days");
+  static multipleDates() {
+    return new DurationWrapper("multipleDates");
+  }
+
+  static rangeOfDates() {
+    return new DurationWrapper("rangeOfDates");
   }
 
   humanize(): string {
-    if (this.kind === "days") {
+    if (this.kind === "multipleDates") {
       return "un ou plusieurs jours";
+    }
+
+    if (this.kind === "rangeOfDates") {
+      return "une période";
     }
 
     return this.duration!.humanize();
@@ -39,5 +64,6 @@ class DurationWrapper {
 export const AVAILABLE_DURATION = {
   ONE_HOUR: DurationWrapper.oneHour(),
   HALF_DAY: DurationWrapper.halfDay(),
-  DAYS: DurationWrapper.days(),
+  RANGE_OF_DATES: DurationWrapper.rangeOfDates(),
+  MULTIPLE_DATES: DurationWrapper.multipleDates(),
 };

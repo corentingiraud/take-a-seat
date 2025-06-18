@@ -1,7 +1,5 @@
 "use client";
 
-import { Duration } from "moment";
-
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -10,11 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AVAILABLE_DURATION } from "@/models/duration";
+import { AVAILABLE_DURATION, DurationWrapper } from "@/models/duration";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface DurationFormStepProps {
-  onDurationChange: (duration: Duration | null) => void;
+  onDurationChange: (duration: DurationWrapper | undefined) => void;
 }
 
 export const DurationFormStep = ({
@@ -22,9 +20,7 @@ export const DurationFormStep = ({
 }: DurationFormStepProps) => {
   const onValueChange = (value: string) => {
     onDurationChange(
-      AVAILABLE_DURATION[
-        value as keyof typeof AVAILABLE_DURATION
-      ].getDuration(),
+      AVAILABLE_DURATION[value as keyof typeof AVAILABLE_DURATION],
     );
   };
 
