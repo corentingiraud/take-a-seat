@@ -4,7 +4,7 @@ import * as React from "react";
 import { X } from "lucide-react";
 
 import { User } from "@/models/user";
-import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
+import { useAdminBookings } from "@/contexts/admin/bookings-context";
 import { Button } from "@/components/ui/button";
 import {
   DrawerClose,
@@ -17,14 +17,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { Booking } from "@/models/booking";
 
-interface UnpaidBookingsDetailsDrawerProps {
+interface BookingPendingPaymentsDetailsDrawerProps {
   user: User | null;
 }
 
-export function UnpaidBookingsDetailsDrawer({
+export function BookingPendingPaymentsDetailsDrawer({
   user,
-}: UnpaidBookingsDetailsDrawerProps) {
-  const { markAsPaid } = useAdminBooking();
+}: BookingPendingPaymentsDetailsDrawerProps) {
+  const { markAsPaid } = useAdminBookings();
   const askConfirm = useConfirm();
 
   if (!user) return null;

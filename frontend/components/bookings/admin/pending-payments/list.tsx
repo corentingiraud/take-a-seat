@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { AdminUnpaidBookingActionMenu } from "./actions";
+import { AdminBookingPendingPaymentsActionMenu } from "./actions";
 
 import {
   Table,
@@ -10,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
+import { useAdminBookings } from "@/contexts/admin/bookings-context";
 
-export function AdminUnpaidBookingsList() {
-  const { usersWithUnpaidBookings, reload } = useAdminBooking();
+export function AdminBookingPendingPaymentsList() {
+  const { usersWithPendingPayments: usersWithPendingPayments, reload } = useAdminBookings();
 
   useEffect(() => {
     reload();
@@ -30,20 +30,20 @@ export function AdminUnpaidBookingsList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {usersWithUnpaidBookings.map((user) => (
+          {usersWithPendingPayments.map((user) => (
             <TableRow key={user.documentId}>
               <TableCell>
                 {user.firstName} {user.lastName}
               </TableCell>
               <TableCell>{user.bookings?.length}</TableCell>
               <TableCell>
-                <AdminUnpaidBookingActionMenu user={user} />
+                <AdminBookingPendingPaymentsActionMenu user={user} />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {usersWithUnpaidBookings.length === 0 && (
+      {usersWithPendingPayments.length === 0 && (
         <p className="mt-10 text-center">
           Aucune réservations pour le moment...
         </p>

@@ -4,7 +4,7 @@ import * as React from "react";
 import { Check, X } from "lucide-react";
 
 import { User } from "@/models/user";
-import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
+import { useAdminBookings } from "@/contexts/admin/bookings-context";
 import { Button } from "@/components/ui/button";
 import {
   DrawerClose,
@@ -17,17 +17,23 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { Booking } from "@/models/booking";
 
-interface UnconfirmedBookingsDetailsDrawerProps {
+interface PendingBookingsDetailsDrawerProps {
   user: User | null;
 }
 
-export function UnconfirmedBookingsDetailsDrawer({
+export function PendingBookingsDetailsDrawer({
   user,
-}: UnconfirmedBookingsDetailsDrawerProps) {
-  const { cancel, confirm } = useAdminBooking();
+}: PendingBookingsDetailsDrawerProps) {
+  const { cancel, confirm } = useAdminBookings();
   const askConfirm = useConfirm(); // renamed to avoid conflict
 
+  const { bookings } = useAdminBookings();
+
   if (!user) return null;
+
+  const userBookings = bookings.filter(
+    (booking) => booking.user?.id === user.id,
+  );
 
   const handleCancel = async (booking: Booking) => {
     const confirmed = await askConfirm({
@@ -73,7 +79,7 @@ export function UnconfirmedBookingsDetailsDrawer({
         <div className="p-4 pb-0">
           <div>
             <div className="mt-2 space-y-3 text-sm">
-              {user.bookings?.map((booking, i) => (
+              {userBookings.map((booking, i) => (
                 <div
                   key={i}
                   className="rounded-md border border-muted p-3 space-y-2"

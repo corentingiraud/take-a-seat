@@ -2,24 +2,20 @@
 
 import { useEffect, useState } from "react";
 
+import { ServiceSelect } from "@/components/services/select";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Service } from "@/models/service";
 import { CoworkingSpace } from "@/models/coworking-space";
 
 interface ServiceFormStepProps {
+  value?: Service | null;
   coworkingSpace: CoworkingSpace;
-  onServiceChange: (service: Service) => void;
+  onServiceChange: (service: Service | null) => void;
 }
 
 export const ServiceFormStep = ({
+  value,
   coworkingSpace,
   onServiceChange,
 }: ServiceFormStepProps) => {
@@ -40,32 +36,21 @@ export const ServiceFormStep = ({
         },
       },
     }).then((services) => {
-      services.map((service) => {
+      services.forEach((service) => {
         service.coworkingSpace = coworkingSpace;
       });
       setServices(services);
     });
   }, [coworkingSpace]);
 
-  const onValueChange = (i: string) => {
-    onServiceChange(services[parseInt(i)]);
-  };
-
   return (
     <div>
       <Label htmlFor="service">Quoi ?</Label>
-      <Select required name="service" onValueChange={onValueChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Sélectionner un service" />
-        </SelectTrigger>
-        <SelectContent>
-          {services.map((service, i) => (
-            <SelectItem key={i} value={i.toString()}>
-              {service.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <ServiceSelect
+        services={services}
+        value={value}
+        onChange={onServiceChange}
+      />
     </div>
   );
 };

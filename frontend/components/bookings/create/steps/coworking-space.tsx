@@ -2,22 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CoworkingSpaceSelect } from "@/components/coworking-spaces/select";
 import { CoworkingSpace } from "@/models/coworking-space";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
+import { Label } from "@/components/ui/label";
 
 interface CoworkingSpaceFormStepProps {
-  onCoworkingSpaceChange: (coworkingSpace: CoworkingSpace) => void;
+  value?: CoworkingSpace | null;
+  onCoworkingSpaceChange: (coworkingSpace: CoworkingSpace | null) => void;
 }
 
 export const CoworkingSpaceFormStep = ({
+  value,
   onCoworkingSpaceChange,
 }: CoworkingSpaceFormStepProps) => {
   const [coworkingSpaces, setCoworkingSpaces] = useState<CoworkingSpace[]>([]);
@@ -29,30 +25,17 @@ export const CoworkingSpaceFormStep = ({
       queryParams: {
         populate: ["unavailabilities"],
       },
-    }).then((coworkingSpaces) => {
-      setCoworkingSpaces(coworkingSpaces);
-    });
+    }).then(setCoworkingSpaces);
   }, []);
-
-  const onValueChange = (i: string) => {
-    onCoworkingSpaceChange(coworkingSpaces[parseInt(i)]);
-  };
 
   return (
     <div>
       <Label htmlFor="coworkingSpace">Où ?</Label>
-      <Select required name="coworkingSpace" onValueChange={onValueChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Sélectionner un espace" />
-        </SelectTrigger>
-        <SelectContent>
-          {coworkingSpaces.map((space, i) => (
-            <SelectItem key={i} value={i.toString()}>
-              {space.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <CoworkingSpaceSelect
+        coworkingSpaces={coworkingSpaces}
+        value={value}
+        onChange={onCoworkingSpaceChange}
+      />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 
-import { UnpaidBookingsDetailsDrawer } from "./details";
+import { BookingPendingPaymentsDetailsDrawer } from "./details";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,19 +10,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAdminBooking } from "@/contexts/admin/admin-booking-context";
+import { useAdminBookings } from "@/contexts/admin/bookings-context";
 import { User } from "@/models/user";
 import { Drawer } from "@/components/ui/drawer";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 
-interface AdminUnpaidBookingActionMenuProps {
+interface AdminPendingPaymentsActionMenuProps {
   user: User;
 }
 
-export function AdminUnpaidBookingActionMenu({
+export function AdminBookingPendingPaymentsActionMenu({
   user,
-}: AdminUnpaidBookingActionMenuProps) {
-  const { markAsPaid } = useAdminBooking();
+}: AdminPendingPaymentsActionMenuProps) {
+  const { markAsPaid } = useAdminBookings();
   const askConfirm = useConfirm();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -68,7 +68,7 @@ export function AdminUnpaidBookingActionMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <UnpaidBookingsDetailsDrawer user={selectedUser} />
+      <BookingPendingPaymentsDetailsDrawer user={selectedUser} />
     </Drawer>
   );
 }

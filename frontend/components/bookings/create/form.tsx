@@ -93,16 +93,24 @@ export const CreateBookingForm = () => {
   return (
     <div className="mt-5 m-auto max-w-xl flex flex-col gap-5">
       <CoworkingSpaceFormStep
+        value={coworkingSpace}
         onCoworkingSpaceChange={(value) => {
-          setService(undefined);
-          setCoworkingSpace(value);
+          if (value) {
+            setService(undefined);
+            setCoworkingSpace(value);
+          }
         }}
       />
       {coworkingSpace && (
         <ServiceFormStep
           key={`coworking-space-${coworkingSpace.id}-service`}
           coworkingSpace={coworkingSpace}
-          onServiceChange={(value) => setService(value)}
+          value={service}
+          onServiceChange={(value) => {
+            if (value) {
+              setService(value);
+            }
+          }}
         />
       )}
       {service && (
