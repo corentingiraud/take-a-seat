@@ -19,6 +19,8 @@ interface PrepaidCardInterface {
   bookings: Booking[];
 }
 
+export type PrepaidCardStatus = "usable" | "upcoming" | "expired";
+
 export class PrepaidCard implements StrapiData {
   id: number;
   documentId: string;
@@ -77,5 +79,22 @@ export class PrepaidCard implements StrapiData {
 
   toString() {
     return `Carte N°${this.id} (${this.remainingBalance} heures restantes)`;
+  }
+
+  get status(): PrepaidCardStatus {
+    const today = moment();
+
+    if (
+      this.validFrom?.isSameOrBefore(today) &&
+      this.expirationDate?.isAfter(today)
+    ) {
+      return "usable";
+    }
+
+    if (this.validFrom?.isAfter(today) && this.expirationDate?.isAfter(today)) {
+      return "upcoming";
+    }
+
+    return "expired";
   }
 }
