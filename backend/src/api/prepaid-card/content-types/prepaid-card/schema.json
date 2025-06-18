@@ -41,6 +41,9 @@
       "relation": "oneToMany",
       "target": "api::booking.booking",
       "mappedBy": "prepaidCard"
+    },
+    "validFrom": {
+      "type": "date"
     }
   }
 }

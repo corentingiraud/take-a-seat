@@ -11,6 +11,7 @@ import { GeneralParams } from "@/types/strapi-api-params";
 interface PrepaidCardInterface {
   id?: number;
   documentId?: string;
+  validFrom?: Moment | null;
   expirationDate?: Moment | null;
   remainingBalance: number;
   paymentStatus: PaymentStatus;
@@ -21,6 +22,7 @@ interface PrepaidCardInterface {
 export class PrepaidCard implements StrapiData {
   id: number;
   documentId: string;
+  validFrom?: Moment | null;
   expirationDate?: Moment | null;
   remainingBalance: number;
   paymentStatus: PaymentStatus;
@@ -32,6 +34,7 @@ export class PrepaidCard implements StrapiData {
   constructor({
     id = UNDEFINED_ID,
     documentId = UNDEFINED_DOCUMENT_ID,
+    validFrom = null,
     expirationDate = null,
     remainingBalance,
     paymentStatus = PaymentStatus.PENDING,
@@ -40,6 +43,7 @@ export class PrepaidCard implements StrapiData {
   }: PrepaidCardInterface) {
     this.id = id;
     this.documentId = documentId;
+    this.validFrom = validFrom;
     this.expirationDate = expirationDate;
     this.remainingBalance = remainingBalance;
     this.user = user;
@@ -51,6 +55,7 @@ export class PrepaidCard implements StrapiData {
     return new PrepaidCard({
       id: json.id ?? UNDEFINED_ID,
       documentId: json.documentId ?? UNDEFINED_DOCUMENT_ID,
+      validFrom: moment(json.validFrom),
       expirationDate: moment(json.expirationDate),
       remainingBalance: json.remainingBalance ?? 0,
       paymentStatus: json.paymentStatus,

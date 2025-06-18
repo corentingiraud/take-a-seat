@@ -494,6 +494,7 @@ export interface ApiPrepaidCardPrepaidCard extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    validFrom: Schema.Attribute.Date;
   };
 }
 

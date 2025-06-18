@@ -42,7 +42,7 @@
           "editable": true
         },
         "list": {
-          "label": "Valide jusqu'au",
+          "label": "Date d'expiration",
           "searchable": true,
           "sortable": true
         }
@@ -89,6 +89,20 @@
           "label": "bookings",
           "searchable": false,
           "sortable": false
+        }
+      },
+      "validFrom": {
+        "edit": {
+          "label": "Date d'activation",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Date d'activation",
+          "searchable": true,
+          "sortable": true
         }
       },
       "createdAt": {
@@ -151,12 +165,6 @@
       }
     },
     "layouts": {
-      "list": [
-        "user",
-        "remainingBalance",
-        "expirationDate",
-        "paymentStatus"
-      ],
       "edit": [
         [
           {
@@ -167,23 +175,36 @@
         [
           {
             "name": "remainingBalance",
-            "size": 4
-          },
-          {
-            "name": "expirationDate",
-            "size": 4
+            "size": 6
           },
           {
             "name": "paymentStatus",
-            "size": 4
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "validFrom",
+            "size": 6
+          },
+          {
+            "name": "expirationDate",
+            "size": 6
           }
         ],
         [
           {
             "name": "bookings",
-            "size": 6
+            "size": 12
           }
         ]
+      ],
+      "list": [
+        "user",
+        "remainingBalance",
+        "validFrom",
+        "expirationDate",
+        "paymentStatus"
       ]
     },
     "uid": "api::prepaid-card.prepaid-card"
