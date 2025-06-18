@@ -44,6 +44,9 @@ export const SingleDateFormStep = ({
     }
   };
 
+  const currentMonth = moment();
+  const nextMonth = currentMonth.clone().add(1, "month");
+
   return (
     <div className="flex flex-col mt-2">
       <Label htmlFor="date">Quand ?</Label>
@@ -75,8 +78,10 @@ export const SingleDateFormStep = ({
                   duration: duration.getDuration(),
                 })
               }
+              fromMonth={currentMonth.toDate()}
               mode="single"
               selected={date}
+              toMonth={nextMonth.toDate()}
               onDayClick={() => setCalendarOpen(false)}
               onSelect={onValueChange}
             />

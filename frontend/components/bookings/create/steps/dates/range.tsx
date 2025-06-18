@@ -50,6 +50,9 @@ export const RangeOfDatesFormStep = ({
     onDateRangeChange(undefined);
   };
 
+  const currentMonth = moment();
+  const nextMonth = currentMonth.clone().add(1, "month");
+
   return (
     <div className="flex flex-col mt-2">
       <Label htmlFor="date">Quand ?</Label>
@@ -78,8 +81,10 @@ export const RangeOfDatesFormStep = ({
                   unavailabilities,
                 })
               }
+              fromMonth={currentMonth.toDate()}
               mode="range"
               selected={dateRange}
+              toMonth={nextMonth.toDate()}
               onSelect={onValueChange}
             />
           </PopoverContent>

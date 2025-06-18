@@ -40,6 +40,9 @@ export const MultipleDatesFormStep = ({
     onDatesChange(sortedDates.map((d) => moment(d)));
   };
 
+  const currentMonth = moment();
+  const nextMonth = currentMonth.clone().add(1, "month");
+
   return (
     <div className="flex flex-col mt-2">
       <Label htmlFor="multiple-dates">Quand ?</Label>
@@ -73,8 +76,10 @@ export const MultipleDatesFormStep = ({
                   unavailabilities,
                 })
               }
+              fromMonth={currentMonth.toDate()}
               mode="multiple"
               selected={selectedDates}
+              toMonth={nextMonth.toDate()}
               onDayClick={() => {}} // keep required interaction
               onSelect={onValueChange}
             />
