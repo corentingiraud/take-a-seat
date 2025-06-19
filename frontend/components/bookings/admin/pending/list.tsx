@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { User } from "@/models/user";
+import { UserPreview } from "@/components/users/preview";
 
 export const AdminPendingBookingsList = () => {
   const { bookings } = useAdminBookings();
@@ -52,7 +53,7 @@ export const AdminPendingBookingsList = () => {
         {sortedUsers.map((user) => (
           <TableRow key={user.id}>
             <TableCell>
-              {user.lastName} {user.firstName}
+              <UserPreview user={user} />
             </TableCell>
             <TableCell>{user.bookings?.length || 0}</TableCell>
             <TableCell>

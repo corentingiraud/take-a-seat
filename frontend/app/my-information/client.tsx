@@ -1,10 +1,13 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserDetails } from "@/components/users/details";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function MyInformation() {
   const { user } = useAuth();
+
+  if (!user) return;
 
   return (
     <Card className="w-full max-w-lg mx-auto">
@@ -14,26 +17,7 @@ export default function MyInformation() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        <p>
-          <span className="font-medium">Nom :</span> {user?.lastName}
-        </p>
-        <p>
-          <span className="font-medium">Prénom :</span> {user?.firstName}
-        </p>
-        <p>
-          <span className="font-medium">Nom d&apos;utilisateur :</span>{" "}
-          {user?.username}
-        </p>
-        <p>
-          <span className="font-medium">Email :</span> {user?.email}
-        </p>
-        <p>
-          <span className="font-medium">Téléphone :</span> {user?.phone}
-        </p>
-        <p>
-          <span className="font-medium">Compte confirmé :</span>{" "}
-          {user?.confirmed ? "Oui" : "Non"}
-        </p>
+        <UserDetails user={user} />
       </CardContent>
     </Card>
   );
