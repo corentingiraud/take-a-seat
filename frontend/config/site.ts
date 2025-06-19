@@ -35,6 +35,9 @@ export const siteConfig = {
     adminBookings: {
       href: "/admin/bookings",
     },
+    adminPrepaidCardsNew: {
+      href: "/admin/prepaid-cards/new",
+    },
     strapiAdmin: {
       href: API_URL.replace("/api", "/admin"),
     },

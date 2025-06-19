@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAdminBookings } from "@/contexts/admin/bookings-context";
+import { useAdminBookings } from "@/contexts/admin/bookings";
 import { User } from "@/models/user";
 import { Drawer } from "@/components/ui/drawer";
 import { useConfirm } from "@/contexts/confirm-dialog-context";

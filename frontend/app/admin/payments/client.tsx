@@ -2,7 +2,7 @@
 
 import { AdminPendingBookingsList } from "@/components/bookings/admin/pending/list";
 import { AdminBookingPendingPaymentsList } from "@/components/bookings/admin/pending-payments/list";
-import { AdminPaymentProvider } from "@/contexts/admin/payments-context";
+import { AdminPaymentProvider } from "@/contexts/admin/payments";
 
 export default function AdminPaymentsPageClient() {
   return (

@@ -16,7 +16,7 @@ interface PrepaidCardInterface {
   remainingBalance: number;
   paymentStatus: PaymentStatus;
   user?: User;
-  bookings: Booking[];
+  bookings?: Booking[];
 }
 
 export type PrepaidCardStatus = "usable" | "upcoming" | "expired";
@@ -41,7 +41,7 @@ export class PrepaidCard implements StrapiData {
     remainingBalance,
     paymentStatus = PaymentStatus.PENDING,
     user,
-    bookings,
+    bookings = [],
   }: PrepaidCardInterface) {
     this.id = id;
     this.documentId = documentId;
@@ -73,8 +73,19 @@ export class PrepaidCard implements StrapiData {
     };
   }
 
-  toJson() {
-    return {};
+  toJson(): object {
+    const json: any = {
+      validFrom: this.validFrom?.format(),
+      expirationDate: this.expirationDate?.format(),
+      remainingBalance: this.remainingBalance,
+      paymentStatus: this.paymentStatus,
+    };
+
+    if (this.user?.documentId) {
+      json.user = this.user.documentId;
+    }
+
+    return json;
   }
 
   toString() {

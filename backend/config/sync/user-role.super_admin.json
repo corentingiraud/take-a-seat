@@ -46,6 +46,16 @@
       "locale": null
     },
     {
+      "documentId": "l8jnswtc0myp2x82pyzdyjot",
+      "action": "api::prepaid-card.prepaid-card.create",
+      "locale": null
+    },
+    {
+      "documentId": "piy8b27mdslsc8h5japnx42n",
+      "action": "api::prepaid-card.prepaid-card.delete",
+      "locale": null
+    },
+    {
       "documentId": "mb5bqo7o22n6vn8kl6qn6ioo",
       "action": "api::prepaid-card.prepaid-card.find",
       "locale": null
@@ -53,6 +63,11 @@
     {
       "documentId": "urx3ocowlooc5wb1to9cjn95",
       "action": "api::prepaid-card.prepaid-card.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "g6wzrr81sds3h9tztcfgsrtk",
+      "action": "api::prepaid-card.prepaid-card.update",
       "locale": null
     },
     {

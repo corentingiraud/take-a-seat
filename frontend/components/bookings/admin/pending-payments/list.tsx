@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAdminBookings } from "@/contexts/admin/bookings-context";
+import { useAdminBookings } from "@/contexts/admin/bookings";
 
 export function AdminBookingPendingPaymentsList() {
   const { usersWithPendingPayments: usersWithPendingPayments, reload } = useAdminBookings();

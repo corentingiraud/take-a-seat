@@ -2,7 +2,7 @@
 
 import { AdminBookingsFilters } from "@/components/admin/bookings/filters";
 import { AdminPendingBookingsList } from "@/components/bookings/admin/pending/list";
-import { AdminBookingsProvider } from "@/contexts/admin/bookings-context";
+import { AdminBookingsProvider } from "@/contexts/admin/bookings";
 
 export default function AdminBookingsPageClient() {
   return (

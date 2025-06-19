@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { useAdminBookings } from "@/contexts/admin/bookings-context";
+import { useAdminBookings } from "@/contexts/admin/bookings";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { User } from "@/models/user";
 import { CoworkingSpace } from "@/models/coworking-space";

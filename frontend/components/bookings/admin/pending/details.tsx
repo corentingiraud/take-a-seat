@@ -4,7 +4,7 @@ import * as React from "react";
 import { Check, X } from "lucide-react";
 
 import { User } from "@/models/user";
-import { useAdminBookings } from "@/contexts/admin/bookings-context";
+import { useAdminBookings } from "@/contexts/admin/bookings";
 import { Button } from "@/components/ui/button";
 import {
   DrawerClose,

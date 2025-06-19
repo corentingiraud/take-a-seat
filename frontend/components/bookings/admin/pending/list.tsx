@@ -2,7 +2,7 @@
 
 import { AdminPendingBookingActionMenu } from "./actions";
 
-import { useAdminBookings } from "@/contexts/admin/bookings-context";
+import { useAdminBookings } from "@/contexts/admin/bookings";
 import {
   Table,
   TableBody,
