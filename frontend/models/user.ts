@@ -100,4 +100,13 @@ export class User implements StrapiData {
   toJson() {
     return {};
   }
+
+  static sortAlphabetically(list: User[]): User[] {
+    return list.sort((a, b) => {
+      const nameA = `${a.lastName?.toLowerCase() || ""} ${a.firstName?.toLowerCase() || ""}`;
+      const nameB = `${b.lastName?.toLowerCase() || ""} ${b.firstName?.toLowerCase() || ""}`;
+
+      return nameA.localeCompare(nameB);
+    });
+  }
 }

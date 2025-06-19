@@ -16,6 +16,8 @@ interface UserSelectProps {
 }
 
 export const UserSelect = ({ users, onChange, value }: UserSelectProps) => {
+  const sortedUsers = User.sortAlphabetically(users);
+
   const handleChange = (val: string) => {
     const index = parseInt(val);
 
@@ -38,9 +40,9 @@ export const UserSelect = ({ users, onChange, value }: UserSelectProps) => {
         <SelectValue placeholder="Sélectionner un utilisateur" />
       </SelectTrigger>
       <SelectContent>
-        {users.map((user, index) => (
+        {sortedUsers.map((user, index) => (
           <SelectItem key={user.id} value={index.toString()}>
-            {user.firstName} {user.lastName}
+            {user.lastName} {user.firstName}
           </SelectItem>
         ))}
       </SelectContent>

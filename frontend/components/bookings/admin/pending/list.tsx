@@ -16,30 +16,28 @@ import { User } from "@/models/user";
 export const AdminPendingBookingsList = () => {
   const { bookings } = useAdminBookings();
 
-  // Grouper les bookings par user.id
-  const bookingsGroupedByUser: Record<string, { user: User; count: number }> =
-    {};
+  const users: User[] = [];
 
   bookings.forEach((booking) => {
     const user = booking.user;
 
     if (!user || !user.id) return;
 
-    if (!bookingsGroupedByUser[user.id]) {
-      bookingsGroupedByUser[user.id] = {
-        user: new User({
+    const existingUser = users.find((u) => u.id === user.id);
+
+    if (existingUser) {
+      existingUser.bookings?.push(booking);
+    } else {
+      users.push(
+        new User({
           ...user,
           bookings: [booking],
         }),
-        count: 1,
-      };
-    } else {
-      bookingsGroupedByUser[user.id].user.bookings!.push(booking);
-      bookingsGroupedByUser[user.id].count += 1;
+      );
     }
   });
 
-  const groupedUsers = Object.values(bookingsGroupedByUser);
+  const sortedUsers = User.sortAlphabetically(users);
 
   return (
     <Table>
@@ -51,12 +49,12 @@ export const AdminPendingBookingsList = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {groupedUsers.map(({ user, count }) => (
+        {sortedUsers.map((user) => (
           <TableRow key={user.id}>
             <TableCell>
-              {user.firstName} {user.lastName}
+              {user.lastName} {user.firstName}
             </TableCell>
-            <TableCell>{count}</TableCell>
+            <TableCell>{user.bookings?.length || 0}</TableCell>
             <TableCell>
               <AdminPendingBookingActionMenu user={user} />
             </TableCell>
