@@ -48,7 +48,7 @@ export default function UserProfile({ userId }: { userId: string }) {
         {user.firstName} {user.lastName}
       </h3>
 
-      <Section title="User information">
+      <Section title="Informations">
         <UserDetails user={user} />
       </Section>
 
@@ -56,7 +56,7 @@ export default function UserProfile({ userId }: { userId: string }) {
         <PrepaidCardsList user={user} />
       </Section>
 
-      <Section title="Mes réservations">
+      <Section title="Réservations">
         <BookingProvider user={user}>
           <BookingsList />
         </BookingProvider>

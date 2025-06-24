@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { AdminBookingPendingPaymentsActionMenu } from "./actions";
 
 import {
@@ -10,14 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAdminBookings } from "@/contexts/admin/bookings";
+import { useAdminPayments } from "@/contexts/admin/payments";
 
 export function AdminBookingPendingPaymentsList() {
-  const { usersWithPendingPayments: usersWithPendingPayments, reload } = useAdminBookings();
-
-  useEffect(() => {
-    reload();
-  }, []);
+  const { usersWithPendingPayments: usersWithPendingPayments } =
+    useAdminPayments();
 
   return (
     <div>
@@ -44,9 +39,7 @@ export function AdminBookingPendingPaymentsList() {
         </TableBody>
       </Table>
       {usersWithPendingPayments.length === 0 && (
-        <p className="mt-10 text-center">
-          Aucune réservations pour le moment...
-        </p>
+        <p className="mt-10 text-center">Vous êtes à jour 👌👏</p>
       )}
     </div>
   );

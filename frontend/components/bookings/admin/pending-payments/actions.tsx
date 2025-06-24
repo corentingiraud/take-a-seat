@@ -10,10 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAdminBookings } from "@/contexts/admin/bookings";
 import { User } from "@/models/user";
 import { Drawer } from "@/components/ui/drawer";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
+import { useAdminPayments } from "@/contexts/admin/payments";
 
 interface AdminPendingPaymentsActionMenuProps {
   user: User;
@@ -22,7 +22,7 @@ interface AdminPendingPaymentsActionMenuProps {
 export function AdminBookingPendingPaymentsActionMenu({
   user,
 }: AdminPendingPaymentsActionMenuProps) {
-  const { markAsPaid } = useAdminBookings();
+  const { markAsPaid } = useAdminPayments();
   const askConfirm = useConfirm();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);

@@ -16,6 +16,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { Booking } from "@/models/booking";
+import { useAdminPayments } from "@/contexts/admin/payments";
 
 interface BookingPendingPaymentsDetailsDrawerProps {
   user: User | null;
@@ -24,7 +25,7 @@ interface BookingPendingPaymentsDetailsDrawerProps {
 export function BookingPendingPaymentsDetailsDrawer({
   user,
 }: BookingPendingPaymentsDetailsDrawerProps) {
-  const { markAsPaid } = useAdminBookings();
+  const { markAsPaid } = useAdminPayments();
   const askConfirm = useConfirm();
 
   if (!user) return null;

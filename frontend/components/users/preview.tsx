@@ -54,7 +54,9 @@ export const UserPreview = ({ user }: UserPreviewProps) => {
           </DialogTitle>
         </DialogHeader>
 
-        <UserDetails user={user} />
+        <div>
+          <UserDetails user={user} />
+        </div>
 
         <div className="mt-4 flex justify-end">
           <Button className="text-blue-600" onClick={handleViewProfile}>

@@ -72,6 +72,11 @@ export const AuthMenu = () => {
               Gérer les réservations
             </DropdownMenuItem>
             <DropdownMenuItem
+              onClick={() => router.push(siteConfig.path.adminPayments.href)}
+            >
+              Gérer les payements
+            </DropdownMenuItem>
+            <DropdownMenuItem
               onClick={() =>
                 router.push(siteConfig.path.adminPrepaidCardsNew.href)
               }

@@ -39,6 +39,9 @@ export const siteConfig = {
     adminBookings: {
       href: "/admin/bookings",
     },
+    adminPayments: {
+      href: "/admin/payments",
+    },
     adminPrepaidCardsNew: {
       href: "/admin/prepaid-cards/new",
     },
