@@ -9,6 +9,7 @@ import { BookingsList } from "@/components/bookings/list/list";
 import { PrepaidCardsList } from "@/components/prepaid-cards/list/list";
 import { BookingProvider } from "@/contexts/booking-context";
 import { Section } from "@/components/ui/section";
+import { Button } from "@/components/ui/button";
 
 export default function HomePageClient() {
   const { loading, user } = useAuth();
@@ -32,7 +33,14 @@ export default function HomePageClient() {
         <PrepaidCardsList user={user} />
       </Section>
 
-      <Section title="Mes réservations">
+      <Section
+        action={
+          <Button onClick={() => router.push(siteConfig.path.book.href)}>
+            Nouvelle réservation
+          </Button>
+        }
+        title="Mes réservations"
+      >
         <BookingProvider user={user}>
           <BookingsList />
         </BookingProvider>

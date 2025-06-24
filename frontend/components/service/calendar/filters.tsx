@@ -12,11 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 export const ServiceCalendarFilter = () => {
-  const { setService, service } = useServiceCalendar();
+  const { service, coworkingSpace, setService, setCoworkingSpace } =
+    useServiceCalendar();
+
   const [spaces, setSpaces] = useState<CoworkingSpace[]>([]);
-  const [selectedSpace, setSelectedSpace] = useState<CoworkingSpace | null>(
-    null,
-  );
   const [services, setServices] = useState<Service[]>([]);
 
   const { fetchAll } = useStrapiAPI();
@@ -26,9 +25,9 @@ export const ServiceCalendarFilter = () => {
     fetchAll(CoworkingSpace.strapiAPIParams).then(setSpaces);
   }, []);
 
-  // Fetch services when space changes
+  // Fetch services when coworking space changes
   useEffect(() => {
-    if (!selectedSpace) {
+    if (!coworkingSpace) {
       setServices([]);
       setService(null);
 
@@ -41,13 +40,13 @@ export const ServiceCalendarFilter = () => {
         filters: {
           coworkingSpace: {
             id: {
-              $eq: selectedSpace.id,
+              $eq: coworkingSpace.id,
             },
           },
         },
       },
     }).then(setServices);
-  }, [selectedSpace]);
+  }, [coworkingSpace]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,15 +54,15 @@ export const ServiceCalendarFilter = () => {
         <Label>Espace de coworking</Label>
         <CoworkingSpaceSelect
           coworkingSpaces={spaces}
-          value={selectedSpace ?? undefined}
+          value={coworkingSpace ?? undefined}
           onChange={(space) => {
-            setSelectedSpace(space);
+            setCoworkingSpace(space);
             setService(null);
           }}
         />
       </div>
 
-      {selectedSpace && (
+      {coworkingSpace && (
         <div>
           <Label>Service</Label>
           <ServiceSelect
@@ -73,16 +72,19 @@ export const ServiceCalendarFilter = () => {
           />
         </div>
       )}
-      <Button
-        variant="outline"
-        onClick={() => {
-          setService(null);
-          setSelectedSpace(null);
-          setServices([]);
-        }}
-      >
-        Réinitialiser les filtres
-      </Button>
+
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          onClick={() => {
+            setCoworkingSpace(null);
+            setService(null);
+            setServices([]);
+          }}
+        >
+          Réinitialiser les filtres
+        </Button>
+      </div>
     </div>
   );
 };

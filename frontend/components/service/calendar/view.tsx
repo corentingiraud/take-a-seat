@@ -87,7 +87,7 @@ export const ServiceCalendarView = () => {
               </div>
 
               {days.map((day) => {
-                const key = `${day.format("YYYY-MM-DD")}-${hour}`;
+                const key = `${day.format("YYYY-MM-DD")}-${String(hour).padStart(2, "0")}`;
                 const slotBookings = calendarData.get(key) || [];
 
                 return (
@@ -103,7 +103,7 @@ export const ServiceCalendarView = () => {
                         key={b.id}
                         className="bg-blue-100 dark:bg-blue-800/40 rounded px-1 py-0.5 text-[11px] text-blue-900 dark:text-blue-200"
                       >
-                        {b.user?.fullName || "Utilisateur inconnu"}
+                        {b.user?.firstNameWithInitial || "Utilisateur inconnu"}
                       </div>
                     ))}
                   </div>

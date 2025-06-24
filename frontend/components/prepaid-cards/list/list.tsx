@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { CardStatusBadge } from "../badge";
+import { PrepaidCardStatusBadge } from "../badge";
 
 import {
   Table,
@@ -11,9 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePrepaidCard } from "@/hooks/use-prepaid-card";
-import { getPaymentStatusTranslation } from "@/models/payment-status";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { User } from "@/models/user";
+import { PaymentStatusBadge } from "@/components/payment-badge";
 
 export function PrepaidCardsList({ user }: { user: User }) {
   const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard({
@@ -51,7 +51,7 @@ export function PrepaidCardsList({ user }: { user: User }) {
             return (
               <TableRow key={prepaidCard.documentId}>
                 <TableCell>
-                  <CardStatusBadge status={prepaidCard.status} />
+                  <PrepaidCardStatusBadge status={prepaidCard.status} />
                 </TableCell>
                 <TableCell>{prepaidCard.id}</TableCell>
                 <TableCell>
@@ -66,7 +66,7 @@ export function PrepaidCardsList({ user }: { user: User }) {
                 </TableCell>
                 <TableCell>{prepaidCard.remainingBalance}</TableCell>
                 <TableCell>
-                  {getPaymentStatusTranslation(prepaidCard.paymentStatus)}
+                  <PaymentStatusBadge status={prepaidCard.paymentStatus} />
                 </TableCell>
               </TableRow>
             );

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+import { BookingStatusBadge } from "../badge";
+
 import { BookingActionMenu } from "./actions";
 
 import { useBooking } from "@/contexts/booking-context";
@@ -11,8 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getBookingStatusTranslation } from "@/models/booking-status";
-import { getPaymentStatusTranslation } from "@/models/payment-status";
+import { PaymentStatusBadge } from "@/components/payment-badge";
 
 export function BookingsList() {
   const { bookings, reload } = useBooking();
@@ -37,10 +38,10 @@ export function BookingsList() {
             <TableRow key={booking.documentId}>
               <TableCell>{booking.toString()}</TableCell>
               <TableCell>
-                {getBookingStatusTranslation(booking.bookingStatus)}
+                <BookingStatusBadge booking={booking} />
               </TableCell>
               <TableCell>
-                {getPaymentStatusTranslation(booking.paymentStatus)}
+                <PaymentStatusBadge status={booking.paymentStatus} />
               </TableCell>
               <TableCell>
                 <BookingActionMenu booking={booking} />

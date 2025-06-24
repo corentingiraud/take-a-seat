@@ -72,6 +72,10 @@ export class User implements StrapiData {
     return `${this.firstName} ${this.lastName}`;
   }
 
+  get firstNameWithInitial() {
+    return `${this.firstName} ${this.lastName.slice(0, 1).toUpperCase()}.`;
+  }
+
   static fromJson(json: any): User {
     return new User({
       id: json.id,

@@ -60,18 +60,18 @@ export const ConfirmDialogProvider = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {options.title || "Are you sure?"}
+              {options.title || "Merci de confirmer votre action"}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {options.description || "This action cannot be undone."}
+              {options.description || "Cette action est irréversible."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => handleClose(false)}>
-              {options.cancelText || "Cancel"}
+              {options.cancelText || "Non"}
             </AlertDialogCancel>
             <AlertDialogAction onClick={() => handleClose(true)}>
-              {options.confirmText || "Confirm"}
+              {options.confirmText || "Oui"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

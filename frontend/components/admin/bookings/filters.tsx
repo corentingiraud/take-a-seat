@@ -100,9 +100,11 @@ export const AdminBookingsFilters = () => {
         />
       </div>
 
-      <Button variant="outline" onClick={resetFilters}>
-        Réinitialiser les filtres
-      </Button>
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={resetFilters}>
+          Réinitialiser les filtres
+        </Button>
+      </div>
     </div>
   );
 };
