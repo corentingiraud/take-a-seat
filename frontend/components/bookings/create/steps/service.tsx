@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { ServiceSelect } from "@/components/services/select";
+import { ServiceSelect } from "@/components/service/select";
 import { Label } from "@/components/ui/label";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Service } from "@/models/service";

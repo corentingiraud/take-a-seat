@@ -10,7 +10,7 @@ import { Service } from "@/models/service";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CoworkingSpaceSelect } from "@/components/coworking-spaces/select";
-import { ServiceSelect } from "@/components/services/select";
+import { ServiceSelect } from "@/components/service/select";
 import { UserSelect } from "@/components/users/select";
 
 export const AdminBookingsFilters = () => {

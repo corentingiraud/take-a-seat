@@ -32,6 +32,9 @@ export const siteConfig = {
     book: {
       href: "/book",
     },
+    serviceCalendar: {
+      href: "/service-calendar",
+    },
     myInformation: {
       href: "/my-information",
     },
