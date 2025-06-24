@@ -2,11 +2,11 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { useServiceCalendar } from "@/contexts/service-calendar-context";
 import { Booking } from "@/models/booking";
-import React from "react";
 
 export const ServiceCalendarView = () => {
   const { bookings, startDate, endDate, service, setStartDate, setEndDate } =

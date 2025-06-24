@@ -21,7 +21,8 @@ import { SubscriptionType, HOURS_PER_TYPE } from "@/config/constants";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
 export const AdminPrepaidCardsCreate = () => {
-  const { users, handleSubmit, upcomingMonths, isFormValid } = useAdminPrepaidCards();
+  const { users, handleSubmit, upcomingMonths, isFormValid } =
+    useAdminPrepaidCards();
 
   const [subscription, setSubscription] = useState<SubscriptionType | null>(
     null,
@@ -126,7 +127,7 @@ export const AdminPrepaidCardsCreate = () => {
             });
             setSubscription(null);
             setSelectedUsers([]);
-            setSelectedMonth(startOfMonth(new Date()),);
+            setSelectedMonth(startOfMonth(new Date()));
             setCustomHours("");
           }}
         >

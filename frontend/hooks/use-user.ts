@@ -36,6 +36,6 @@ export function useUser(userId: string) {
   return {
     reload,
     user,
-    loading
+    loading,
   };
 }

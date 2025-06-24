@@ -11,7 +11,9 @@ export function usePrepaidCard({ userId }: { userId?: number }) {
   const { user } = useAuth();
   const { fetchAll } = useStrapiAPI();
   const [allPrepaidCards, setAllPrepaidCards] = useState<PrepaidCard[]>([]);
-  const [usablePrepaidCards, setUsablePrepaidCards] = useState<PrepaidCard[]>([]);
+  const [usablePrepaidCards, setUsablePrepaidCards] = useState<PrepaidCard[]>(
+    [],
+  );
 
   const reload = async () => {
     if (!user) return;

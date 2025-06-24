@@ -46,6 +46,7 @@ export const MultiUserSelect = ({
 
   const filteredUsers = sortedUsers.filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+
     return fullName.includes(search.toLowerCase());
   });
 
