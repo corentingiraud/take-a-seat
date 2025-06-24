@@ -53,7 +53,10 @@ export const MultiUserSelect = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="w-full justify-start" variant="outline">
+        <Button
+          className="w-full justify-start bg-transparent"
+          variant="outline"
+        >
           {value.length > 0
             ? value.map((u) => `${u.firstName} ${u.lastName}`).join(", ")
             : "Sélectionner les utilisateurs"}

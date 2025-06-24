@@ -59,9 +59,7 @@ export const UserPreview = ({ user }: UserPreviewProps) => {
         </div>
 
         <div className="mt-4 flex justify-end">
-          <Button className="text-blue-600" onClick={handleViewProfile}>
-            Voir le profil complet
-          </Button>
+          <Button onClick={handleViewProfile}>Voir le profil complet</Button>
         </div>
       </DialogContent>
     </Dialog>

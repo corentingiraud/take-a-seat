@@ -73,7 +73,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           }
         });
 
-        if (overlappingBookings.length >= service.maximumBookingsPerHour) {
+        if (overlappingBookings.length > service.maximumBookingsPerHour) {
           return ctx.badRequest(`Slot exceeds maximum bookings (${service.maximumBookingsPerHour})`);
         }
 

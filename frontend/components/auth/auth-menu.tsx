@@ -49,7 +49,6 @@ export const AuthMenu = () => {
           Réserver un créneau
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="font-semibold text-primary hover:bg-primary/10"
           onClick={() => router.push(siteConfig.path.serviceCalendar.href)}
         >
           Calendrier des services

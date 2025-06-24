@@ -41,9 +41,7 @@ export function AdminPendingBookingActionMenu({
   const handleConfirmAll = async () => {
     const confirmed = await askConfirm({
       title: "Confirmer toutes les réservations ?",
-      description: `Tu es sur le point de confirmer ${userBookings.length} réservation(s).`,
-      confirmText: "Oui, confirmer tout",
-      cancelText: "Annuler",
+      description: `${userBookings.length} réservation(s) seront confirmée(s).`,
     });
 
     if (confirmed) {
@@ -54,9 +52,7 @@ export function AdminPendingBookingActionMenu({
   const handleCancelAll = async () => {
     const confirmed = await askConfirm({
       title: "Annuler toutes les réservations ?",
-      description: `Tu es sur le point d'annuler ${userBookings.length} réservation(s). Cette action est irréversible.`,
-      confirmText: "Oui, tout annuler",
-      cancelText: "Revenir",
+      description: `${userBookings.length} réservation(s) seront annulée(s). Cette action est irréversible.`,
     });
 
     if (confirmed) {

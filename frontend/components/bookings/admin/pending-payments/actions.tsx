@@ -37,9 +37,7 @@ export function AdminBookingPendingPaymentsActionMenu({
   const handleMarkAllAsPaid = async () => {
     const confirmed = await askConfirm({
       title: "Tout marquer comme payé ?",
-      description: `Tu es sur le point de marquer ${user.bookings!.length} réservation(s) comme payée(s).`,
-      confirmText: "Oui, marquer comme payé",
-      cancelText: "Annuler",
+      description: `${user.bookings!.length} réservation(s) seront marquée(s) comme payée(s).`,
     });
 
     if (confirmed) {
