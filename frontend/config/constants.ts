@@ -6,5 +6,5 @@ export type SubscriptionType = "quarter" | "half" | "full";
 export const HOURS_PER_TYPE: Record<SubscriptionType, number> = {
   quarter: 36,
   half: 72,
-  full: 9999, // arbitraire pour illimité
+  full: 9999,
 };

@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { DEFAULT_DATE_FORMAT } from "@/models/utils/strapi-data";
 
-export function usePrepaidCard() {
+export function usePrepaidCard({ userId }: { userId?: number }) {
   const { user } = useAuth();
   const { fetchAll } = useStrapiAPI();
   const [allPrepaidCards, setAllPrepaidCards] = useState<PrepaidCard[]>([]);
@@ -22,7 +22,7 @@ export function usePrepaidCard() {
         filters: {
           user: {
             id: {
-              $eq: user.id,
+              $eq: userId ?? user.id,
             },
           },
         },

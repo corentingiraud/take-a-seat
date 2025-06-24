@@ -15,6 +15,7 @@ import { useAuth } from "./auth-context";
 import { Booking } from "@/models/booking";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { BookingStatus } from "@/models/booking-status";
+import { User } from "@/models/user";
 
 interface BookingContextType {
   bookings: Booking[];
@@ -24,6 +25,7 @@ interface BookingContextType {
 
 interface BookingProviderProps {
   children: ReactNode;
+  user: User;
 }
 
 export const BookingContext = createContext<BookingContextType | undefined>(
@@ -32,8 +34,8 @@ export const BookingContext = createContext<BookingContextType | undefined>(
 
 export const BookingProvider: React.FC<BookingProviderProps> = ({
   children,
+  user,
 }) => {
-  const { user } = useAuth();
   const { fetchAll, update } = useStrapiAPI();
   const [bookings, setBookings] = useState<Booking[]>([]);
 

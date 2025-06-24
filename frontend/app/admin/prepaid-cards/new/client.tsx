@@ -2,17 +2,19 @@
 
 import { AdminPrepaidCardsCreate } from "@/components/prepaid-cards/admin/create";
 import { AdminPrepaidCardsProvider } from "@/contexts/admin/prepaid-card";
+import { Section } from "@/components/ui/section";
 
 export default function AdminPrepaidCardsCreatePageClient() {
   return (
     <AdminPrepaidCardsProvider>
-      <div>
+      <div className="space-y-6">
         <h3 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
           Création des cartes prépayées
         </h3>
-        <div className="mt-5 space-y-8">
+
+        <Section>
           <AdminPrepaidCardsCreate />
-        </div>
+        </Section>
       </div>
     </AdminPrepaidCardsProvider>
   );

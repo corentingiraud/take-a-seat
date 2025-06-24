@@ -53,7 +53,9 @@ async function fetchOne<T extends StrapiData>(
     const url = `${API_URL}/${contentType}/${id}?${qs.stringify(queryParams)}`;
     const jsonData = await fetchFromStrapi<{ data: T }>(url, headers);
 
-    return jsonData.data ? factory(jsonData.data) : null;
+    if (jsonData.data) return factory(jsonData.data);
+
+    return factory(jsonData);
   } catch (error) {
     throw error;
   }

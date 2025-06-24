@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -7,4 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 
 export function capitalizeFirstLetter(val?: string): string {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
+export function generateDynamicPageTitle(title: string) {
+  return `${title} - ${siteConfig.name}`;
 }

@@ -27,10 +27,11 @@ export function BookingActionMenu({ booking }: BookingActionMenuProps) {
   };
 
   return (
-    booking.bookingStatus === BookingStatus.PENDING && (
+    booking.bookingStatus === BookingStatus.PENDING ||
+    (booking.bookingStatus === BookingStatus.CONFIRMED && (
       <Button variant="destructive" onClick={() => handleCancel(booking)}>
         Annuler
       </Button>
-    )
+    ))
   );
 }

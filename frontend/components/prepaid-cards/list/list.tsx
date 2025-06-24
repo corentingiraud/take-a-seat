@@ -13,9 +13,12 @@ import {
 import { usePrepaidCard } from "@/hooks/use-prepaid-card";
 import { getPaymentStatusTranslation } from "@/models/payment-status";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { User } from "@/models/user";
 
-export function PrepaidCardsList() {
-  const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard();
+export function PrepaidCardsList({ user }: { user: User }) {
+  const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard({
+    userId: user.id,
+  });
 
   useEffect(() => {
     reload();

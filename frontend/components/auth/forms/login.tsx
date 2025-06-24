@@ -22,7 +22,7 @@ export function LoginForm({
 
   useEffect(() => {
     if (user) {
-      router.push(siteConfig.path.myBookings.href);
+      router.push(siteConfig.path.dashboard.href);
     }
   }, [user, router]);
 
@@ -34,7 +34,7 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(email, password);
-    router.push(siteConfig.path.myBookings.href);
+    router.push(siteConfig.path.dashboard.href);
   };
 
   return (

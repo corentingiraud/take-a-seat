@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 export function useBulkCreateBookings(bookings: Booking[]) {
   const { getJWT } = useAuth();
 
-  async function bulkCreate(prepaidCard?: PrepaidCard) {
+  async function bulkCreate(prepaidCard: PrepaidCard | null) {
     if (bookings.length === 0) {
       toast.error("Aucune réservation à enregistrer.");
 

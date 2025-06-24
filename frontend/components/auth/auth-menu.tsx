@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { Calendar, LogOut } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -42,21 +42,22 @@ export const AuthMenu = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuItem
+          className="font-semibold text-primary hover:bg-primary/10"
+          onClick={() => router.push(siteConfig.path.book.href)}
+        >
+          <Calendar className="mr-2 h-4 w-4" />
+          Réserver un créneau
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => router.push(siteConfig.path.dashboard.href)}
+        >
+          Tableau de bord
+        </DropdownMenuItem>
+        <DropdownMenuItem
           onClick={() => router.push(siteConfig.path.myInformation.href)}
         >
           Mes informations
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => router.push(siteConfig.path.myBookings.href)}
-        >
-          Mes réservations
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => router.push(siteConfig.path.myPrepaidCards.href)}
-        >
-          Mes cartes pré-payées
         </DropdownMenuItem>
 
         {hasRole(RoleType.SUPER_ADMIN) && (

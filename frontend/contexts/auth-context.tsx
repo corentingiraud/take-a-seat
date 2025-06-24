@@ -15,6 +15,7 @@ import { User } from "@/models/user";
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  loading: boolean;
   getJWT: () => string | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -34,24 +35,41 @@ const JWT_LOCAL_STORAGE_KEY = "jwt";
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUser = async () => {
+    setLoading(true);
     const token = getJWT();
 
-    if (!token) logout();
+    if (!token) {
+      logout();
+      setLoading(false);
 
-    const res = await fetch(`${API_URL}/users/me?populate=role`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await res.json();
+      return;
+    }
 
-    if (data.id) {
-      const user = User.fromJson(data);
+    try {
+      const res = await fetch(`${API_URL}/users/me?populate=role`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      setUser(user);
-      setIsAuthenticated(true);
+      if (!res.ok) throw new Error("Failed to fetch user");
+
+      const data = await res.json();
+
+      if (data.id) {
+        const user = User.fromJson(data);
+
+        setUser(user);
+        setIsAuthenticated(true);
+      }
+    } catch {
+      toast.error("Erreur lors du chargement de l'utilisateur");
+      logout();
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, getJWT, login, logout, hasRole }}
+      value={{ user, isAuthenticated, loading, getJWT, login, logout, hasRole }}
     >
       {children}
     </AuthContext.Provider>

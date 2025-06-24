@@ -69,7 +69,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
               documentId: service.documentId
             },
             startDate: { $lte: end },
-            endDate: { $gte: start }
+            endDate: { $gt: start }
           }
         });
 

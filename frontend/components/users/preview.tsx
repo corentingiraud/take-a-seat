@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { InfoIcon } from "lucide-react";
+
+import { Button } from "../ui/button";
 
 import { UserDetails } from "./details";
 
@@ -20,6 +23,12 @@ interface UserPreviewProps {
 
 export const UserPreview = ({ user }: UserPreviewProps) => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handleViewProfile = () => {
+    router.push(`/user/${user.id}`);
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -44,7 +53,14 @@ export const UserPreview = ({ user }: UserPreviewProps) => {
             {user.firstName} {user.lastName}
           </DialogTitle>
         </DialogHeader>
+
         <UserDetails user={user} />
+
+        <div className="mt-4 flex justify-end">
+          <Button className="text-blue-600" onClick={handleViewProfile}>
+            Voir le profil complet
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

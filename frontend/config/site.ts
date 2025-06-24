@@ -11,6 +11,10 @@ export const siteConfig = {
   name: "Take a seat",
   description: "Réservez votre espace de travail en toute simplicité.",
   path: {
+    // GENERAL
+    notFound: {
+      href: "/404",
+    },
     // AUTHENTICATION
     forgotPassword: {
       href: "/forgot-password",
@@ -19,17 +23,17 @@ export const siteConfig = {
       href: "/signup",
     },
     login: {
-      href: "/",
+      href: "/login",
     },
     // COWORKER PAGES
+    dashboard: {
+      href: "/",
+    },
+    book: {
+      href: "/book",
+    },
     myInformation: {
       href: "/my-information",
-    },
-    myBookings: {
-      href: "/my-bookings",
-    },
-    myPrepaidCards: {
-      href: "/my-prepaid-cards",
     },
     // ADMIN PAGES
     adminBookings: {

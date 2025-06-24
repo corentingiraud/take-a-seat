@@ -32,6 +32,7 @@ import { usePrepaidCard } from "@/hooks/use-prepaid-card";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { siteConfig } from "@/config/site";
 import { DurationWrapper } from "@/models/duration";
+import { useAuth } from "@/contexts/auth-context";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
@@ -54,6 +55,7 @@ export const BookingAvailabilities = ({
   startTime,
   duration,
 }: BookingAvailabilitiesProps) => {
+  const { user } = useAuth();
   const router = useRouter();
 
   const {
@@ -70,14 +72,21 @@ export const BookingAvailabilities = ({
     duration,
   });
 
-  const { usablePrepaidCards } = usePrepaidCard();
+  let { usablePrepaidCards: prepaidCard } = usePrepaidCard({
+    userId: user?.id,
+  });
+
+  prepaidCard = prepaidCard.filter(
+    (prepaidCard) => prepaidCard.remainingBalance >= availableBookings.length,
+  );
 
   const [useCard, setUseCard] = useState(false);
-  const [selectedPrepaidCard, setSelectedPrepaidCard] = useState<PrepaidCard>();
+  const [selectedPrepaidCard, setSelectedPrepaidCard] =
+    useState<PrepaidCard | null>(null);
 
   async function createAvailableBookings() {
     await bulkCreateAvailableBookings(selectedPrepaidCard);
-    router.push(siteConfig.path.myBookings.href);
+    router.push(siteConfig.path.dashboard.href);
   }
 
   return (
@@ -131,12 +140,17 @@ export const BookingAvailabilities = ({
       )}
 
       <div className="mt-6 space-y-4">
-        {usablePrepaidCards.length > 0 && (
+        {prepaidCard.length > 0 && (
           <div className="flex items-center space-x-2">
             <Checkbox
               checked={useCard}
               id="use-card"
-              onCheckedChange={() => setUseCard(!useCard)}
+              onCheckedChange={(checked) => {
+                if (!checked) {
+                  setSelectedPrepaidCard(null);
+                }
+                setUseCard(!useCard);
+              }}
             />
             <Label htmlFor="use-card">Utiliser une carte prépayée</Label>
           </div>
@@ -145,16 +159,16 @@ export const BookingAvailabilities = ({
         {useCard && (
           <Select
             onValueChange={(val) => {
-              const card = usablePrepaidCards.find((c) => c.documentId === val);
+              const card = prepaidCard.find((c) => c.documentId === val);
 
-              setSelectedPrepaidCard(card);
+              setSelectedPrepaidCard(card || null);
             }}
           >
             <SelectTrigger>
               <SelectValue placeholder="Sélectionnez une carte prépayée" />
             </SelectTrigger>
             <SelectContent>
-              {usablePrepaidCards.map((card) => (
+              {prepaidCard.map((card) => (
                 <SelectItem key={card.id} value={card.documentId}>
                   {card.toString()}
                 </SelectItem>
