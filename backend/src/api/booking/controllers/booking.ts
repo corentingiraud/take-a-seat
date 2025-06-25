@@ -1,5 +1,6 @@
 import { factories } from '@strapi/strapi';
 import { ADMIN_ROLE_TYPE } from '../../constants';
+import { renderEJSTemplate } from '../../../utils/render-template';
 
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
   async bulkCreate(ctx) {
@@ -88,7 +89,6 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
 
       await strapi.db.transaction(async () => {
         for (const booking of bookingsToCreate) {
-          console.log(booking);
           await strapi.documents('api::booking.booking').create({
             data: booking
           });
@@ -107,8 +107,46 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
       ctx.body = {
         count: bookings.length,
       };
+
+      const emailPayload = {
+        user: {
+          email: user.email,
+          firstName: user.firstName,
+        },
+        service: {
+          name: service.name
+        },
+        coworkingSpace: {
+          name: service.coworkingSpace.name
+        },
+        bookings: bookingsToCreate.map(b => ({
+          startDate: new Date(b.startDate).toLocaleString('fr-FR'),
+          endDate: new Date(b.endDate).toLocaleString('fr-FR'),
+        })),
+        paymentStatus: prepaidCard ? 'PAYÉ' : 'EN ATTENTE',
+        prepaidCardUsed: !!prepaidCard,
+        remainingBalance: prepaidCard ? prepaidCard.remainingBalance - bookings.length : null
+      };
+
+      console.log(emailPayload);
+
+      // Send to user
+      await strapi.plugins['email'].services.email.send({
+        to: user.email,
+        from: 'no-reply@take-a-seat.giraud.dev',
+        subject: 'Confirmation de vos réservations – Le Pêle Coworking',
+        html: await renderEJSTemplate('user-booking-summary.ejs', emailPayload)
+      });
+
+      // Send to admin
+      await strapi.plugins['email'].services.email.send({
+        to: process.env.ADMIN_NOTIFICATION_EMAIL,
+        from: 'no-reply@take-a-seat.giraud.dev',
+        subject: `Nouvelle réservation de ${user.email}`,
+        html: await renderEJSTemplate('admin-booking-summary.ejs', emailPayload)
+      });
     } catch (err) {
-      console.error('Bulk create error:', JSON.stringify(err));
+      console.error(err);
       return ctx.badRequest('Failed to create bookings', { error: err.message });
     }
   },

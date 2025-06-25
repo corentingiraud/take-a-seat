@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nouvelle réservation utilisateur</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333;">
+  <h2>Nouvelle réservation effectuée 🛎️</h2>
+
+  <p>Un utilisateur vient d’effectuer une ou plusieurs réservations sur <strong>Le Pêle Coworking - Take a Seat</strong>.</p>
+
+  <ul>
+    <li><strong>Utilisateur :</strong> <%= user.email %></li>
+    <li><strong>Service :</strong> <%= service.name %></li>
+    <li><strong>Espace :</strong> <%= coworkingSpace.name %></li>
+    <li><strong>Nombre de réservations :</strong> <%= bookings.length %></li>
+  </ul>
+
+  <h3>Détails des créneaux réservés :</h3>
+  <ul>
+    <% bookings.forEach((booking) => { %>
+      <li>
+        📅 Du <strong><%= booking.startDate %></strong> au <strong><%= booking.endDate %></strong>
+      </li>
+    <% }); %>
+  </ul>
+
+  <p><strong>Statut de paiement :</strong> <%= paymentStatus %></p>
+
+  <% if (prepaidCardUsed) { %>
+    <p>✅ Carte prépayée utilisée — solde restant : <strong><%= remainingBalance %></strong> réservation(s)</p>
+  <% } else { %>
+    <p>⚠️ Pas de carte prépayée utilisée. Paiement en attente.</p>
+  <% } %>
+
+  <br>
+  <p>🖥️ Connectez-vous au panneau d’administration pour consulter les détails.</p>
+
+  <br>
+  <strong>L’équipe système</strong>
+</body>
+</html>
