@@ -17,4 +17,8 @@ export class Time {
   toString(): string {
     return `${this.hour.toString().padStart(2, "0")}h${this.minute.toString().padStart(2, "0")}`;
   }
+
+  toISOString(): string {
+    return `${this.hour.toString().padStart(2, "0")}:${this.minute.toString().padStart(2, "0")}`;
+  }
 }

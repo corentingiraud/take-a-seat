@@ -1,13 +1,13 @@
 {
-  "key": "plugin_content_manager_configuration_content_types::api::coworking-space.coworking-space",
+  "key": "plugin_content_manager_configuration_content_types::api::availability.availability",
   "value": {
     "settings": {
       "bulkable": true,
       "filterable": true,
       "searchable": true,
       "pageSize": 10,
-      "mainField": "name",
-      "defaultSortBy": "name",
+      "mainField": "id",
+      "defaultSortBy": "id",
       "defaultSortOrder": "ASC"
     },
     "metadatas": {
@@ -19,23 +19,37 @@
           "sortable": true
         }
       },
-      "name": {
+      "startDate": {
         "edit": {
-          "label": "Nom",
+          "label": "Date de début",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "Nom",
+          "label": "Date de fin",
           "searchable": true,
           "sortable": true
         }
       },
-      "services": {
+      "endDate": {
         "edit": {
-          "label": "services",
+          "label": "Date de fin",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Date de début",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "service": {
+        "edit": {
+          "label": "Service",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -43,36 +57,35 @@
           "mainField": "name"
         },
         "list": {
-          "label": "services",
-          "searchable": false,
-          "sortable": false
+          "label": "Service",
+          "searchable": true,
+          "sortable": true
         }
       },
-      "unavailabilities": {
+      "weeklyAvailabilities": {
         "edit": {
-          "label": "unavailabilities",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "id"
-        },
-        "list": {
-          "label": "unavailabilities",
-          "searchable": false,
-          "sortable": false
-        }
-      },
-      "locationURL": {
-        "edit": {
-          "label": "URL Google Maps",
+          "label": "Disponibilités sur la semaine",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "URL Google Maps",
+          "label": "weeklyAvailabilities",
+          "searchable": false,
+          "sortable": false
+        }
+      },
+      "numberOfSeats": {
+        "edit": {
+          "label": "Nombre max de réservation",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "numberOfSeats",
           "searchable": true,
           "sortable": true
         }
@@ -140,23 +153,41 @@
       "edit": [
         [
           {
-            "name": "name",
+            "name": "startDate",
+            "size": 6
+          },
+          {
+            "name": "endDate",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "service",
             "size": 12
           }
         ],
         [
           {
-            "name": "locationURL",
+            "name": "weeklyAvailabilities",
+            "size": 12
+          }
+        ],
+        [
+          {
+            "name": "numberOfSeats",
             "size": 12
           }
         ]
       ],
       "list": [
-        "name",
-        "locationURL"
+        "id",
+        "service",
+        "endDate",
+        "startDate"
       ]
     },
-    "uid": "api::coworking-space.coworking-space"
+    "uid": "api::availability.availability"
   },
   "type": "object",
   "environment": null,

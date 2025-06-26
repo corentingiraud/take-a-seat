@@ -2,31 +2,38 @@ import moment, { Moment } from "moment";
 
 import { Time } from "./time";
 import { CoworkingSpace } from "./coworking-space";
+import { Availability } from "./availability";
+import { Booking } from "./booking"; // Assuming this exists
 
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
-import { MINIMUM_BOOKING_DURATION } from "@/config/site";
 
 interface ServiceInterface {
   id?: number;
   documentId?: string;
   name: string;
-  openingTime: Time;
-  closingTime: Time;
-  maximumBookingsPerHour: number;
-  minimumBookingMinutes: number;
+  description?: string;
+  bookingDuration: number;
   coworkingSpace?: CoworkingSpace;
+  availabilities?: Availability[];
+  bookings?: Booking[];
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  publishedAt?: string | null;
 }
 
 export class Service {
   id: number;
   documentId: string;
   name: string;
-  openingTime: Time;
-  closingTime: Time;
-  maximumBookingsPerHour: number;
-  minimumBookingMinutes: number;
+  description: string;
+  bookingDuration: number;
   coworkingSpace: CoworkingSpace | null;
+  availabilities: Availability[];
+  bookings: Booking[];
+  createdAt: string | null;
+  updatedAt: string | null;
+  publishedAt: string | null;
 
   static readonly contentType = "services";
 
@@ -34,20 +41,26 @@ export class Service {
     id = UNDEFINED_ID,
     documentId = UNDEFINED_DOCUMENT_ID,
     name,
-    openingTime,
-    closingTime,
-    maximumBookingsPerHour,
-    minimumBookingMinutes,
+    description = "",
+    bookingDuration,
     coworkingSpace,
+    availabilities = [],
+    bookings = [],
+    createdAt = null,
+    updatedAt = null,
+    publishedAt = null,
   }: ServiceInterface) {
     this.id = id;
     this.documentId = documentId;
     this.name = name;
-    this.openingTime = openingTime;
-    this.closingTime = closingTime;
-    this.maximumBookingsPerHour = maximumBookingsPerHour;
-    this.minimumBookingMinutes = minimumBookingMinutes;
+    this.description = description;
+    this.bookingDuration = bookingDuration;
     this.coworkingSpace = coworkingSpace ?? null;
+    this.availabilities = availabilities;
+    this.bookings = bookings;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.publishedAt = publishedAt;
   }
 
   static fromJson(json: any): Service {
@@ -55,13 +68,17 @@ export class Service {
       id: json.id,
       documentId: json.documentId,
       name: json.name,
-      openingTime: Time.fromString(json.openingTime),
-      closingTime: Time.fromString(json.closingTime),
-      maximumBookingsPerHour: json.maximumBookingsPerHour,
-      minimumBookingMinutes: json.minimumBookingMinutes,
+      description: json.description,
+      bookingDuration: json.bookingDuration,
       coworkingSpace: json.coworkingSpace
         ? CoworkingSpace.fromJson(json.coworkingSpace)
         : undefined,
+      availabilities:
+        json.availabilities?.map((a: any) => Availability.fromJson(a)) ?? [],
+      bookings: json.bookings?.map((b: any) => Booking.fromJson(b)) ?? [],
+      createdAt: json.createdAt,
+      updatedAt: json.updatedAt,
+      publishedAt: json.publishedAt,
     });
   }
 
@@ -72,55 +89,56 @@ export class Service {
     };
   }
 
-  toJson() {
-    return {};
-  }
+  toJson(): object {
+    const json: any = {
+      name: this.name,
+      description: this.description,
+      bookingDuration: this.bookingDuration,
+    };
 
-  getTimeSlot(date: Moment): Time[] {
-    const unavailabilities = this.coworkingSpace?.unavailabilities ?? [];
-    const slots: Time[] = [];
-
-    const now = moment(); // current real time
-    const isToday = date.isSame(now, "day");
-
-    const current = date.clone();
-
-    if (isToday) {
-      // Start from the next full hour
-      const nextHour = now.clone().add(1, "hour").startOf("hour");
-
-      current.hour(Math.max(this.openingTime.hour, nextHour.hour()));
-      current.minute(nextHour.minute());
-    } else {
-      // Use coworking opening time
-      current.hour(this.openingTime.hour).minute(this.openingTime.minute);
+    if (this.coworkingSpace?.id) {
+      json.coworkingSpace = this.coworkingSpace.documentId;
     }
 
-    current.second(0);
+    return json;
+  }
 
-    const endOfDay = date
-      .clone()
-      .hour(this.closingTime.hour)
-      .minute(this.closingTime.minute)
-      .second(0);
+  /**
+   * Get bookable time slots for a given date
+   */
+  getTimeSlot(date: Moment): Time[] {
+    const slots: Time[] = [];
 
-    while (current.isBefore(endOfDay)) {
-      const slotStart = current.clone();
-      const slotEnd = slotStart.clone().add(MINIMUM_BOOKING_DURATION);
+    const availability = this.findAvailabilityFor(date);
 
-      const overlaps = unavailabilities.some((unav) => {
-        return (
-          slotEnd.isAfter(unav.startDate) && slotStart.isBefore(unav.endDate)
-        );
-      });
+    if (!availability) return [];
 
-      if (!overlaps) {
+    const slotStart = availability.getStartTimeFor(date)!;
+    const slotEnd = availability.getEndTimeFor(date)!;
+
+    while (slotStart.isBefore(slotEnd)) {
+      if (
+        availability.includeSlot(
+          slotStart,
+          moment.duration(this.bookingDuration, "minutes"),
+        )
+      ) {
         slots.push(new Time(slotStart.hour(), slotStart.minute()));
       }
 
-      current.add(MINIMUM_BOOKING_DURATION);
+      slotStart.add(this.bookingDuration, "minutes");
     }
 
     return slots;
+  }
+
+  findAvailabilityFor(date: Moment): Availability | null {
+    return (
+      this.availabilities.find(
+        (av) =>
+          moment(av.startDate).isSameOrBefore(date, "day") &&
+          moment(av.endDate).isSameOrAfter(date, "day"),
+      ) ?? null
+    );
   }
 }

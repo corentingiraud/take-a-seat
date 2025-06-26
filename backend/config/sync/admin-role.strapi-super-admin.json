@@ -6,6 +6,75 @@
   "locale": null,
   "permissions": [
     {
+      "documentId": "toupqafe3gmre8l75cmgpsxl",
+      "action": "plugin::content-manager.explorer.create",
+      "actionParameters": {},
+      "subject": "api::availability.availability",
+      "properties": {
+        "fields": [
+          "startDate",
+          "endDate",
+          "service",
+          "weeklyAvailabilities",
+          "numberOfSeats"
+        ]
+      },
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "vd0zlp3ygi2bsjjbkhq3zr3i",
+      "action": "plugin::content-manager.explorer.delete",
+      "actionParameters": {},
+      "subject": "api::availability.availability",
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "lxkte4o40bizgad522p2xl62",
+      "action": "plugin::content-manager.explorer.publish",
+      "actionParameters": {},
+      "subject": "api::availability.availability",
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "hz2hil8yevtdqc5oes50iifc",
+      "action": "plugin::content-manager.explorer.read",
+      "actionParameters": {},
+      "subject": "api::availability.availability",
+      "properties": {
+        "fields": [
+          "startDate",
+          "endDate",
+          "service",
+          "weeklyAvailabilities",
+          "numberOfSeats"
+        ]
+      },
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "yl8uqyu907k2g99xs9alveoy",
+      "action": "plugin::content-manager.explorer.update",
+      "actionParameters": {},
+      "subject": "api::availability.availability",
+      "properties": {
+        "fields": [
+          "startDate",
+          "endDate",
+          "service",
+          "weeklyAvailabilities",
+          "numberOfSeats"
+        ]
+      },
+      "conditions": [],
+      "locale": null
+    },
+    {
       "documentId": "zpwumwp4lcx3b8zxnub6l3po",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
@@ -81,7 +150,7 @@
       "locale": null
     },
     {
-      "documentId": "q2jygdvnfqe9znj7jjeck6re",
+      "documentId": "tg7hz1v7dhb641dnkau5cwjs",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
@@ -89,7 +158,8 @@
         "fields": [
           "name",
           "services",
-          "unavailabilities"
+          "unavailabilities",
+          "locationURL"
         ]
       },
       "conditions": [],
@@ -114,7 +184,7 @@
       "locale": null
     },
     {
-      "documentId": "caok40q20e4tyq6miz2eqgqt",
+      "documentId": "mxbez6vvswosbyssh9kxtz02",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
@@ -122,14 +192,15 @@
         "fields": [
           "name",
           "services",
-          "unavailabilities"
+          "unavailabilities",
+          "locationURL"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "rr3sq0s954etqe622b5wwts7",
+      "documentId": "clcmdl1fopspu06emhhejy31",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
@@ -137,7 +208,8 @@
         "fields": [
           "name",
           "services",
-          "unavailabilities"
+          "unavailabilities",
+          "locationURL"
         ]
       },
       "conditions": [],
@@ -216,18 +288,18 @@
       "locale": null
     },
     {
-      "documentId": "vay1ufvutilnan0tj5ehzdy3",
+      "documentId": "wqroze51oymkagi1s4ty446w",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::service.service",
       "properties": {
         "fields": [
           "name",
-          "maximumBookingsPerHour",
           "coworkingSpace",
           "bookings",
-          "openingTime",
-          "closingTime"
+          "availabilities",
+          "description",
+          "bookingDuration"
         ]
       },
       "conditions": [],
@@ -252,36 +324,36 @@
       "locale": null
     },
     {
-      "documentId": "bvzcadjs3kw4xb1jsdm5ja00",
+      "documentId": "xde88fgb7qw10zdhuvrdq4b5",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::service.service",
       "properties": {
         "fields": [
           "name",
-          "maximumBookingsPerHour",
           "coworkingSpace",
           "bookings",
-          "openingTime",
-          "closingTime"
+          "availabilities",
+          "description",
+          "bookingDuration"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "b0kn5ud1yn9463d5r10hjfdy",
+      "documentId": "xrs2utwfhl4rr008x49igaom",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::service.service",
       "properties": {
         "fields": [
           "name",
-          "maximumBookingsPerHour",
           "coworkingSpace",
           "bookings",
-          "openingTime",
-          "closingTime"
+          "availabilities",
+          "description",
+          "bookingDuration"
         ]
       },
       "conditions": [],

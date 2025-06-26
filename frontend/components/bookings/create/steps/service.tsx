@@ -27,6 +27,7 @@ export const ServiceFormStep = ({
     fetchAll<Service>({
       ...Service.strapiAPIParams,
       queryParams: {
+        populate: ["availabilities"],
         filters: {
           coworkingSpace: {
             id: {

@@ -8,17 +8,13 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
     "name": {
       "type": "string",
       "required": true
-    },
-    "maximumBookingsPerHour": {
-      "type": "integer",
-      "min": 1
     },
     "coworkingSpace": {
       "type": "relation",
@@ -32,15 +28,17 @@
       "target": "api::booking.booking",
       "mappedBy": "service"
     },
-    "openingTime": {
-      "type": "time",
-      "required": true,
-      "default": "08:30:00.000"
+    "description": {
+      "type": "richtext"
     },
-    "closingTime": {
-      "type": "time",
-      "default": "18:30:00.000",
-      "required": true
+    "bookingDuration": {
+      "type": "integer"
+    },
+    "availabilities": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::availability.availability",
+      "mappedBy": "service"
     }
   }
 }

@@ -15,22 +15,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Unavailability } from "@/models/unavailability";
-import { Time } from "@/models/time";
 import { DurationWrapper } from "@/models/duration";
+import { Service } from "@/models/service";
 
 interface SingleDateFormStepProps {
-  unavailabilities: Unavailability[];
-  openingTime: Time;
-  closingTime: Time;
+  service: Service;
   duration: DurationWrapper;
   onDateChange: (date: Moment) => void;
 }
 
 export const SingleDateFormStep = ({
-  unavailabilities,
-  openingTime,
-  closingTime,
+  service,
   duration,
   onDateChange,
 }: SingleDateFormStepProps) => {
@@ -72,10 +67,10 @@ export const SingleDateFormStep = ({
               disabled={(date) =>
                 shouldDisableDate({
                   date,
-                  unavailabilities,
-                  openingTime,
-                  closingTime,
-                  duration: duration.getDuration(),
+                  unavailabilities:
+                    service.coworkingSpace?.unavailabilities ?? [],
+                  availabilities: service.availabilities,
+                  duration: duration.getDuration()!,
                 })
               }
               fromMonth={currentMonth.toDate()}

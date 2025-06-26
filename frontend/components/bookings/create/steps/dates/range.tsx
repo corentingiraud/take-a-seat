@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Unavailability } from "@/models/unavailability";
+import { Service } from "@/models/service";
 
 interface DateRange {
   from: Moment | undefined;
@@ -24,12 +24,12 @@ interface DateRange {
 }
 
 interface DateRangeFormStepProps {
-  unavailabilities: Unavailability[];
+  service: Service;
   onDateRangeChange: (dateRange?: DateRange) => void;
 }
 
 export const RangeOfDatesFormStep = ({
-  unavailabilities,
+  service,
   onDateRangeChange,
 }: DateRangeFormStepProps) => {
   const [dateRange, setDateRange] = useState<
@@ -78,7 +78,9 @@ export const RangeOfDatesFormStep = ({
               disabled={(date) =>
                 shouldDisableDate({
                   date,
-                  unavailabilities,
+                  unavailabilities:
+                    service.coworkingSpace?.unavailabilities ?? [],
+                  availabilities: service.availabilities,
                 })
               }
               fromMonth={currentMonth.toDate()}

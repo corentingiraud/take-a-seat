@@ -28,6 +28,9 @@
       "relation": "manyToMany",
       "target": "api::unavailability.unavailability",
       "mappedBy": "coworking_spaces"
+    },
+    "locationURL": {
+      "type": "string"
     }
   }
 }

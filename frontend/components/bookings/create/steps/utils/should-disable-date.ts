@@ -1,72 +1,41 @@
-import moment, { Duration, Moment } from "moment";
+import moment, { Duration } from "moment";
 
-import { Time } from "@/models/time";
-
-type Unavailability = {
-  startDate: Moment;
-  endDate: Moment;
-};
+import { Availability } from "@/models/availability";
+import { Unavailability } from "@/models/unavailability";
 
 interface DisableDateOptions {
   date: Date;
   unavailabilities: Unavailability[];
-  openingTime?: Time;
-  closingTime?: Time;
-  duration?: Duration | null;
+  availabilities: Availability[];
+  duration?: Duration;
 }
 
 export function shouldDisableDate({
   date,
   unavailabilities,
-  openingTime,
-  closingTime,
+  availabilities,
   duration,
 }: DisableDateOptions): boolean {
-  const mDate = moment(date);
+  const mDate = moment(date).startOf("day");
 
-  // Past
+  // 1. Past
   if (mDate.isBefore(moment().startOf("day"))) return true;
 
-  // Weekends
-  if (mDate.day() === 0 || mDate.day() === 6) return true;
+  // 2. No matching availability at all
+  const isCoveredByAvailability = availabilities.some((availability) =>
+    availability.getStartTimeFor(mDate),
+  );
 
-  // Unavailabilities
-  return unavailabilities.some(({ startDate, endDate }) => {
-    // If duration + time logic isn't relevant, fallback to simple range check
-    if (!duration || !openingTime || !closingTime) {
-      return mDate.isBetween(
-        startDate.clone().startOf("day"),
-        endDate.clone().endOf("day"),
-        null,
-        "[]",
-      );
+  if (!isCoveredByAvailability) return true;
+
+  // 3. Overlaps with any unavailability
+  for (const { startDate, endDate } of unavailabilities) {
+    const endOfSlot = mDate.clone().add(duration);
+
+    if (mDate.isSameOrBefore(endDate) && endOfSlot.isSameOrAfter(startDate)) {
+      return true;
     }
+  }
 
-    if (mDate.isSame(startDate, "d")) {
-      const startTime = startDate
-        .clone()
-        .hour(openingTime.hour)
-        .minute(openingTime.minute);
-
-      if (startTime.clone().add(duration).isSameOrBefore(startDate, "minute"))
-        return false;
-    }
-
-    if (mDate.isSame(endDate, "d")) {
-      const endTime = endDate
-        .clone()
-        .hour(closingTime.hour)
-        .minute(closingTime.minute);
-
-      if (endDate.clone().add(duration).isSameOrBefore(endTime, "minute"))
-        return false;
-    }
-
-    return mDate.isBetween(
-      startDate.clone().startOf("day"),
-      endDate.clone().endOf("day"),
-      null,
-      "[]",
-    );
-  });
+  return false;
 }

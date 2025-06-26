@@ -369,6 +369,40 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAvailabilityAvailability
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'availabilities';
+  info: {
+    description: '';
+    displayName: 'Disponibilit\u00E9s';
+    pluralName: 'availabilities';
+    singularName: 'availability';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    endDate: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::availability.availability'
+    > &
+      Schema.Attribute.Private;
+    numberOfSeats: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    service: Schema.Attribute.Relation<'manyToOne', 'api::service.service'>;
+    startDate: Schema.Attribute.Date;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    weeklyAvailabilities: Schema.Attribute.JSON;
+  };
+}
+
 export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
   collectionName: 'bookings';
   info: {
@@ -437,6 +471,7 @@ export interface ApiCoworkingSpaceCoworkingSpace
       'api::coworking-space.coworking-space'
     > &
       Schema.Attribute.Private;
+    locationURL: Schema.Attribute.String;
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
@@ -507,13 +542,15 @@ export interface ApiServiceService extends Struct.CollectionTypeSchema {
     singularName: 'service';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
+    availabilities: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::availability.availability'
+    >;
+    bookingDuration: Schema.Attribute.Integer;
     bookings: Schema.Attribute.Relation<'oneToMany', 'api::booking.booking'>;
-    closingTime: Schema.Attribute.Time &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'18:30:00.000'>;
     coworkingSpace: Schema.Attribute.Relation<
       'manyToOne',
       'api::coworking-space.coworking-space'
@@ -521,23 +558,14 @@ export interface ApiServiceService extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.RichText;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::service.service'
     > &
       Schema.Attribute.Private;
-    maximumBookingsPerHour: Schema.Attribute.Integer &
-      Schema.Attribute.SetMinMax<
-        {
-          min: 1;
-        },
-        number
-      >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    openingTime: Schema.Attribute.Time &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'08:30:00.000'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1097,6 +1125,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::availability.availability': ApiAvailabilityAvailability;
       'api::booking.booking': ApiBookingBooking;
       'api::coworking-space.coworking-space': ApiCoworkingSpaceCoworkingSpace;
       'api::prepaid-card.prepaid-card': ApiPrepaidCardPrepaidCard;

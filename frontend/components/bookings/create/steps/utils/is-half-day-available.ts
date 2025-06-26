@@ -1,39 +1,69 @@
 import moment, { Moment } from "moment";
 
-import { Time } from "@/models/time";
 import { HalfDay } from "@/models/half-day";
 import { Unavailability } from "@/models/unavailability";
+import { Service } from "@/models/service";
+import { AVAILABLE_DURATION } from "@/models/duration";
 
 export function isHalfDayAvailable(
   date: Moment,
   halfDay: HalfDay,
   unavailabilities: Unavailability[],
-  openingTime: Time,
-  closingTime: Time,
+  service: Service,
 ): boolean {
   const now = moment();
+  const halfDayDuration = AVAILABLE_DURATION.HALF_DAY.getDuration()!;
 
-  const start = date
-    .clone()
-    .hour(halfDay === HalfDay.Morning ? openingTime.hour : 13)
-    .minute(halfDay === HalfDay.Morning ? openingTime.minute : 0);
+  // Find availability covering the given date
+  const availability = service.findAvailabilityFor(date);
 
-  const end = date
-    .clone()
-    .hour(halfDay === HalfDay.Morning ? 12 : closingTime.hour)
-    .minute(halfDay === HalfDay.Morning ? 0 : closingTime.minute);
+  if (!availability) return false;
 
-  // 1. Check if half-day is currently ongoing today
+  // Define start and end times for morning/afternoon
+  let start: Moment;
+
+  if (halfDay === HalfDay.Morning) {
+    const opening = availability.getStartTimeFor(date);
+
+    if (!opening) return false;
+
+    start = moment.max(opening, date.clone().hour(0).minute(0)).second(0);
+
+    // Morning must end no later than 13:00
+    if (
+      start
+        .clone()
+        .add(halfDayDuration)
+        .isAfter(date.clone().hour(13).minute(0))
+    )
+      return false;
+  } else {
+    const closingTime = availability.getEndTimeFor(date);
+
+    if (!closingTime) return false;
+
+    const afternoonStart = closingTime.clone().subtract(halfDayDuration);
+
+    // Afternoon must not start before 13:00
+    if (afternoonStart.isBefore(date.clone().hour(13).minute(0))) return false;
+
+    start = afternoonStart;
+  }
+
+  // Rule 1: If the half-day is today and already started, it's not available
   if (date.isSame(now, "day") && now.isAfter(start)) {
     return false;
   }
 
-  // 2. Check for conflicts with unavailabilities
+  // Rule 2: Must not overlap with unavailabilities
+  const end = start.clone().add(halfDayDuration);
+
   for (const { startDate, endDate } of unavailabilities) {
-    if (start.isSameOrBefore(endDate) && end.isSameOrAfter(startDate)) {
+    if (start.isBefore(moment(endDate)) && end.isAfter(moment(startDate))) {
       return false;
     }
   }
 
-  return true;
+  // Rule 3: Must be within the defined weekly slots
+  return availability.includeSlot(start, halfDayDuration);
 }

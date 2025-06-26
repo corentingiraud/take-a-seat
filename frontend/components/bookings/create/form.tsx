@@ -129,10 +129,8 @@ export const CreateBookingForm = () => {
       {service && duration?.isSingleDay && (
         <SingleDateFormStep
           key={`duration-${duration}-date`}
-          closingTime={service.closingTime}
           duration={duration}
-          openingTime={service.openingTime}
-          unavailabilities={service.coworkingSpace?.unavailabilities || []}
+          service={service}
           onDateChange={(value) => {
             setHalfDay(undefined);
             setStartTime(undefined);
@@ -152,17 +150,15 @@ export const CreateBookingForm = () => {
       {service && startDay && duration?.equals(AVAILABLE_DURATION.HALF_DAY) && (
         <HalfDayFormStep
           key={`service-${service.id}-half-day-${startDay?.format("YYYY-MM-DD")}`}
-          closingTime={service.closingTime}
           date={startDay}
-          openingTime={service.openingTime}
-          unavailabilities={service.coworkingSpace?.unavailabilities || []}
+          service={service}
           onHalfDayChange={(value) => setHalfDay(value)}
         />
       )}
       {service && duration?.equals(AVAILABLE_DURATION.MULTIPLE_DATES) && (
         <MultipleDatesFormStep
           key={`duration-${duration}-multiple-dates`}
-          unavailabilities={service.coworkingSpace?.unavailabilities || []}
+          service={service}
           onDatesChange={(dates) => {
             setMultipleDates(dates);
           }}
@@ -171,7 +167,7 @@ export const CreateBookingForm = () => {
       {service && duration?.equals(AVAILABLE_DURATION.RANGE_OF_DATES) && (
         <RangeOfDatesFormStep
           key={`duration-${duration}-date-range`}
-          unavailabilities={service.coworkingSpace?.unavailabilities || []}
+          service={service}
           onDateRangeChange={(range) => {
             if (range) {
               setStartDay(range.from);

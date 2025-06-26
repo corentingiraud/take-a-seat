@@ -145,6 +145,9 @@ export const ServiceCalendarProvider: React.FC<
         const service = await fetchOne({
           ...Service.strapiAPIParams,
           id: urlServiceId,
+          queryParams: {
+            populate: ["availabilities"],
+          },
         });
 
         setServiceState(service);

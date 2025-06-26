@@ -71,6 +71,11 @@
       "locale": null
     },
     {
+      "documentId": "mrk1v505gez21selfmeipfbo",
+      "action": "api::service.service.calendar",
+      "locale": null
+    },
+    {
       "documentId": "sjnbzs6k0m5qu8l2v0j3ha7v",
       "action": "api::service.service.find",
       "locale": null

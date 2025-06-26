@@ -11,31 +11,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { HalfDay } from "@/models/half-day";
-import { Unavailability } from "@/models/unavailability";
-import { Time } from "@/models/time";
+import { Service } from "@/models/service";
 
 interface HalfDayFormStepProps {
   onHalfDayChange: (halfDay: HalfDay) => void;
   date: Moment;
-  unavailabilities: Unavailability[];
-  openingTime: Time;
-  closingTime: Time;
+  service: Service;
 }
 
 export const HalfDayFormStep = ({
   onHalfDayChange,
   date,
-  unavailabilities,
-  openingTime,
-  closingTime,
+  service,
 }: HalfDayFormStepProps) => {
   const options = Object.values(HalfDay).filter((halfDay) =>
     isHalfDayAvailable(
       date,
       halfDay,
-      unavailabilities,
-      openingTime,
-      closingTime,
+      service.coworkingSpace?.unavailabilities ?? [],
+      service,
     ),
   );
 

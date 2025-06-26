@@ -37,6 +37,7 @@ export const ServiceCalendarFilter = () => {
     fetchAll<Service>({
       ...Service.strapiAPIParams,
       queryParams: {
+        populate: ["availabilities"],
         filters: {
           coworkingSpace: {
             id: {

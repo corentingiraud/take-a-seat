@@ -46,6 +46,11 @@
       "locale": null
     },
     {
+      "documentId": "ejd8mlj2nvxcm1i4ep76i8pm",
+      "action": "api::service.service.calendar",
+      "locale": null
+    },
+    {
       "documentId": "lybgqksryds08f3gvi5qg07u",
       "action": "api::service.service.find",
       "locale": null

@@ -211,10 +211,7 @@
       "properties": {
         "fields": [
           "name",
-          "maximumBookingsPerHour",
-          "coworkingSpace",
-          "openingTime",
-          "closingTime"
+          "coworkingSpace"
         ]
       },
       "conditions": [],
@@ -246,10 +243,7 @@
       "properties": {
         "fields": [
           "name",
-          "maximumBookingsPerHour",
-          "coworkingSpace",
-          "openingTime",
-          "closingTime"
+          "coworkingSpace"
         ]
       },
       "conditions": [],
@@ -263,10 +257,7 @@
       "properties": {
         "fields": [
           "name",
-          "maximumBookingsPerHour",
-          "coworkingSpace",
-          "openingTime",
-          "closingTime"
+          "coworkingSpace"
         ]
       },
       "conditions": [],

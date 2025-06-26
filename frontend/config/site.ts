@@ -53,5 +53,3 @@ export const siteConfig = {
     },
   },
 };
-
-export const MINIMUM_BOOKING_DURATION = moment.duration("1", "hours");

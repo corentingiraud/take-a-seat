@@ -36,7 +36,9 @@ export function useBookingAvailability({
           desired.endDate.isSameOrBefore(existing.endDate),
       );
 
-      const maxReached = overlapping.length >= service.maximumBookingsPerHour;
+      const maxReached =
+        overlapping.length >=
+        service.findAvailabilityFor(desired.startDate)!.numberOfSeats;
       const userAlreadyBooked = overlapping.some(
         (booking) => booking.user?.id === user.id,
       );

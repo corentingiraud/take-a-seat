@@ -15,15 +15,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Unavailability } from "@/models/unavailability";
+import { Service } from "@/models/service";
 
 interface MultipleDateFormStepProps {
-  unavailabilities: Unavailability[];
+  service: Service;
   onDatesChange: (dates: Moment[]) => void;
 }
 
 export const MultipleDatesFormStep = ({
-  unavailabilities,
+  service,
   onDatesChange,
 }: MultipleDateFormStepProps) => {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
@@ -73,7 +73,9 @@ export const MultipleDatesFormStep = ({
               disabled={(date) =>
                 shouldDisableDate({
                   date,
-                  unavailabilities,
+                  unavailabilities:
+                    service.coworkingSpace?.unavailabilities ?? [],
+                  availabilities: service.availabilities,
                 })
               }
               fromMonth={currentMonth.toDate()}

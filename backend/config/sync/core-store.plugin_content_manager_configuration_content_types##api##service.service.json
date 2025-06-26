@@ -33,20 +33,6 @@
           "sortable": true
         }
       },
-      "maximumBookingsPerHour": {
-        "edit": {
-          "label": "Nombre max de réservation par heure",
-          "description": "Nombre maximum de réservation par heure. Lorsque ce nombre est atteint, les reservations sont impossibles.",
-          "placeholder": "",
-          "visible": true,
-          "editable": true
-        },
-        "list": {
-          "label": "Nombre max de réservation par heure",
-          "searchable": true,
-          "sortable": true
-        }
-      },
       "coworkingSpace": {
         "edit": {
           "label": "Espace de coworking",
@@ -77,30 +63,45 @@
           "sortable": false
         }
       },
-      "openingTime": {
+      "availabilities": {
         "edit": {
-          "label": "Heure d'ouverture",
+          "label": "Disponibilités",
           "description": "",
           "placeholder": "",
           "visible": true,
-          "editable": true
+          "editable": true,
+          "mainField": "id"
         },
         "list": {
-          "label": "Heure d'ouverture",
-          "searchable": true,
-          "sortable": true
+          "label": "availabilities",
+          "searchable": false,
+          "sortable": false
         }
       },
-      "closingTime": {
+      "description": {
         "edit": {
-          "label": "Heure de fermeture",
+          "label": "Description",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "Heure de fermeture",
+          "label": "description",
+          "searchable": false,
+          "sortable": false
+        }
+      },
+      "bookingDuration": {
+        "edit": {
+          "label": "Durée de la réservation",
+          "description": "Durée de la réservation en minute",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "bookingDuration",
           "searchable": true,
           "sortable": true
         }
@@ -165,13 +166,6 @@
       }
     },
     "layouts": {
-      "list": [
-        "coworkingSpace",
-        "name",
-        "openingTime",
-        "closingTime",
-        "maximumBookingsPerHour"
-      ],
       "edit": [
         [
           {
@@ -187,20 +181,27 @@
         ],
         [
           {
-            "name": "maximumBookingsPerHour",
-            "size": 6
+            "name": "bookingDuration",
+            "size": 12
           }
         ],
         [
           {
-            "name": "openingTime",
-            "size": 6
-          },
+            "name": "description",
+            "size": 12
+          }
+        ],
+        [
           {
-            "name": "closingTime",
-            "size": 6
+            "name": "availabilities",
+            "size": 12
           }
         ]
+      ],
+      "list": [
+        "coworkingSpace",
+        "name",
+        "bookingDuration"
       ]
     },
     "uid": "api::service.service"

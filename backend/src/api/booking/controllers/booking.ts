@@ -21,7 +21,15 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         return ctx.badRequest(`Service with ID ${serviceDocumentId} not found`);
       }
 
-      let prepaidCard;
+      // Fetch future availabilities for this service
+      const futureAvailabilities = await strapi.db.query('api::availability.availability').findMany({
+        where: {
+          service: service.id,
+          endDate: { $gt: new Date().toISOString() },
+        },
+      });
+
+      let prepaidCard = null;
       if (prepaidCardDocumentId) {
         prepaidCard = await strapi.documents('api::prepaid-card.prepaid-card').findOne({
           documentId: prepaidCardDocumentId,
@@ -43,7 +51,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         const { startDate, endDate } = booking;
 
         if (!startDate || !endDate) {
-          return ctx.badRequest('Missing required fields (startDate, endDate, service)');
+          return ctx.badRequest('Missing required fields (startDate, endDate)');
         }
 
         const start = new Date(startDate);
@@ -52,9 +60,8 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           return ctx.badRequest('startDate must be before endDate');
         }
 
-        const coworkingUnavailabilities = service.coworkingSpace.unavailabilities;
-
-        const isUnavailable = coworkingUnavailabilities.some(unavailability => {
+        // Check coworking space unavailability
+        const isUnavailable = service.coworkingSpace.unavailabilities.some(unavailability => {
           const unStart = new Date(unavailability.startDate);
           const unEnd = new Date(unavailability.endDate);
           return start < unEnd && end > unStart;
@@ -64,18 +71,28 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           return ctx.badRequest('Slot overlaps with coworking space unavailability');
         }
 
-        const overlappingBookings = await strapi.documents('api::booking.booking').findMany({
-          filters: {
-            service: {
-              documentId: service.documentId
-            },
-            startDate: { $lte: end },
+        // Find matching availability
+        const matchedAvailability = futureAvailabilities.find(av => {
+          const avStart = new Date(av.startDate);
+          const avEnd = new Date(av.endDate);
+          return start >= avStart && end <= avEnd;
+        });
+
+        if (!matchedAvailability) {
+          return ctx.badRequest('No availability found for the selected time slot');
+        }
+
+        // Check if number of existing bookings exceeds availability.numberOfSeats
+        const overlappingBookings = await strapi.db.query('api::booking.booking').findMany({
+          where: {
+            service: service.id,
+            startDate: { $lt: end },
             endDate: { $gt: start }
           }
         });
 
-        if (overlappingBookings.length > service.maximumBookingsPerHour) {
-          return ctx.badRequest(`Slot exceeds maximum bookings (${service.maximumBookingsPerHour})`);
+        if (overlappingBookings.length >= matchedAvailability.numberOfSeats) {
+          return ctx.badRequest(`Slot exceeds available seats (${matchedAvailability.numberOfSeats})`);
         }
 
         bookingsToCreate.push({
@@ -84,14 +101,13 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           user: user.id,
           paymentStatus: prepaidCard ? 'PAID' : 'PENDING',
           prepaidCard: prepaidCard ? prepaidCard.id : null
-        })
+        });
       }
 
+      // Save bookings and update prepaid card
       await strapi.db.transaction(async () => {
         for (const booking of bookingsToCreate) {
-          await strapi.documents('api::booking.booking').create({
-            data: booking
-          });
+          await strapi.documents('api::booking.booking').create({ data: booking });
         }
 
         if (prepaidCard) {
@@ -104,10 +120,9 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         }
       });
 
-      ctx.body = {
-        count: bookings.length,
-      };
+      ctx.body = { count: bookings.length };
 
+      // Email payload
       const emailPayload = {
         user: {
           email: user.email,
@@ -128,9 +143,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         remainingBalance: prepaidCard ? prepaidCard.remainingBalance - bookings.length : null
       };
 
-      console.log(emailPayload);
-
-      // Send to user
+      // Send email to user
       await strapi.plugins['email'].services.email.send({
         to: user.email,
         from: 'no-reply@take-a-seat.giraud.dev',
@@ -138,7 +151,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         html: await renderEJSTemplate('user-booking-summary.ejs', emailPayload)
       });
 
-      // Send to admin
+      // Send email to admin
       await strapi.plugins['email'].services.email.send({
         to: process.env.ADMIN_NOTIFICATION_EMAIL,
         from: 'no-reply@take-a-seat.giraud.dev',

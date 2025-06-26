@@ -4,7 +4,7 @@ import { Service } from "@/models/service";
 import { HalfDay } from "@/models/half-day";
 import { AVAILABLE_DURATION, DurationWrapper } from "@/models/duration";
 import { Time } from "@/models/time";
-import { DesiredBookingDates } from "@/types";
+import { BookingSlot } from "@/types";
 
 interface UseDesiredDates {
   startDay: Moment;
@@ -24,33 +24,37 @@ export function useDesiredDates({
   startTime,
   halfDay,
   service,
-}: UseDesiredDates): DesiredBookingDates {
+}: UseDesiredDates): BookingSlot[] {
   // Single day
   if (duration.isSingleDay) {
-    let startDate = startDay.clone();
-    let endDate = moment();
+    let start = startDay.clone();
+    let end = moment();
 
     const oneHour = AVAILABLE_DURATION.ONE_HOUR;
     const halfDayDuration = AVAILABLE_DURATION.HALF_DAY;
 
+    // One hour
     if (duration.equals(oneHour) && startTime) {
-      startDate.hour(startTime.hour).minute(0).second(0);
-      endDate = startDate.clone().add(oneHour.getDuration());
+      start.hour(startTime.hour).minute(0).second(0);
+      end = start.clone().add(oneHour.getDuration());
     }
 
+    // Half day
     if (duration.equals(halfDayDuration)) {
+      // Morning
       if (halfDay === HalfDay.Morning) {
-        startDate.hour(service.openingTime.hour).minute(0);
-        endDate = startDate.clone().add(halfDayDuration.getDuration());
+        start = service.findAvailabilityFor(start)!.getStartTimeFor(start)!;
+        end = start.clone().add(halfDayDuration.getDuration());
       }
 
+      // Afternoon
       if (halfDay === HalfDay.Afternoon) {
-        startDate.hour(14).minute(0);
-        endDate = startDate.clone().hour(service.closingTime.hour).minute(0);
+        end = service.findAvailabilityFor(start)!.getEndTimeFor(start)!;
+        start = end.clone().subtract(halfDayDuration.getDuration());
       }
     }
 
-    return [{ startDate, endDate }];
+    return [{ start, end }];
   }
 
   // Date range
@@ -60,14 +64,23 @@ export function useDesiredDates({
     let currentDay = startDay.clone();
 
     while (currentDay.isSameOrBefore(endDay)) {
-      let startDate = currentDay
-        .clone()
-        .hour(service.openingTime.hour)
-        .minute(0);
-      let endDate = currentDay.clone().hour(service.closingTime.hour).minute(0);
+      const availability = service.findAvailabilityFor(currentDay);
 
-      desiredDates.push({ startDate, endDate });
+      if (!availability) continue;
 
+      // Check if unavailabilities
+      for (const { startDate, endDate } of service.coworkingSpace
+        ?.unavailabilities || []) {
+        if (
+          currentDay.isSameOrBefore(endDate) &&
+          currentDay.isSameOrAfter(startDate)
+        ) {
+          continue;
+        }
+      }
+      let timeSlots = availability.getBookingSlotsFor(currentDay);
+
+      desiredDates.push(...timeSlots);
       currentDay.add(1, "day");
     }
   }
@@ -75,10 +88,13 @@ export function useDesiredDates({
   // Multiple date
   if (duration.equals(AVAILABLE_DURATION.MULTIPLE_DATES) && multipleDays) {
     for (const day of multipleDays) {
-      let startDate = day.clone().hour(service.openingTime.hour).minute(0);
-      let endDate = day.clone().hour(service.closingTime.hour).minute(0);
+      const availability = service.findAvailabilityFor(day);
 
-      desiredDates.push({ startDate, endDate });
+      if (!availability) continue;
+
+      let timeSlots = availability.getBookingSlotsFor(day);
+
+      desiredDates.push(...timeSlots);
     }
   }
 
