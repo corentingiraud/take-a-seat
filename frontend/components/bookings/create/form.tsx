@@ -20,6 +20,7 @@ import { AVAILABLE_DURATION, DurationWrapper } from "@/models/duration";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { BookingAvailabilities } from "@/components/bookings/availabilities/availabilities";
 import { Button } from "@/components/ui/button";
+import { ServicePreview } from "@/components/service/preview";
 
 export const CreateBookingForm = () => {
   const [coworkingSpace, setCoworkingSpace] = useState<
@@ -114,17 +115,22 @@ export const CreateBookingForm = () => {
         />
       )}
       {service && (
-        <DurationFormStep
-          key={`service-${service.id}-duration`}
-          onDurationChange={(value) => {
-            setStartDay(undefined);
-            setEndDay(undefined);
-            setHalfDay(undefined);
-            setStartTime(undefined);
-            setFormIsValid(false);
-            setDuration(value);
-          }}
-        />
+        <>
+          <div className="flex justify-end">
+            <ServicePreview service={service} />
+          </div>
+          <DurationFormStep
+            key={`service-${service.id}-duration`}
+            onDurationChange={(value) => {
+              setStartDay(undefined);
+              setEndDay(undefined);
+              setHalfDay(undefined);
+              setStartTime(undefined);
+              setFormIsValid(false);
+              setDuration(value);
+            }}
+          />
+        </>
       )}
       {service && duration?.isSingleDay && (
         <SingleDateFormStep
