@@ -50,8 +50,8 @@ export const AdminBookingsFilters = () => {
       queryParams: {
         filters: {
           coworkingSpace: {
-            id: {
-              $eq: coworkingSpaceFilter.id,
+            documentId: {
+              $eq: coworkingSpaceFilter.documentId,
             },
           },
         },

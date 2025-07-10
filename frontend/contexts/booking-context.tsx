@@ -52,7 +52,7 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
       ...Booking.strapiAPIParams,
       queryParams: {
         filters: {
-          user: { id: { $eq: user.id } },
+          user: { documentId: { $eq: user.documentId } },
           startDate: { $gte: startDate.toDate() },
           endDate: { $lte: endDate.toDate() },
         },

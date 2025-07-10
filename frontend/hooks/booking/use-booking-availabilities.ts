@@ -59,7 +59,7 @@ export function useBookingAvailabilities({
     bookings: existingBookings,
     loading,
     error,
-  } = useFetchBookings(service.id, startDate, endDate);
+  } = useFetchBookings(service.documentId, startDate, endDate);
 
   // Step 4: Determine which desired slots are available
   const { availableBookings, unavailableBookings } = useBookingAvailability({

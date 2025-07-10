@@ -18,7 +18,7 @@ import { Switch } from "@/components/ui/switch";
 
 export function PrepaidCardsList({ user }: { user: User }) {
   const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard({
-    userId: user.id,
+    userDocumentId: user.documentId,
   });
 
   const [showExpired, setShowExpired] = useState(false);

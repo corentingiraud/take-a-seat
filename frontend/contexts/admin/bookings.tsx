@@ -61,17 +61,19 @@ export const AdminBookingsProvider = ({
     };
 
     if (userFilter) {
-      filters.user = { id: { $eq: userFilter.id } };
+      filters.user = { documentId: { $eq: userFilter.documentId } };
     }
 
     if (serviceFilter) {
-      filters.service = { id: { $eq: serviceFilter.id } };
+      filters.service = { documentId: { $eq: serviceFilter.documentId } };
     }
 
     if (coworkingSpaceFilter) {
       filters.service = {
         ...(filters.service ?? {}),
-        coworkingSpace: { id: { $eq: coworkingSpaceFilter.id } },
+        coworkingSpace: {
+          documentId: { $eq: coworkingSpaceFilter.documentId },
+        },
       };
     }
 

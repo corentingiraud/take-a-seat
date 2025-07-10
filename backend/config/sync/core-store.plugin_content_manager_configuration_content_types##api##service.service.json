@@ -63,21 +63,6 @@
           "sortable": false
         }
       },
-      "availabilities": {
-        "edit": {
-          "label": "Disponibilités",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "id"
-        },
-        "list": {
-          "label": "availabilities",
-          "searchable": false,
-          "sortable": false
-        }
-      },
       "description": {
         "edit": {
           "label": "Description",
@@ -101,9 +86,24 @@
           "editable": true
         },
         "list": {
-          "label": "bookingDuration",
+          "label": "Durée de la réservation",
           "searchable": true,
           "sortable": true
+        }
+      },
+      "availabilities": {
+        "edit": {
+          "label": "availabilities",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "id"
+        },
+        "list": {
+          "label": "availabilities",
+          "searchable": false,
+          "sortable": false
         }
       },
       "createdAt": {
@@ -194,7 +194,7 @@
         [
           {
             "name": "availabilities",
-            "size": 12
+            "size": 6
           }
         ]
       ],

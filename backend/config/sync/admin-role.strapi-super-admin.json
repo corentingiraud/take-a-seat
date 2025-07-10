@@ -6,7 +6,7 @@
   "locale": null,
   "permissions": [
     {
-      "documentId": "toupqafe3gmre8l75cmgpsxl",
+      "documentId": "wvi9yjsrmryi47u6trk8ddri",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::availability.availability",
@@ -14,9 +14,9 @@
         "fields": [
           "startDate",
           "endDate",
-          "service",
           "weeklyAvailabilities",
-          "numberOfSeats"
+          "numberOfSeats",
+          "service"
         ]
       },
       "conditions": [],
@@ -41,7 +41,7 @@
       "locale": null
     },
     {
-      "documentId": "hz2hil8yevtdqc5oes50iifc",
+      "documentId": "nqg36nx1imsamm07weyggkv9",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::availability.availability",
@@ -49,16 +49,16 @@
         "fields": [
           "startDate",
           "endDate",
-          "service",
           "weeklyAvailabilities",
-          "numberOfSeats"
+          "numberOfSeats",
+          "service"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "yl8uqyu907k2g99xs9alveoy",
+      "documentId": "ud9zgfhpncmwzei9qp6wyalz",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::availability.availability",
@@ -66,9 +66,9 @@
         "fields": [
           "startDate",
           "endDate",
-          "service",
           "weeklyAvailabilities",
-          "numberOfSeats"
+          "numberOfSeats",
+          "service"
         ]
       },
       "conditions": [],
@@ -288,7 +288,7 @@
       "locale": null
     },
     {
-      "documentId": "wqroze51oymkagi1s4ty446w",
+      "documentId": "u2ndy9zrrhe98h0f50nn0ai5",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::service.service",
@@ -297,9 +297,9 @@
           "name",
           "coworkingSpace",
           "bookings",
-          "availabilities",
           "description",
-          "bookingDuration"
+          "bookingDuration",
+          "availabilities"
         ]
       },
       "conditions": [],
@@ -324,7 +324,7 @@
       "locale": null
     },
     {
-      "documentId": "xde88fgb7qw10zdhuvrdq4b5",
+      "documentId": "kzgpurfe9v6t21ahwjrle4rg",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::service.service",
@@ -333,16 +333,16 @@
           "name",
           "coworkingSpace",
           "bookings",
-          "availabilities",
           "description",
-          "bookingDuration"
+          "bookingDuration",
+          "availabilities"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "xrs2utwfhl4rr008x49igaom",
+      "documentId": "jzpqjyd2r5bxgy2jxlfn6oq0",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::service.service",
@@ -351,9 +351,9 @@
           "name",
           "coworkingSpace",
           "bookings",
-          "availabilities",
           "description",
-          "bookingDuration"
+          "bookingDuration",
+          "availabilities"
         ]
       },
       "conditions": [],

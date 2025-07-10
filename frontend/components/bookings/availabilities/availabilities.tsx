@@ -73,7 +73,7 @@ export const BookingAvailabilities = ({
   });
 
   let { usablePrepaidCards: prepaidCard } = usePrepaidCard({
-    userId: user?.id,
+    userDocumentId: user?.documentId,
   });
 
   prepaidCard = prepaidCard.filter(
@@ -96,20 +96,25 @@ export const BookingAvailabilities = ({
           {coworkingSpace.name} - {service.name}
         </DialogTitle>
         <DialogDescription className="text-lg text-gray-600">
-          Disponibilités des réservations
+          Vérifiez les créneaux disponibles pour cette réservation
         </DialogDescription>
       </DialogHeader>
+
+      {/* Créneaux indisponibles */}
       {unavailableBookings.length > 0 && (
-        <div>
-          <h4 className="mb-4 text-sm font-medium leading-none text-gray-500">
-            Créneaux indisponibles :
+        <div className="mt-6 rounded-md border border-red-300 bg-red-50 p-4">
+          <h4 className="flex items-center gap-2 text-sm font-semibold text-red-600">
+            ❌ Créneaux indisponibles
           </h4>
-          <ScrollArea className="rounded-md border h-32">
+          <p className="text-xs text-red-500 mb-3">
+            Ces créneaux ne peuvent pas être réservés pour le moment.
+          </p>
+          <ScrollArea className="rounded-md border h-32 bg-white">
             <div className="p-4">
               {unavailableBookings.map((unavailableBooking, i) => (
                 <div key={i}>
-                  <div className="text-sm text-gray-700">
-                    {unavailableBooking.booking.toString()}:{" "}
+                  <div className="text-sm text-red-700">
+                    {unavailableBooking.booking.toString()} :{" "}
                     {unavailableBooking.cause}
                   </div>
                   <Separator className="my-2" />
@@ -119,16 +124,21 @@ export const BookingAvailabilities = ({
           </ScrollArea>
         </div>
       )}
+
+      {/* Créneaux disponibles */}
       {availableBookings.length > 0 && (
-        <div>
-          <h4 className="mb-4 text-sm font-medium leading-none text-gray-500">
-            Créneaux disponibles :
+        <div className="mt-6 rounded-md border border-green-300 bg-green-50 p-4">
+          <h4 className="flex items-center gap-2 text-sm font-semibold text-green-600">
+            ✅ Créneaux disponibles
           </h4>
-          <ScrollArea className="rounded-md border h-32">
+          <p className="text-xs text-green-500 mb-3">
+            Ces créneaux sont prêts à être réservés.
+          </p>
+          <ScrollArea className="rounded-md border h-32 bg-white">
             <div className="p-4">
               {availableBookings.map((booking, i) => (
                 <div key={i}>
-                  <div className="text-sm text-gray-300">
+                  <div className="text-sm text-green-700">
                     {booking.toString()}
                   </div>
                   <Separator className="my-2" />
@@ -139,6 +149,7 @@ export const BookingAvailabilities = ({
         </div>
       )}
 
+      {/* Carte prépayée */}
       <div className="mt-6 space-y-4">
         {prepaidCard.length > 0 && (
           <div className="flex items-center space-x-2">
@@ -178,7 +189,8 @@ export const BookingAvailabilities = ({
         )}
       </div>
 
-      <DialogFooter>
+      {/* CTA */}
+      <DialogFooter className="mt-6">
         <DialogClose asChild>
           <Button
             disabled={availableBookings.length === 0}

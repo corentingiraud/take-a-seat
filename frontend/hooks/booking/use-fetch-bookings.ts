@@ -5,7 +5,7 @@ import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Booking } from "@/models/booking";
 
 export function useFetchBookings(
-  serviceId: number,
+  serviceDocumentId: string,
   startDate: Moment,
   endDate: Moment,
 ) {
@@ -28,15 +28,15 @@ export function useFetchBookings(
             populate: ["user"],
             filters: {
               service: {
-                id: {
-                  $eq: serviceId,
+                documentId: {
+                  $eq: serviceDocumentId,
                 },
               },
               startDate: {
-                $gte: startDate.toISOString(),
+                $gte: startDate.toDate(),
               },
               endDate: {
-                $lte: endDate.toISOString(),
+                $lte: endDate.toDate(),
               },
             },
           },
@@ -61,7 +61,7 @@ export function useFetchBookings(
     return () => {
       isCancelled = true;
     };
-  }, [serviceId, startDate.valueOf(), endDate.valueOf()]);
+  }, [serviceDocumentId, startDate.valueOf(), endDate.valueOf()]);
 
   return {
     bookings,

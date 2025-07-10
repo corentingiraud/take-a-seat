@@ -30,8 +30,8 @@ export const ServiceFormStep = ({
         populate: ["availabilities"],
         filters: {
           coworkingSpace: {
-            id: {
-              $eq: coworkingSpace.id,
+            documentId: {
+              $eq: coworkingSpace.documentId,
             },
           },
         },

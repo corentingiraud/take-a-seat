@@ -6,6 +6,31 @@
   "locale": null,
   "permissions": [
     {
+      "documentId": "d7mobomz8kz6k2kc3qb2bj7j",
+      "action": "api::availability.availability.create",
+      "locale": null
+    },
+    {
+      "documentId": "f9xe5tkvjbxuyeg4r2epvnlh",
+      "action": "api::availability.availability.delete",
+      "locale": null
+    },
+    {
+      "documentId": "j4rxahbqi5cz7ykosn0mdzd5",
+      "action": "api::availability.availability.find",
+      "locale": null
+    },
+    {
+      "documentId": "i0qb9qr74e3v4l7s4o4dd6ez",
+      "action": "api::availability.availability.findOne",
+      "locale": null
+    },
+    {
+      "documentId": "jab0iu0ojyctg8faze5tq4zg",
+      "action": "api::availability.availability.update",
+      "locale": null
+    },
+    {
       "documentId": "h4mlizfaeogiv0rzgjobeq55",
       "action": "api::booking.booking.bulkCreate",
       "locale": null
