@@ -50,14 +50,14 @@ export function isHalfDayAvailable(
     start = afternoonStart;
   }
 
-  // Rule 1: If the half-day is today and already started, it's not available
-  if (date.isSame(now, "day") && now.isAfter(start)) {
+  const end = start.clone().add(halfDayDuration);
+
+  // Rule 1: If the half-day is today and end is past, it's not available
+  if (date.isSame(now, "day") && now.isAfter(end)) {
     return false;
   }
 
   // Rule 2: Must not overlap with unavailabilities
-  const end = start.clone().add(halfDayDuration);
-
   for (const { startDate, endDate } of unavailabilities) {
     if (start.isBefore(moment(endDate)) && end.isAfter(moment(startDate))) {
       return false;

@@ -103,9 +103,6 @@ export class Service {
     return json;
   }
 
-  /**
-   * Get bookable time slots for a given date
-   */
   getTimeSlot(date: Moment): Time[] {
     const slots: Time[] = [];
 

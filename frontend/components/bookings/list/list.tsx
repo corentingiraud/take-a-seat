@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { PaymentStatusBadge } from "@/components/payment-badge";
 import { WeekSelector } from "@/components/ui/week-selector";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export function BookingsList() {
   const { bookings, reload, setWeekRange } = useBooking();
@@ -30,6 +31,8 @@ export function BookingsList() {
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
+            <TableHead>Espace</TableHead>
+            <TableHead>Service</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Paiement</TableHead>
             <TableHead>Actions</TableHead>
@@ -38,7 +41,13 @@ export function BookingsList() {
         <TableBody>
           {bookings.map((booking) => (
             <TableRow key={booking.documentId}>
-              <TableCell>{booking.toString()}</TableCell>
+              <TableCell>
+                {capitalizeFirstLetter(booking.startDate.format("dddd HH:mm"))}
+                {" => "}
+                {booking.endDate.format("HH:mm")}
+              </TableCell>
+              <TableCell>{booking.service?.coworkingSpace?.name}</TableCell>
+              <TableCell>{booking.service?.name}</TableCell>
               <TableCell>
                 <BookingStatusBadge booking={booking} />
               </TableCell>

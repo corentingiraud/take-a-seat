@@ -51,11 +51,13 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
     fetchAll({
       ...Booking.strapiAPIParams,
       queryParams: {
+        populate: ["service", "service.coworkingSpace"],
         filters: {
           user: { documentId: { $eq: user.documentId } },
           startDate: { $gte: startDate.toDate() },
           endDate: { $lte: endDate.toDate() },
         },
+        sort: ["startDate:asc"],
       },
     }).then((bookings) => {
       setBookings(bookings);
