@@ -32,8 +32,9 @@ export function BookingActionMenu({ booking }: BookingActionMenuProps) {
   };
 
   if (
-    booking.bookingStatus !== BookingStatus.PENDING &&
-    booking.bookingStatus !== BookingStatus.CONFIRMED
+    (booking.bookingStatus !== BookingStatus.PENDING &&
+      booking.bookingStatus !== BookingStatus.CONFIRMED) ||
+    booking.isPast
   ) {
     return null;
   }

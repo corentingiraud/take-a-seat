@@ -9,13 +9,7 @@ interface BookingStatusBadgeProps {
 }
 
 export function BookingStatusBadge({ booking }: BookingStatusBadgeProps) {
-  const now = moment();
-  const isPast =
-    (booking.bookingStatus === BookingStatus.CONFIRMED ||
-      booking.bookingStatus === BookingStatus.PENDING) &&
-    booking.endDate.isBefore(now);
-
-  if (isPast) {
+  if (booking.isPast) {
     return (
       <Badge className="bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700">
         Passée

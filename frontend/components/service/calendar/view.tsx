@@ -1,13 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
 
-import { Button } from "@/components/ui/button";
 import { useServiceCalendar } from "@/contexts/service-calendar-context";
 import { Booking } from "@/models/booking";
 import { Availability } from "@/models/availability";
+import { WeekSelector } from "@/components/ui/week-selector";
 
 export const ServiceCalendarView = () => {
   const { bookings, startDate, endDate, service, setStartDate, setEndDate } =
@@ -28,16 +27,6 @@ export const ServiceCalendarView = () => {
 
     return map;
   }, [bookings]);
-
-  const prevWeek = () => {
-    setStartDate(startDate.clone().subtract(1, "week").startOf("isoWeek"));
-    setEndDate(endDate.clone().subtract(1, "week").endOf("isoWeek"));
-  };
-
-  const nextWeek = () => {
-    setStartDate(startDate.clone().add(1, "week").startOf("isoWeek"));
-    setEndDate(endDate.clone().add(1, "week").endOf("isoWeek"));
-  };
 
   // Show Monday to Saturday only (exclude Sunday)
   const days = Array.from({ length: 7 }, (_, i) =>
@@ -66,29 +55,30 @@ export const ServiceCalendarView = () => {
     setHours(hours);
   }, [startDate, endDate]);
 
-  if (!service) return <p>Veuillez sélectionner un service.</p>;
+  if (!service)
+    return (
+      <p className="mt-10 text-center text-muted-foreground">
+        Veuillez sélectionner un service.
+      </p>
+    );
 
   const headerNav = (
-    <div className="flex items-center justify-between">
-      <Button size="icon" variant="ghost" onClick={prevWeek}>
-        <ChevronLeft className="w-4 h-4" />
-      </Button>
-      <p className="text-sm text-muted-foreground">
-        Réservations du {startDate.format("DD/MM")} - {endDate.format("DD/MM")}
-      </p>
-      <Button size="icon" variant="ghost" onClick={nextWeek}>
-        <ChevronRight className="w-4 h-4" />
-      </Button>
-    </div>
+    <WeekSelector
+      initialStartDate={startDate}
+      onWeekChange={(newStart, newEnd) => {
+        setStartDate(newStart);
+        setEndDate(newEnd);
+      }}
+    />
   );
 
   if (!availability)
     return (
-      <div className="space-y-4">
+      <div className="space-y-10">
         {headerNav}
-        <p>
+        <p className="text-sm text-center text-muted-foreground">
           Le service n&apos;a pas de disponibilité ouverte sur la semaine
-          selectionnée
+          sélectionnée
         </p>
       </div>
     );

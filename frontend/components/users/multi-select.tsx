@@ -86,7 +86,7 @@ export const MultiUserSelect = ({
                 </CommandItem>
               ))}
               {filteredUsers.length === 0 && (
-                <div className="px-4 py-2 text-sm text-muted-foreground">
+                <div className="px-4 py-2 text-center text-muted-foreground">
                   Aucun utilisateur trouvé
                 </div>
               )}

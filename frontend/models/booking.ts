@@ -94,4 +94,14 @@ export class Booking implements StrapiData {
   toString() {
     return `Le ${this.startDate.format("ddd D MMM")} de ${this.startDate.format("H")}h à ${this.endDate.format("H")}h`;
   }
+
+  get isPast(): boolean {
+    const now = moment();
+
+    return (
+      (this.bookingStatus === BookingStatus.CONFIRMED ||
+        this.bookingStatus === BookingStatus.PENDING) &&
+      this.endDate.isBefore(now)
+    );
+  }
 }

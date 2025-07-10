@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { PrepaidCardStatusBadge } from "../badge";
 
@@ -14,16 +14,24 @@ import { usePrepaidCard } from "@/hooks/use-prepaid-card";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { User } from "@/models/user";
 import { PaymentStatusBadge } from "@/components/payment-badge";
+import { Switch } from "@/components/ui/switch";
 
 export function PrepaidCardsList({ user }: { user: User }) {
   const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard({
     userId: user.id,
   });
 
+  const [showExpired, setShowExpired] = useState(false);
+
   useEffect(() => {
     reload();
   }, []);
-  const sortedCards = [...prepaidCards].sort((a, b) => {
+
+  const filteredCards = showExpired
+    ? prepaidCards
+    : prepaidCards.filter((card) => card.status !== "expired");
+
+  const sortedCards = [...filteredCards].sort((a, b) => {
     const priority = {
       usable: 0,
       upcoming: 1,
@@ -35,6 +43,20 @@ export function PrepaidCardsList({ user }: { user: User }) {
 
   return (
     <div>
+      <div className="mb-4 flex items-center justify-end space-x-2">
+        <Switch
+          checked={showExpired}
+          id="show-expired-switch"
+          onCheckedChange={(checked) => setShowExpired(checked)}
+        />
+        <label
+          className="select-none cursor-pointer"
+          htmlFor="show-expired-switch"
+        >
+          Afficher les cartes expirées
+        </label>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -75,7 +97,7 @@ export function PrepaidCardsList({ user }: { user: User }) {
       </Table>
 
       {prepaidCards.length === 0 && (
-        <p className="mt-10 text-center">
+        <p className="mt-10 text-center text-muted-foreground">
           Aucune carte pré-payée pour le moment...
         </p>
       )}

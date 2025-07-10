@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 import { Booking } from "@/models/booking";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
@@ -19,6 +19,9 @@ interface BookingContextType {
   bookings: Booking[];
   reload: () => void;
   cancel: (booking: Booking) => void;
+  startDate: Moment;
+  endDate: Moment;
+  setWeekRange: (start: Moment, end: Moment) => void;
 }
 
 interface BookingProviderProps {
@@ -35,6 +38,11 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
   user,
 }) => {
   const { fetchAll, update } = useStrapiAPI();
+
+  const [startDate, setStartDate] = useState<Moment>(
+    moment().startOf("isoWeek"),
+  );
+  const [endDate, setEndDate] = useState<Moment>(moment().endOf("isoWeek"));
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   const reload = () => {
@@ -44,14 +52,9 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
       ...Booking.strapiAPIParams,
       queryParams: {
         filters: {
-          user: {
-            id: {
-              $eq: user.id,
-            },
-          },
-          endDate: {
-            $gt: moment().toDate(),
-          },
+          user: { id: { $eq: user.id } },
+          startDate: { $gte: startDate.toDate() },
+          endDate: { $lte: endDate.toDate() },
         },
       },
     }).then((bookings) => {
@@ -59,7 +62,7 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
     });
   };
 
-  useEffect(reload, [user]);
+  useEffect(reload, [user, startDate, endDate]);
 
   const cancel = (booking: Booking) => {
     booking.bookingStatus = BookingStatus.CANCELLED;
@@ -68,13 +71,20 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
       object: booking,
       fieldsToUpdate: ["bookingStatus"],
     }).then(() => {
-      toast.success("Votre réservation a été modifié");
+      toast.success("Votre réservation a été annulée");
       reload();
     });
   };
 
+  const setWeekRange = (start: Moment, end: Moment) => {
+    setStartDate(start);
+    setEndDate(end);
+  };
+
   return (
-    <BookingContext.Provider value={{ bookings, reload, cancel }}>
+    <BookingContext.Provider
+      value={{ bookings, reload, cancel, startDate, endDate, setWeekRange }}
+    >
       {children}
     </BookingContext.Provider>
   );

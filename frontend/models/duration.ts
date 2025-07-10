@@ -51,7 +51,7 @@ export class DurationWrapper {
   humanize(): string {
     if (this.kind === "multipleDates") return "un ou plusieurs jours";
 
-    if (this.kind === "rangeOfDates") return "une période";
+    if (this.kind === "rangeOfDates") return "des jours consécutifs";
 
     if (this.kind && this.equals(AVAILABLE_DURATION.HALF_DAY))
       return "1/2 journée";

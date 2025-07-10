@@ -50,7 +50,7 @@ export const ServiceCalendarFilter = () => {
   }, [coworkingSpace]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="m-auto max-w-xl flex flex-col gap-4">
       <div>
         <Label>Espace de coworking</Label>
         <CoworkingSpaceSelect

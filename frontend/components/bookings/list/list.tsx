@@ -14,17 +14,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PaymentStatusBadge } from "@/components/payment-badge";
+import { WeekSelector } from "@/components/ui/week-selector";
 
 export function BookingsList() {
-  const { bookings, reload } = useBooking();
+  const { bookings, reload, setWeekRange } = useBooking();
 
   useEffect(() => {
     reload();
   }, []);
 
   return (
-    <div>
-      <Table>
+    <div className="mt-7">
+      <WeekSelector onWeekChange={setWeekRange} />
+      <Table className="mt-7">
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
@@ -51,8 +53,8 @@ export function BookingsList() {
         </TableBody>
       </Table>
       {bookings.length === 0 && (
-        <p className="mt-10 text-center">
-          Aucune réservations pour le moment...
+        <p className="mt-10 text-sm text-center text-muted-foreground">
+          Aucune réservations ...
         </p>
       )}
     </div>
