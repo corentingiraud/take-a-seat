@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory to store backups
-BACKUP_DIR="/home/ubunutu/backups"
+BACKUP_DIR="/home/ubuntu/backups"
 DATE=$(date +\%Y-\%m-\%d)
 
 # Docker container name
