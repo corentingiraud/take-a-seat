@@ -6,7 +6,7 @@ DATE=$(date +\%Y-\%m-\%d)
 
 # Docker container name
 CONTAINER_NAME="take-a-seat-database"
-$DATABASE_NAME="take-a-seat"
+DATABASE_NAME="take-a-seat"
 
 # Backup filename
 BACKUP_FILE="$BACKUP_DIR/$DATABASE_NAME-$DATE.dump"
