@@ -104,6 +104,11 @@
       "documentId": "b9woqeazwyoka5a32tf5bsy7",
       "action": "plugin::users-permissions.user.me",
       "locale": null
+    },
+    {
+      "documentId": "mwf7fmpbc4xjuwcwumt39rtj",
+      "action": "plugin::users-permissions.user.updateMe",
+      "locale": null
     }
   ]
 }

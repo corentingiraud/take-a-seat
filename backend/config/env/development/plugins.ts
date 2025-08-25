@@ -13,7 +13,6 @@ export default ({ env }) => ({
       },
       settings: {
         defaultFrom: env('EMAIL_FROM', 'no-reply@take-a-seat.local'),
-        defaultFromName: env('EMAIL_FROM_NAME', 'LOCAL - Le Pêle Coworking'),
         defaultReplyTo: env('EMAIL_REPLY_TO', 'no-reply@take-a-seat.local'),
       },
     },

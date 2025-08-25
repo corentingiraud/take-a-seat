@@ -144,6 +144,11 @@
       "documentId": "mfk9qcjd83fjc5r0wuad1zsg",
       "action": "plugin::users-permissions.user.me",
       "locale": null
+    },
+    {
+      "documentId": "m6f2qfus7kqvjvw6kd2uk9jw",
+      "action": "plugin::users-permissions.user.updateMe",
+      "locale": null
     }
   ]
 }

@@ -143,25 +143,19 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         remainingBalance: prepaidCard ? prepaidCard.remainingBalance - bookings.length : null
       };
 
-      if (strapi.config.env === 'production') {
-        // Send email to user
-        await strapi.plugins['email'].services.email.send({
-          to: user.email,
-          from: 'no-reply@take-a-seat.giraud.dev',
-          subject: 'Confirmation de vos réservations – Le Pêle Coworking',
-          html: await renderEJSTemplate('user-booking-summary.ejs', emailPayload)
-        });
+      // Send email to user
+      await strapi.plugins['email'].services.email.send({
+        to: user.email,
+        subject: 'Confirmation de vos réservations – Le Pêle Coworking',
+        html: await renderEJSTemplate('user-booking-summary.ejs', emailPayload)
+      });
 
-        // Send email to admin
-        await strapi.plugins['email'].services.email.send({
-          to: process.env.ADMIN_NOTIFICATION_EMAIL,
-          from: 'no-reply@take-a-seat.giraud.dev',
-          subject: `Nouvelle réservation de ${user.email}`,
-          html: await renderEJSTemplate('admin-booking-summary.ejs', emailPayload)
-        });
-      } else {
-        console.info("Skiping emails in dev env");
-      }
+      // Send email to admin
+      await strapi.plugins['email'].services.email.send({
+        to: process.env.ADMIN_NOTIFICATION_EMAIL,
+        subject: `Nouvelle réservation de ${user.email}`,
+        html: await renderEJSTemplate('admin-booking-summary.ejs', emailPayload)
+      });
     } catch (err) {
       console.error(err);
       return ctx.badRequest('Failed to create bookings', { error: err.message });
