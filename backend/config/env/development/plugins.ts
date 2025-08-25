@@ -1,18 +1,21 @@
+// config/plugins.ts
 export default ({ env }) => ({
   email: {
     config: {
-      provider: 'mailgun',
+      provider: 'nodemailer',
       providerOptions: {
-        key: env('MAILGUN_API_KEY'),
-        domain: env('MAILGUN_DOMAIN'),
-        url: env('MAILGUN_URL', 'https://api.mailgun.net'), //Optional. If domain region is Europe use 'https://api.eu.mailgun.net'
+        host: env('SMTP_HOST', 'localhost'),
+        port: env.int('SMTP_PORT', 1025),
+
+        // Mailcatcher doesn't use TLS or auth.
+        secure: false,
+        ignoreTLS: true,
       },
       settings: {
-        defaultFrom: "no-reply@take-a-seat.giraud.dev",
-        defaultFromName: "Le Pêle Coworking",
-        defaultTo: "corentin@giraud.dev",
-        defaultToName: "Corentin Giraud",
+        defaultFrom: env('EMAIL_FROM', 'no-reply@take-a-seat.local'),
+        defaultFromName: env('EMAIL_FROM_NAME', 'LOCAL - Le Pêle Coworking'),
+        defaultReplyTo: env('EMAIL_REPLY_TO', 'no-reply@take-a-seat.local'),
       },
     },
-  }
-})
+  },
+});

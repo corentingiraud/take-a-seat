@@ -101,8 +101,30 @@ export class User implements StrapiData {
     };
   }
 
+  toJsonForRegistration() {
+    const json: any = {
+      username: this.username,
+      email: this.email,
+    };
+
+    return json;
+  }
+
   toJson() {
-    return {};
+    const json: any = {
+      username: this.username,
+      email: this.email,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      phone: this.phone,
+    };
+
+    // Keep IDs only if they’re defined (useful when updating)
+    if (this.id !== UNDEFINED_ID) json.id = this.id;
+    if (this.documentId !== UNDEFINED_DOCUMENT_ID)
+      json.documentId = this.documentId;
+
+    return json;
   }
 
   static sortAlphabetically(list: User[]): User[] {

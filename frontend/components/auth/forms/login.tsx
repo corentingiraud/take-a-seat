@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/use-login";
 import { useAuth } from "@/contexts/auth-context";
 import { siteConfig } from "@/config/site";
 
@@ -26,7 +25,7 @@ export function LoginForm({
     }
   }, [user, router]);
 
-  const { login, isLoading } = useLogin();
+  const { login, loading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +33,6 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(email, password);
-    router.push(siteConfig.path.dashboard.href);
   };
 
   return (
@@ -78,8 +76,8 @@ export function LoginForm({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <Button className="w-full" disabled={isLoading} type="submit">
-                {isLoading ? "Chargement..." : "Login"}
+              <Button className="w-full" disabled={loading} type="submit">
+                {loading ? "Chargement..." : "Login"}
               </Button>
               <div className="text-center text-sm">
                 Pas encore de compte ?{" "}

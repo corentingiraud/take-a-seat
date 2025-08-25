@@ -4,13 +4,18 @@ services:
     platform: linux/amd64 #for platform error on Apple M1 chips
     restart: unless-stopped
     env_file: .env
-    image: postgres:14.5-alpine
+    image: postgres:14.17-alpine
     environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_ROOT_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_USERNAME_RO: ${DATABASE_USERNAME_RO}
+      DATABASE_PASSWORD_RO: ${DATABASE_PASSWORD_RO}
     volumes:
       - take-a-seat-data:/var/lib/postgresql/data/
+      - ../scripts/init-databases-and-users.sh:/docker-entrypoint-initdb.d/init-databases-and-users.sh
     ports:
       - '5432:5432'
     networks:

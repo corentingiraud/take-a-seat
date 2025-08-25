@@ -19,7 +19,7 @@ export default function HomePageClient() {
     if (!loading && !user) {
       router.push(siteConfig.path.login.href);
     }
-  }, [user, router]);
+  }, [loading, user, router]);
 
   if (!user) return "";
 

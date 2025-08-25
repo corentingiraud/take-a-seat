@@ -19,7 +19,7 @@ docker buildx build \
 ## Deploy
 
 ```bash
-sudo docker compose -f docker-compose.prod.yml pull
-sudo docker compose -f docker-compose.prod.yml up -d
-sudo docker image prune -f
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker image prune -f
 ```
