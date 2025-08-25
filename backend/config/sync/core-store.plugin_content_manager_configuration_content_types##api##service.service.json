@@ -93,7 +93,7 @@
       },
       "availabilities": {
         "edit": {
-          "label": "availabilities",
+          "label": "Disponibilités",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -194,7 +194,7 @@
         [
           {
             "name": "availabilities",
-            "size": 6
+            "size": 12
           }
         ]
       ],

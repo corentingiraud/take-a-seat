@@ -242,7 +242,7 @@ export function SignupForm({
                   aria-invalid={!!errors.phone || undefined}
                   id="phone"
                   name="phone"
-                  placeholder="+33 6 12 34 56 78"
+                  placeholder="0612345878"
                   type="tel"
                   value={values.phone}
                   onBlur={handleBlur("phone")}

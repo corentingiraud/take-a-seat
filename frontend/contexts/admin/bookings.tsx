@@ -20,9 +20,9 @@ import { Service } from "@/models/service";
 
 interface AdminBookingsContextType {
   bookings: Booking[];
-  reload: () => void;
-  confirm: (bookings: Booking[]) => void;
-  cancel: (bookings: Booking[]) => void;
+  reload: () => Promise<void>;
+  confirm: (bookings: Booking[]) => Promise<void>;
+  cancel: (bookings: Booking[]) => Promise<void>;
 
   // Filters
   userFilter: User | null;
@@ -32,6 +32,11 @@ interface AdminBookingsContextType {
   setUserFilter: (user: User | null) => void;
   setCoworkingSpaceFilter: (space: CoworkingSpace | null) => void;
   setServiceFilter: (service: Service | null) => void;
+
+  // UI states
+  loading: boolean; // true while reloading or while running actions
+  progress: number; // 0..1 during confirm/cancel, 0 when idle
+  actionType: "confirm" | "cancel" | null; // optional: to know what’s running
 }
 
 interface AdminBookingProviderProps {
@@ -55,92 +60,129 @@ export const AdminBookingsProvider = ({
     useState<CoworkingSpace | null>(null);
   const [serviceFilter, setServiceFilter] = useState<Service | null>(null);
 
+  // UI states
+  const [loading, setLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [actionType, setActionType] = useState<"confirm" | "cancel" | null>(
+    null,
+  );
+
   const reload = async () => {
-    const filters: any = {
-      bookingStatus: { $eq: BookingStatus.PENDING },
-    };
+    try {
+      setLoading(true);
 
-    if (userFilter) {
-      filters.user = { documentId: { $eq: userFilter.documentId } };
-    }
-
-    if (serviceFilter) {
-      filters.service = { documentId: { $eq: serviceFilter.documentId } };
-    }
-
-    if (coworkingSpaceFilter) {
-      filters.service = {
-        ...(filters.service ?? {}),
-        coworkingSpace: {
-          documentId: { $eq: coworkingSpaceFilter.documentId },
-        },
+      const filters: any = {
+        bookingStatus: { $eq: BookingStatus.PENDING },
       };
-    }
 
-    const data = await fetchAll<Booking>({
-      ...Booking.strapiAPIParams,
-      queryParams: {
-        filters,
-        populate: {
-          user: true,
-          service: {
-            populate: ["coworkingSpace"],
+      if (userFilter) {
+        filters.user = { documentId: { $eq: userFilter.documentId } };
+      }
+
+      if (serviceFilter) {
+        filters.service = { documentId: { $eq: serviceFilter.documentId } };
+      }
+
+      if (coworkingSpaceFilter) {
+        filters.service = {
+          ...(filters.service ?? {}),
+          coworkingSpace: {
+            documentId: { $eq: coworkingSpaceFilter.documentId },
           },
-        },
-        sort: ["startDate:asc"],
-      },
-    });
+        };
+      }
 
-    setBookings(data);
+      const data = await fetchAll<Booking>({
+        ...Booking.strapiAPIParams,
+        queryParams: {
+          filters,
+          populate: {
+            user: true,
+            service: {
+              populate: ["coworkingSpace"],
+            },
+          },
+          sort: ["startDate:asc"],
+        },
+      });
+
+      setBookings(data);
+    } catch (err) {
+      toast.error(
+        "Une erreur est survenue lors du chargement des réservations.",
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     reload();
   }, [userFilter, coworkingSpaceFilter, serviceFilter]);
 
-  const cancel = (bookings: Booking[]) => {
-    const promises = bookings.map((booking) => {
-      booking.bookingStatus = BookingStatus.CANCELLED;
+  // helper to run sequential updates with progress
+  const runSequential = async (
+    items: Booking[],
+    status: BookingStatus,
+    successSingular: string,
+    successPlural: string,
+    type: "confirm" | "cancel",
+  ) => {
+    if (items.length === 0) return;
 
-      return update({
-        ...Booking.strapiAPIParams,
-        object: booking,
-        fieldsToUpdate: ["bookingStatus"],
-      });
-    });
+    setActionType(type);
+    setLoading(true);
+    setProgress(0);
 
-    Promise.all(promises).then(() => {
-      toast.success(
-        bookings.length === 1
-          ? "La réservation a été annulée"
-          : "Les réservations ont été annulées",
+    try {
+      const total = items.length;
+      let done = 0;
+
+      for (const b of items) {
+        b.bookingStatus = status;
+
+        await update({
+          ...Booking.strapiAPIParams,
+          object: b,
+          fieldsToUpdate: ["bookingStatus"],
+        });
+
+        done += 1;
+        setProgress(done / total);
+      }
+
+      toast.success(total === 1 ? successSingular : successPlural);
+      await reload();
+    } catch (err) {
+      toast.error(
+        "Une erreur est survenue lors de la mise à jour des réservations.",
       );
-      reload();
-    });
+      throw err;
+    } finally {
+      setActionType(null);
+      setProgress(0);
+      setLoading(false);
+    }
   };
 
-  const confirm = (bookings: Booking[]) => {
-    if (bookings.length === 0) return;
+  const cancel = async (toCancel: Booking[]) =>
+    runSequential(
+      toCancel,
+      BookingStatus.CANCELLED,
+      "La réservation a été annulée",
+      "Les réservations ont été annulées",
+      "cancel",
+    );
 
-    const promises = bookings.map((booking) => {
-      booking.bookingStatus = BookingStatus.CONFIRMED;
-
-      return update({
-        ...Booking.strapiAPIParams,
-        object: booking,
-        fieldsToUpdate: ["bookingStatus"],
-      });
-    });
-
-    Promise.all(promises).then(() => {
-      toast.success(
-        bookings.length === 1
-          ? "La réservation a été confirmée"
-          : "Les réservations ont été confirmées",
-      );
-      reload();
-    });
-  };
+  const confirm = async (toConfirm: Booking[]) =>
+    runSequential(
+      toConfirm,
+      BookingStatus.CONFIRMED,
+      "La réservation a été confirmée",
+      "Les réservations ont été confirmées",
+      "confirm",
+    );
 
   return (
     <AdminBookingsContext.Provider
@@ -155,6 +197,9 @@ export const AdminBookingsProvider = ({
         setUserFilter,
         setCoworkingSpaceFilter,
         setServiceFilter,
+        loading,
+        progress,
+        actionType,
       }}
     >
       {children}

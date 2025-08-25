@@ -78,7 +78,7 @@
       },
       "bookings": {
         "edit": {
-          "label": "bookings",
+          "label": "Réservations",
           "description": "",
           "placeholder": "",
           "visible": true,

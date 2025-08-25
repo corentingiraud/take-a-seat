@@ -77,7 +77,7 @@
       },
       "service": {
         "edit": {
-          "label": "service",
+          "label": "Service",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -150,13 +150,13 @@
       }
     },
     "layouts": {
-      "list": [
-        "id",
-        "endDate",
-        "startDate",
-        "service"
-      ],
       "edit": [
+        [
+          {
+            "name": "service",
+            "size": 12
+          }
+        ],
         [
           {
             "name": "startDate",
@@ -169,22 +169,22 @@
         ],
         [
           {
-            "name": "weeklyAvailabilities",
-            "size": 12
-          }
-        ],
-        [
-          {
             "name": "numberOfSeats",
             "size": 12
           }
         ],
         [
           {
-            "name": "service",
-            "size": 6
+            "name": "weeklyAvailabilities",
+            "size": 12
           }
         ]
+      ],
+      "list": [
+        "id",
+        "endDate",
+        "startDate",
+        "service"
       ]
     },
     "uid": "api::availability.availability"

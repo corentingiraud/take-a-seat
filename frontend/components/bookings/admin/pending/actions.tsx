@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Loader2 } from "lucide-react";
 
 import { PendingBookingsDetailsDrawer } from "./details";
 
@@ -24,15 +24,18 @@ interface AdminPendingBookingActionMenuProps {
 export function AdminPendingBookingActionMenu({
   user,
 }: AdminPendingBookingActionMenuProps) {
-  const { bookings, cancel, confirm } = useAdminBookings();
+  const { bookings, cancel, confirm, loading, actionType, progress } =
+    useAdminBookings();
   const askConfirm = useConfirm();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // 🧠 bookings dynamiques du user
   const userBookings = bookings.filter((b) => b.user?.id === user.id);
 
   if (userBookings.length === 0) return null;
+
+  const isMutating = loading && actionType !== null; // true during confirm/cancel
+  const isBusy = isMutating; // alias for readability
 
   const handleViewDetails = () => {
     setIsDrawerOpen(true);
@@ -45,7 +48,7 @@ export function AdminPendingBookingActionMenu({
     });
 
     if (confirmed) {
-      confirm(userBookings);
+      await confirm(userBookings); // await to ensure UI state lines up
     }
   };
 
@@ -56,7 +59,7 @@ export function AdminPendingBookingActionMenu({
     });
 
     if (confirmed) {
-      cancel(userBookings);
+      await cancel(userBookings); // await here too
     }
   };
 
@@ -64,22 +67,40 @@ export function AdminPendingBookingActionMenu({
     <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button size="icon" variant="outline">
-            <MoreHorizontal className="h-4 w-4" />
+          <Button
+            aria-busy={isBusy}
+            disabled={isBusy}
+            size="icon"
+            variant="outline"
+          >
+            {isBusy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MoreHorizontal className="h-4 w-4" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleViewDetails}>
+          <DropdownMenuItem disabled={loading} onClick={handleViewDetails}>
             Voir le détail
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-green-600"
+            disabled={isBusy}
             onClick={handleConfirmAll}
           >
-            Tout confirmer
+            {isMutating && actionType === "confirm"
+              ? `Confirmation… ${Math.round(progress * 100)}%`
+              : "Tout confirmer"}
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-red-600" onClick={handleCancelAll}>
-            Tout annuler
+          <DropdownMenuItem
+            className="text-red-600"
+            disabled={isBusy}
+            onClick={handleCancelAll}
+          >
+            {isMutating && actionType === "cancel"
+              ? `Annulation… ${Math.round(progress * 100)}%`
+              : "Tout annuler"}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

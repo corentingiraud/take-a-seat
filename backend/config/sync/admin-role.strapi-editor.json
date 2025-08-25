@@ -75,7 +75,7 @@
       "locale": null
     },
     {
-      "documentId": "wnr6ukmbjiyarirklc6tdymj",
+      "documentId": "x8ydm5dbiyxho4c8bzb86bdz",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::booking.booking",
@@ -85,7 +85,9 @@
           "endDate",
           "bookingStatus",
           "paymentStatus",
-          "user"
+          "user",
+          "prepaidCard",
+          "service"
         ]
       },
       "conditions": [],
@@ -110,7 +112,7 @@
       "locale": null
     },
     {
-      "documentId": "ivd1mdmqccxgxko00m0qqcu5",
+      "documentId": "doplmd2lo53adddyq9yz9wjj",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::booking.booking",
@@ -120,14 +122,16 @@
           "endDate",
           "bookingStatus",
           "paymentStatus",
-          "user"
+          "user",
+          "prepaidCard",
+          "service"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "iair02jq2dsdemja1tdtespz",
+      "documentId": "vieyn5jwesd6x6outs2wt16y",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::booking.booking",
@@ -137,14 +141,16 @@
           "endDate",
           "bookingStatus",
           "paymentStatus",
-          "user"
+          "user",
+          "prepaidCard",
+          "service"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "iqwocsn00l5e18qxpon9wrst",
+      "documentId": "mchddeclessqk7w0qi4uxkop",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
@@ -152,7 +158,8 @@
         "fields": [
           "name",
           "services",
-          "unavailabilities"
+          "unavailabilities",
+          "locationURL"
         ]
       },
       "conditions": [],
@@ -177,7 +184,7 @@
       "locale": null
     },
     {
-      "documentId": "m0n7o2a22pfsk3qkq7e1oaeb",
+      "documentId": "qoc7ynbk1d4j38tvzxhq7lsd",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
@@ -185,14 +192,15 @@
         "fields": [
           "name",
           "services",
-          "unavailabilities"
+          "unavailabilities",
+          "locationURL"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "ne3egpgmjlb61yuz3ko8is1w",
+      "documentId": "z4i6i1css4afj3mn48rxzenp",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::coworking-space.coworking-space",
@@ -200,14 +208,15 @@
         "fields": [
           "name",
           "services",
-          "unavailabilities"
+          "unavailabilities",
+          "locationURL"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "x1mpk90e0fafkskjcidnrgz2",
+      "documentId": "iy941gzi1yef6vey7mrh8qcx",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -216,7 +225,9 @@
           "remainingBalance",
           "expirationDate",
           "paymentStatus",
-          "user"
+          "user",
+          "bookings",
+          "validFrom"
         ]
       },
       "conditions": [],
@@ -241,7 +252,7 @@
       "locale": null
     },
     {
-      "documentId": "kexye20tx3x5capnuvci54dc",
+      "documentId": "f5gt0a6qebntmbdsf839mnrv",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -250,14 +261,16 @@
           "remainingBalance",
           "expirationDate",
           "paymentStatus",
-          "user"
+          "user",
+          "bookings",
+          "validFrom"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "aokzsyzx8fcnghpmvy7qp8yc",
+      "documentId": "h7b5nnlo8qm22f0t7857qd69",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -266,21 +279,27 @@
           "remainingBalance",
           "expirationDate",
           "paymentStatus",
-          "user"
+          "user",
+          "bookings",
+          "validFrom"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "cx6041d5e2a9yoz3a667lom8",
+      "documentId": "mo2jsmhwsf79412j8rw6mitr",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::service.service",
       "properties": {
         "fields": [
           "name",
-          "coworkingSpace"
+          "coworkingSpace",
+          "bookings",
+          "description",
+          "bookingDuration",
+          "availabilities"
         ]
       },
       "conditions": [],
@@ -305,35 +324,43 @@
       "locale": null
     },
     {
-      "documentId": "nzk8oewc0848a3oxaapaxzq0",
+      "documentId": "dr859sozf3134m8la8jc8oxt",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::service.service",
       "properties": {
         "fields": [
           "name",
-          "coworkingSpace"
+          "coworkingSpace",
+          "bookings",
+          "description",
+          "bookingDuration",
+          "availabilities"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "di9m8d2ki9828xvs236c4gxu",
+      "documentId": "s8asnk52g0siottjpeh93rd0",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::service.service",
       "properties": {
         "fields": [
           "name",
-          "coworkingSpace"
+          "coworkingSpace",
+          "bookings",
+          "description",
+          "bookingDuration",
+          "availabilities"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "skvs448bvq618uh2vsjulch0",
+      "documentId": "at3ptf3v5mfae7lhn3vymeh4",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::unavailability.unavailability",
@@ -341,7 +368,8 @@
         "fields": [
           "startDate",
           "endDate",
-          "name"
+          "name",
+          "coworking_spaces"
         ]
       },
       "conditions": [],
@@ -366,7 +394,7 @@
       "locale": null
     },
     {
-      "documentId": "wcod2ib94hjufqbi6hdapclq",
+      "documentId": "hlc19v6keq9qqz6xs5vzqd0l",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::unavailability.unavailability",
@@ -374,14 +402,15 @@
         "fields": [
           "startDate",
           "endDate",
-          "name"
+          "name",
+          "coworking_spaces"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "i9nv0xvr225vg1ovopmxcb2t",
+      "documentId": "ei3odna7gbfpgc0nk4phv9zu",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::unavailability.unavailability",
@@ -389,7 +418,8 @@
         "fields": [
           "startDate",
           "endDate",
-          "name"
+          "name",
+          "coworking_spaces"
         ]
       },
       "conditions": [],
