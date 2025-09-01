@@ -1,16 +1,16 @@
 import { Metadata } from "next";
 
-import { ForgotPasswordForm } from "@/components/auth/forms/forgot-password";
+import { ResetPasswordForm } from "@/components/auth/forms/reset-password";
 
 export const metadata: Metadata = {
-  title: "Mot de passe oublié",
+  title: "Réinitialisation du mot de passe",
 };
 
 export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-xs md:max-w-xl">
-        <ForgotPasswordForm />
+        <ResetPasswordForm />
       </div>
     </div>
   );

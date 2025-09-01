@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
-import { toast } from "sonner";
+import { useEffect, useState, useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,19 @@ import { Label } from "@/components/ui/label";
 import { siteConfig } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 import { User } from "@/models/user";
+import { PasswordInput } from "@/components/ui/password-input";
+import {
+  compose,
+  required,
+  isFRMobile,
+  isEmail,
+  minLength,
+  passwordStrength,
+  equalsField,
+  validateField,
+  validateAll,
+  Validator,
+} from "@/lib/validators/validators";
 
 type Fields =
   | "firstName"
@@ -22,6 +34,8 @@ type Fields =
   | "password"
   | "confirmPassword";
 
+type Values = Record<Fields, string>;
+
 export function SignupForm({
   className,
   ...props
@@ -29,7 +43,7 @@ export function SignupForm({
   const { user, signup, loading } = useAuth();
   const router = useRouter();
 
-  const [values, setValues] = useState<Record<Fields, string>>({
+  const [values, setValues] = useState<Values>({
     firstName: "",
     lastName: "",
     phone: "",
@@ -57,107 +71,91 @@ export function SignupForm({
   });
 
   useEffect(() => {
-    if (user) {
-      router.push(siteConfig.path.dashboard.href);
-    }
+    if (user) router.push(siteConfig.path.dashboard.href);
   }, [user, router]);
 
-  // --- validation rules (defaults; tweak as you like) ---
-  const validators: Record<Fields, (v: string, all: typeof values) => string> =
-    {
-      firstName: (v) => (v.trim() ? "" : "Le prénom est requis."),
-      lastName: (v) => (v.trim() ? "" : "Le nom est requis."),
-      phone: (v) => {
-        if (!v.trim()) return "Le numéro de téléphone est requis.";
-        // FR mobile: +33 6/7 xx xx xx xx or 06/07 xx xx xx xx
-        const frMobile = /^(\+33\s?|0)(6|7)(?:[\s.-]?\d{2}){4}$/;
+  const rules = useMemo<Partial<Record<Fields, Validator<Values>>>>(
+    () => ({
+      firstName: compose(required("Le prénom est requis.")),
+      lastName: compose(required("Le nom est requis.")),
+      phone: compose(
+        required("Le numéro de téléphone est requis."),
+        isFRMobile(),
+      ),
+      email: compose(required("L'email est requis."), isEmail()),
+      password: compose(
+        minLength<Values>(8),
+        passwordStrength<Values>({
+          requireLower: true,
+          requireUpper: true,
+          requireDigit: true,
+          requireSpecial: false,
+          message: "Doit contenir des minuscules, majuscules et chiffres.",
+        }),
+      ),
+      confirmPassword: compose(
+        required("La confirmation est requise."),
+        equalsField<Values>(
+          "password",
+          "Les mots de passe ne correspondent pas.",
+        ),
+      ),
+    }),
+    [],
+  );
 
-        return frMobile.test(v.trim())
-          ? ""
-          : "Numéro de mobile français invalide.";
-      },
-      email: (v) => {
-        if (!v.trim()) return "L'email est requis.";
-        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const onChange =
+    (name: Fields) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const next = { ...values, [name]: e.target.value };
 
-        return ok ? "" : "Adresse email invalide.";
-      },
-      password: (v) => {
-        if (v.length < 8) return "Au moins 8 caractères.";
-        const mix = /[a-z]/.test(v) && /[A-Z]/.test(v) && /\d/.test(v);
+      setValues(next);
 
-        return mix
-          ? ""
-          : "Doit contenir des minuscules, majuscules et chiffres.";
-      },
-      confirmPassword: (v, all) =>
-        v === all.password ? "" : "Les mots de passe ne correspondent pas.",
-    };
-
-  const validateField = useCallback(
-    (name: Fields, value: string, nextValues?: typeof values) => {
-      const all = nextValues ?? values;
-      const msg = validators[name](value, all);
+      // live validation champ + cascade confirmPassword si password bouge
+      const msg = validateField<Values>(name, next, rules);
 
       setErrors((prev) => ({ ...prev, [name]: msg }));
 
-      // also re-validate confirmPassword when password changes
       if (name === "password" && touched.confirmPassword) {
-        const cpMsg = validators.confirmPassword(all.confirmPassword, {
-          ...all,
-          password: value,
-        });
+        const cpMsg = validateField<Values>("confirmPassword", next, rules);
 
         setErrors((prev) => ({ ...prev, confirmPassword: cpMsg }));
       }
-
-      return msg;
-    },
-    [validators, values, touched.confirmPassword],
-  );
-
-  const handleChange =
-    (name: Fields) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const next = { ...values, [name]: value };
-
-      setValues(next);
-      // live validation
-      validateField(name, value, next);
     };
 
-  const handleBlur = (name: Fields) => () => {
+  const onBlur = (name: Fields) => () => {
     setTouched((t) => ({ ...t, [name]: true }));
-    validateField(name, values[name]);
+    const msg = validateField<Values>(name, values, rules);
+
+    setErrors((prev) => ({ ...prev, [name]: msg }));
   };
 
-  const formHasErrors =
-    Object.values(errors).some(Boolean) ||
-    Object.values(values).some((v) => !v.trim());
+  const isFormValid = useMemo(() => {
+    const { isValid } = validateAll<Values>(values, rules);
+    // en plus de la validation, on évite les champs vides
+    const allFilled = Object.values(values).every((v) => v.trim());
+
+    return isValid && allFilled;
+  }, [values, rules]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // touch all & final validate
-    const allTouched: Partial<Record<Fields, boolean>> = {};
+    // final validation
+    const result = validateAll<Values>(values, rules);
 
-    (Object.keys(values) as Fields[]).forEach((k) => (allTouched[k] = true));
-    setTouched((t) => ({ ...t, ...(allTouched as Record<Fields, boolean>) }));
+    setErrors((prev) => ({ ...prev, ...(result.errors as any) }));
 
-    let anyError = false;
-    const nextErrors: Partial<Record<Fields, string>> = {};
-
-    (Object.keys(values) as Fields[]).forEach((k) => {
-      const msg = validators[k](values[k], values);
-
-      nextErrors[k] = msg;
-      if (msg) anyError = true;
+    // mark all as touched to afficher toutes les erreurs
+    setTouched({
+      firstName: true,
+      lastName: true,
+      phone: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
     });
-    setErrors((prev) => ({
-      ...prev,
-      ...(nextErrors as Record<Fields, string>),
-    }));
-    if (anyError) return;
+
+    if (!result.isValid) return;
 
     const { firstName, lastName, phone, email, password } = values;
 
@@ -201,8 +199,8 @@ export function SignupForm({
                   placeholder="Jean"
                   type="text"
                   value={values.firstName}
-                  onBlur={handleBlur("firstName")}
-                  onChange={handleChange("firstName")}
+                  onBlur={onBlur("firstName")}
+                  onChange={onChange("firstName")}
                 />
                 {touched.firstName && errors.firstName && (
                   <p className="text-xs text-destructive" id="first-name-error">
@@ -223,8 +221,8 @@ export function SignupForm({
                   placeholder="Dupont"
                   type="text"
                   value={values.lastName}
-                  onBlur={handleBlur("lastName")}
-                  onChange={handleChange("lastName")}
+                  onBlur={onBlur("lastName")}
+                  onChange={onChange("lastName")}
                 />
                 {touched.lastName && errors.lastName && (
                   <p className="text-xs text-destructive" id="last-name-error">
@@ -242,11 +240,11 @@ export function SignupForm({
                   aria-invalid={!!errors.phone || undefined}
                   id="phone"
                   name="phone"
-                  placeholder="0612345878"
+                  placeholder="0612345678"
                   type="tel"
                   value={values.phone}
-                  onBlur={handleBlur("phone")}
-                  onChange={handleChange("phone")}
+                  onBlur={onBlur("phone")}
+                  onChange={onChange("phone")}
                 />
                 {touched.phone && errors.phone && (
                   <p className="text-xs text-destructive" id="phone-error">
@@ -267,8 +265,8 @@ export function SignupForm({
                   placeholder="m@example.com"
                   type="email"
                   value={values.email}
-                  onBlur={handleBlur("email")}
-                  onChange={handleChange("email")}
+                  onBlur={onBlur("email")}
+                  onChange={onChange("email")}
                 />
                 {touched.email && errors.email && (
                   <p className="text-xs text-destructive" id="email-error">
@@ -280,22 +278,24 @@ export function SignupForm({
               {/* Password */}
               <div className="grid gap-2">
                 <Label htmlFor="password">Mot de passe</Label>
-                <Input
+                <PasswordInput
                   required
                   aria-describedby="password-error"
                   aria-invalid={!!errors.password || undefined}
                   id="password"
                   name="password"
-                  type="password"
                   value={values.password}
-                  onBlur={handleBlur("password")}
-                  onChange={handleChange("password")}
+                  onBlur={onBlur("password")}
+                  onChange={onChange("password")}
                 />
                 {touched.password && errors.password && (
                   <p className="text-xs text-destructive" id="password-error">
                     {errors.password}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Minimum 8 caractères, avec minuscules, majuscules et chiffres.
+                </p>
               </div>
 
               {/* Confirm password */}
@@ -303,16 +303,15 @@ export function SignupForm({
                 <Label htmlFor="confirm-password">
                   Confirmer le mot de passe
                 </Label>
-                <Input
+                <PasswordInput
                   required
                   aria-describedby="confirm-password-error"
                   aria-invalid={!!errors.confirmPassword || undefined}
                   id="confirm-password"
                   name="confirmPassword"
-                  type="password"
                   value={values.confirmPassword}
-                  onBlur={handleBlur("confirmPassword")}
-                  onChange={handleChange("confirmPassword")}
+                  onBlur={onBlur("confirmPassword")}
+                  onChange={onChange("confirmPassword")}
                 />
                 {touched.confirmPassword && errors.confirmPassword && (
                   <p
@@ -326,7 +325,7 @@ export function SignupForm({
 
               <Button
                 className="w-full"
-                disabled={loading || formHasErrors}
+                disabled={loading || !isFormValid}
                 type="submit"
               >
                 {loading ? "Chargement..." : "S'inscrire"}

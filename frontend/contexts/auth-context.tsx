@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 
 import { API_URL, siteConfig } from "@/config/site";
 import { User } from "@/models/user";
-import { useStrapiAPI } from "@/hooks/use-strapi-api";
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +22,15 @@ interface AuthContextType {
   signup: (user: User, password: string) => Promise<void>;
   logout: () => void;
   hasRole: (role: string) => boolean;
+
+  /** Sends reset email via Strapi Users & Permissions */
+  forgotPassword: (email: string) => Promise<void>;
+  /** Completes reset using the code from the email link */
+  resetPassword: (
+    code: string,
+    password: string,
+    passwordConfirmation?: string,
+  ) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -135,7 +143,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!res.ok) {
-        // Try to surface Strapi’s error message
         let msg = "Échec de l'inscription. Veuillez réessayer.";
 
         try {
@@ -178,6 +185,86 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const forgotPassword = async (email: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        // Strapi usually returns { error: { message } }
+        let msg = "Impossible d'envoyer l'e-mail de réinitialisation.";
+
+        try {
+          const err = await res.json();
+
+          if (err?.error?.message) msg = err.error.message;
+        } catch {}
+        toast.error(msg);
+
+        return;
+      }
+
+      toast.success(
+        "Si un compte existe avec cet e-mail, un lien de réinitialisation a été envoyé.",
+      );
+    } catch {
+      toast.error("Erreur lors de l'envoi de l'e-mail de réinitialisation.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (
+    code: string,
+    password: string,
+    passwordConfirmation?: string,
+  ) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          password,
+          passwordConfirmation: passwordConfirmation ?? password,
+        }),
+      });
+
+      if (!res.ok) {
+        let msg = "Échec de la réinitialisation du mot de passe.";
+
+        try {
+          const err = await res.json();
+
+          if (err?.error?.message) msg = err.error.message;
+        } catch {}
+        toast.error(msg);
+
+        return;
+      }
+
+      const data = await res.json();
+
+      // Strapi returns a fresh JWT + user after reset
+      if (data?.jwt) {
+        window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, data.jwt);
+        await fetchUser();
+      }
+
+      toast.success("Mot de passe réinitialisé. Vous êtes connecté.");
+      router.push(siteConfig.path.dashboard.href);
+    } catch {
+      toast.error("Erreur lors de la réinitialisation du mot de passe.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getJWT = () => {
     return window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY);
   };
@@ -205,6 +292,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         logout,
         hasRole,
         signup,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}
