@@ -7,6 +7,9 @@ export type SiteConfig = typeof siteConfig;
 export const API_URL =
   env("NEXT_PUBLIC_STRAPI_API_URL") || "http://localhost:1337/api";
 
+export const HCAPTCHA_SITE_KEY =
+  env("NEXT_PUBLIC_HCAPTCHA_SITE_KEY") || "92caca56-0a84-409e-acf0-449c998efc7e";
+
 export const siteConfig = {
   name: "Take a seat",
   description: "Réservez votre espace de travail en toute simplicité.",

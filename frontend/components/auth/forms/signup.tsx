@@ -25,6 +25,7 @@ import {
   validateAll,
   Validator,
 } from "@/lib/validators/validators";
+import HCaptchaWidget from "@/components/security/hcaptcha-widget";
 
 type Fields =
   | "firstName"
@@ -69,6 +70,7 @@ export function SignupForm({
     password: "",
     confirmPassword: "",
   });
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) router.push(siteConfig.path.dashboard.href);
@@ -157,6 +159,8 @@ export function SignupForm({
 
     if (!result.isValid) return;
 
+    if (!hCaptchaToken) return;
+
     const { firstName, lastName, phone, email, password } = values;
 
     const newUser = new User({
@@ -171,7 +175,7 @@ export function SignupForm({
       phone: phone.trim(),
     });
 
-    await signup(newUser, password);
+    await signup(newUser, password, hCaptchaToken);
   };
 
   return (
@@ -322,6 +326,11 @@ export function SignupForm({
                   </p>
                 )}
               </div>
+
+              <HCaptchaWidget
+                className="self-center"
+                onChange={setHCaptchaToken}
+              />
 
               <Button
                 className="w-full"

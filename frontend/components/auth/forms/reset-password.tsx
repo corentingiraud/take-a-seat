@@ -23,6 +23,7 @@ import {
   passwordRule,
   confirmPasswordRule,
 } from "@/lib/validators/auth";
+import HCaptchaWidget from "@/components/security/hcaptcha-widget";
 
 type Fields = "password" | "confirm";
 type Values = Record<Fields, string>;
@@ -47,6 +48,7 @@ export function ResetPasswordForm({
     confirm: "",
     general: "",
   });
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) router.push(siteConfig.path.dashboard.href);
@@ -115,7 +117,9 @@ export function ResetPasswordForm({
 
     if (!result.isValid) return;
 
-    await resetPassword(code, values.password, values.confirm);
+    if (!hCaptchaToken) return;
+
+    await resetPassword(code, values.password, values.confirm, hCaptchaToken);
   };
 
   return (
@@ -180,6 +184,11 @@ export function ResetPasswordForm({
                   </p>
                 )}
               </div>
+
+              <HCaptchaWidget
+                className="self-center"
+                onChange={setHCaptchaToken}
+              />
 
               <Button
                 className="w-full"

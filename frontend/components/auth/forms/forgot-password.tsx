@@ -13,6 +13,7 @@ import { siteConfig } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 import { validateAll, validateField } from "@/lib/validators/validators";
 import { emailRule } from "@/lib/validators/auth";
+import HCaptchaWidget from "@/components/security/hcaptcha-widget";
 
 type Fields = "email";
 type Values = Record<Fields, string>;
@@ -31,6 +32,7 @@ export function ForgotPasswordForm({
   const [errors, setErrors] = useState<Record<Fields, string>>({
     email: "",
   });
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -78,7 +80,9 @@ export function ForgotPasswordForm({
     setTouched({ email: true });
     if (!result.isValid) return;
 
-    await forgotPassword(values.email.trim());
+    if (!hCaptchaToken) return;
+
+    await forgotPassword(values.email.trim(), hCaptchaToken);
   };
 
   return (
@@ -114,6 +118,11 @@ export function ForgotPasswordForm({
                   </p>
                 )}
               </div>
+
+              <HCaptchaWidget
+                className="self-center"
+                onChange={setHCaptchaToken}
+              />
 
               <Button
                 className="w-full"

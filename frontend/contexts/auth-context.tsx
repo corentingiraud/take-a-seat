@@ -18,18 +18,24 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   getJWT: () => string | null;
-  login: (username: string, password: string) => Promise<void>;
-  signup: (user: User, password: string) => Promise<void>;
+  login: (
+    username: string,
+    password: string,
+    hCaptchaToken: string,
+  ) => Promise<void>;
+  signup: (
+    user: User,
+    password: string,
+    hCaptchaToken: string,
+  ) => Promise<void>;
   logout: () => void;
   hasRole: (role: string) => boolean;
-
-  /** Sends reset email via Strapi Users & Permissions */
-  forgotPassword: (email: string) => Promise<void>;
-  /** Completes reset using the code from the email link */
+  forgotPassword: (email: string, hCaptchaToken: string) => Promise<void>;
   resetPassword: (
     code: string,
     password: string,
-    passwordConfirmation?: string,
+    passwordConfirmation: string,
+    hCaptchaToken: string,
   ) => Promise<void>;
 }
 
@@ -89,7 +95,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string,
+    hCaptchaToken: string,
+  ) => {
     setLoading(true);
 
     try {
@@ -97,6 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-hcaptcha-token": hCaptchaToken,
         },
         body: JSON.stringify({
           identifier: email,
@@ -127,7 +138,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signup = async (user: User, password: string) => {
+  const signup = async (
+    user: User,
+    password: string,
+    hCaptchaToken: string,
+  ) => {
     setLoading(true);
 
     try {
@@ -135,6 +150,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-hcaptcha-token": hCaptchaToken,
         },
         body: JSON.stringify({
           ...user.toJsonForRegistration(),
@@ -185,12 +201,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const forgotPassword = async (email: string) => {
+  const forgotPassword = async (email: string, hCaptchaToken: string) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/auth/forgot-password`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-hcaptcha-token": hCaptchaToken,
+        },
         body: JSON.stringify({ email }),
       });
 
@@ -221,17 +240,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const resetPassword = async (
     code: string,
     password: string,
-    passwordConfirmation?: string,
+    passwordConfirmation: string,
+    hCaptchaToken: string,
   ) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/auth/reset-password`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-hcaptcha-token": hCaptchaToken,
+        },
         body: JSON.stringify({
           code,
           password,
-          passwordConfirmation: passwordConfirmation ?? password,
+          passwordConfirmation: passwordConfirmation,
         }),
       });
 
