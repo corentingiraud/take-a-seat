@@ -10,7 +10,7 @@ export const HCAPTCHA_SITE_KEY =
   "92caca56-0a84-409e-acf0-449c998efc7e";
 
 export const siteConfig = {
-  name: "Take a seat",
+  name: "Le Pêle Coworking",
   description: "Réservez votre espace de travail en toute simplicité.",
   path: {
     // GENERAL

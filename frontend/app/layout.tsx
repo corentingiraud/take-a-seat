@@ -50,7 +50,7 @@ export default function RootLayout({
                 <footer className="w-full flex items-center justify-center py-3">
                   <div className="flex items-center gap-1 text-current">
                     <span className="text-default-600">
-                      © Take a Seat - {moment().format("YYYY")}
+                      © Le Pêle Coworking - {moment().format("YYYY")}
                     </span>
                   </div>
                 </footer>
