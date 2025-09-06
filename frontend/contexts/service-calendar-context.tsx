@@ -25,10 +25,12 @@ interface ServiceCalendarContextType {
   endDate: Moment;
   service: Service | null;
   coworkingSpace: CoworkingSpace | null;
-  setStartDate: (date: Moment) => void;
-  setEndDate: (date: Moment) => void;
   setService: (service: Service | null) => void;
   setCoworkingSpace: (space: CoworkingSpace | null) => void;
+  setWeekRange: (start: Moment, end: Moment) => void;
+  goToPreviousWeek: () => void;
+  goToNextWeek: () => void;
+
   reload: () => void;
 }
 
@@ -64,36 +66,40 @@ export const ServiceCalendarProvider: React.FC<
 
     current.set("startDate", startDate.toISOString());
     current.set("endDate", endDate.toISOString());
-    if (service?.documentId) current.set("serviceId", service?.documentId);
+    if (service?.documentId) current.set("serviceId", service.documentId);
     if (coworkingSpace?.documentId)
-      current.set("coworkingSpaceId", coworkingSpace?.documentId);
-    current.set("serviceId", service?.documentId ?? "");
+      current.set("coworkingSpaceId", coworkingSpace.documentId);
 
     router.replace(`?${current.toString()}`);
   };
 
-  const setStartDate = (date: Moment) => {
-    setStartDateState(date);
-  };
-
-  const setEndDate = (date: Moment) => {
-    setEndDateState(date);
-  };
-
-  const setService = (service: Service | null) => {
-    setServiceState(service);
-  };
-
-  const setCoworkingSpace = (space: CoworkingSpace | null) => {
+  const setService = (service: Service | null) => setServiceState(service);
+  const setCoworkingSpace = (space: CoworkingSpace | null) =>
     setCoworkingSpaceState(space);
+
+  const setWeekRange = (start: Moment, end: Moment) => {
+    setStartDateState(start);
+    setEndDateState(end);
+  };
+
+  const goToPreviousWeek = () => {
+    const newStart = startDate.clone().subtract(1, "week").startOf("isoWeek");
+    const newEnd = newStart.clone().endOf("isoWeek");
+
+    setWeekRange(newStart, newEnd);
+  };
+
+  const goToNextWeek = () => {
+    const newStart = startDate.clone().add(1, "week").startOf("isoWeek");
+    const newEnd = newStart.clone().endOf("isoWeek");
+
+    setWeekRange(newStart, newEnd);
   };
 
   const reload = async () => {
     if (!service) return;
-
     try {
       const token = getJWT();
-
       const query = new URLSearchParams({
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
@@ -110,9 +116,7 @@ export const ServiceCalendarProvider: React.FC<
         },
       );
 
-      if (!response.ok) {
-        throw new Error("Erreur lors du chargement des réservations");
-      }
+      if (!response.ok) throw new Error();
 
       const json = await response.json();
       const bookings = json.map(Booking.fromJson);
@@ -146,9 +150,7 @@ export const ServiceCalendarProvider: React.FC<
         const service = await fetchOne({
           ...Service.strapiAPIParams,
           id: urlServiceId,
-          queryParams: {
-            populate: ["availabilities"],
-          },
+          queryParams: { populate: ["availabilities"] },
         });
 
         setServiceState(service);
@@ -174,10 +176,11 @@ export const ServiceCalendarProvider: React.FC<
         endDate,
         service,
         coworkingSpace,
-        setStartDate,
-        setEndDate,
         setService,
         setCoworkingSpace,
+        setWeekRange,
+        goToPreviousWeek,
+        goToNextWeek,
         reload,
       }}
     >

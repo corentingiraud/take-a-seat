@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
+import { ChevronRight } from "lucide-react";
 
 import { useServiceCalendar } from "@/contexts/service-calendar-context";
 import { Booking } from "@/models/booking";
 import { Availability } from "@/models/availability";
 import { WeekSelector } from "@/components/ui/week-selector";
+import { Button } from "@/components/ui/button";
 
 export const ServiceCalendarView = () => {
-  const { bookings, startDate, endDate, service, setStartDate, setEndDate } =
+  const { bookings, startDate, endDate, service, setWeekRange, goToNextWeek } =
     useServiceCalendar();
 
   const [availability, setAvailability] = useState<Availability | null>(null);
@@ -64,10 +66,10 @@ export const ServiceCalendarView = () => {
 
   const headerNav = (
     <WeekSelector
-      initialStartDate={startDate}
-      onWeekChange={(newStart, newEnd) => {
-        setStartDate(newStart);
-        setEndDate(newEnd);
+      endDate={endDate}
+      startDate={startDate}
+      onChange={(newStart, newEnd) => {
+        setWeekRange(newStart, newEnd);
       }}
     />
   );
@@ -76,10 +78,15 @@ export const ServiceCalendarView = () => {
     return (
       <div className="space-y-10">
         {headerNav}
-        <p className="text-sm text-center text-muted-foreground">
-          Le service n&apos;a pas de disponibilité ouverte sur la semaine
-          sélectionnée
-        </p>
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-sm text-center text-muted-foreground">
+            Le service semble fermé sur cette semaine.
+          </p>
+          <Button onClick={goToNextWeek}>
+            Essayez la semaine suivante
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
       </div>
     );
 

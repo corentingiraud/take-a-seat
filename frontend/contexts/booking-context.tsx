@@ -23,8 +23,8 @@ interface BookingContextType {
   startDate: Moment;
   endDate: Moment;
   setWeekRange: (start: Moment, end: Moment) => void;
-  goToPreviousWeek: () => void; // <—
-  goToNextWeek: () => void; // <—
+  goToPreviousWeek: () => void;
+  goToNextWeek: () => void;
 }
 
 interface BookingProviderProps {
