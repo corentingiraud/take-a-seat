@@ -7,9 +7,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import moment from "moment";
 import { toast } from "sonner";
 
+import moment from "@/lib/moment";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { User } from "@/models/user";
 import { Booking } from "@/models/booking";
@@ -48,7 +48,6 @@ export const AdminPaymentsProvider: React.FC<AdminPaymentsProviderProps> = ({
             $and: [
               { bookingStatus: { $eq: BookingStatus.CONFIRMED } },
               { paymentStatus: { $eq: PaymentStatus.PENDING } },
-              { endDate: { $gt: now } },
             ],
           },
         },

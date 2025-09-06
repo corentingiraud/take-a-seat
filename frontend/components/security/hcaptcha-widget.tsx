@@ -67,7 +67,7 @@ export function HCaptchaWidget({
   const widgetKey = `${effectiveTheme}-${effectiveSize}`;
 
   if (!sitekey) {
-    console.warn(
+    throw new Error(
       "HCaptchaWidget: Missing NEXT_PUBLIC_HCAPTCHA_SITEKEY. Add it to .env.local",
     );
   }
@@ -88,7 +88,7 @@ export function HCaptchaWidget({
     (e: string) => {
       setError("Le captcha n’a pas pu se charger. Réessaie.");
       onChange?.(null);
-      console.error("hCaptcha error:", e);
+      throw e;
     },
     [onChange],
   );

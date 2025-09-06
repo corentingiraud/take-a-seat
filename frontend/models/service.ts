@@ -1,10 +1,11 @@
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 
 import { Time } from "./time";
 import { CoworkingSpace } from "./coworking-space";
 import { Availability } from "./availability";
-import { Booking } from "./booking"; // Assuming this exists
+import { Booking } from "./booking";
 
+import moment from "@/lib/moment";
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
 

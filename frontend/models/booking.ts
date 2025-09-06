@@ -1,4 +1,4 @@
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 
 import { BookingStatus } from "./booking-status";
 import { PaymentStatus } from "./payment-status";
@@ -6,6 +6,7 @@ import { Service } from "./service";
 import { User } from "./user";
 import { StrapiData } from "./utils/strapi-data";
 
+import moment from "@/lib/moment";
 import { GeneralParams } from "@/types/strapi-api-params";
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 
@@ -92,7 +93,7 @@ export class Booking implements StrapiData {
   }
 
   toString() {
-    return `Le ${this.startDate.format("ddd D MMM")} de ${this.startDate.format("H")}h à ${this.endDate.format("H")}h`;
+    return `Le ${this.startDate.format("ddd D MMM [de] H[h]mm [à]")} ${this.endDate.format("H[h]mm")}`;
   }
 
   get isPast(): boolean {

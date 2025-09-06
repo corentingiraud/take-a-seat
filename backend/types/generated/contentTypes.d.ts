@@ -392,6 +392,7 @@ export interface ApiAvailabilityAvailability
       'api::availability.availability'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String;
     numberOfSeats: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     service: Schema.Attribute.Relation<'manyToOne', 'api::service.service'>;

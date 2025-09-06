@@ -7,7 +7,7 @@
 <body style="font-family: Arial, sans-serif; color: #333;">
   <h2>Nouvelle réservation effectuée 🛎️</h2>
 
-  <p>Un utilisateur vient d’effectuer une ou plusieurs réservations sur <strong>Le Pêle Coworking - Take a Seat</strong>.</p>
+  <p>Un utilisateur vient d’effectuer une ou plusieurs réservations sur <strong>Le Pêle Coworking</strong>.</p>
 
   <ul>
     <li><strong>Utilisateur :</strong> <%= user.email %></li>
@@ -32,6 +32,10 @@
   <% } else { %>
     <p>⚠️ Pas de carte prépayée utilisée. Paiement en attente.</p>
   <% } %>
+
+  <br>
+  <p>ℹ️ Aucune action n’est nécessaire de votre part : la réservation est <strong>confirmée par défaut</strong>.  
+  Il faudra uniquement gérer le paiement si nécessaire.</p>
 
   <br>
   <p>🖥️ Connectez-vous au panneau d’administration pour consulter les détails.</p>

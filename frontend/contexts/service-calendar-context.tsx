@@ -7,10 +7,11 @@ import {
   useState,
   ReactNode,
 } from "react";
-import moment, { Moment } from "moment";
 import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Moment } from "moment";
 
+import moment from "@/lib/moment";
 import { Booking } from "@/models/booking";
 import { Service } from "@/models/service";
 import { API_URL } from "@/config/site";

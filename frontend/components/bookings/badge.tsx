@@ -1,5 +1,3 @@
-import moment from "moment";
-
 import { Badge } from "@/components/ui/badge";
 import { Booking } from "@/models/booking";
 import { BookingStatus } from "@/models/booking-status";

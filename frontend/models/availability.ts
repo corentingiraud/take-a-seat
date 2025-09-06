@@ -1,4 +1,4 @@
-import moment, { Duration, Moment } from "moment";
+import { Duration, Moment } from "moment";
 
 import { Service } from "./service";
 import { Time } from "./time";
@@ -6,6 +6,7 @@ import { Time } from "./time";
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
 import { BookingSlot, Day, TimeSlot, WeeklySchedule } from "@/types";
+import moment from "@/lib/moment";
 
 interface AvailabilityInterface {
   id?: number;
@@ -229,7 +230,11 @@ export class Availability {
   }
 
   private getDailySlots(date: Moment): TimeSlot[] {
-    const dayOfWeek = date.locale("en").format("dddd").toLowerCase() as Day;
+    const dayOfWeek = date
+      .clone()
+      .locale("en")
+      .format("dddd")
+      .toLowerCase() as Day;
 
     return this.weeklyAvailabilities?.[dayOfWeek] ?? [];
   }

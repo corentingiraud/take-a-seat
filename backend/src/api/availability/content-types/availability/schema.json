@@ -28,6 +28,9 @@
       "relation": "manyToOne",
       "target": "api::service.service",
       "inversedBy": "availabilities"
+    },
+    "name": {
+      "type": "string"
     }
   }
 }

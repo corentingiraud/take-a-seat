@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import clsx from "clsx";
-import moment from "moment";
 import { PublicEnvScript } from "next-runtime-env";
 
+import moment from "@/lib/moment";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbars/navbar";

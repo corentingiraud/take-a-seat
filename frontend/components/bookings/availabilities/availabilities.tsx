@@ -58,6 +58,10 @@ export const BookingAvailabilities = ({
   const { user } = useAuth();
   const router = useRouter();
 
+  startDay.locale("fr");
+  endDay?.locale("fr");
+  multipleDays = multipleDays?.map((day) => day.locale("fr"));
+
   const {
     availableBookings,
     unavailableBookings,

@@ -1,5 +1,6 @@
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 
+import moment from "@/lib/moment";
 import { HalfDay } from "@/models/half-day";
 import { Unavailability } from "@/models/unavailability";
 import { Service } from "@/models/service";

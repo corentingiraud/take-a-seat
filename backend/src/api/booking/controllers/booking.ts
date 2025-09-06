@@ -97,6 +97,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
 
         bookingsToCreate.push({
           ...booking,
+          bookingStatus: 'CONFIRMED',
           service: service.documentId,
           user: user.documentId,
           paymentStatus: prepaidCard ? 'PAID' : 'PENDING',

@@ -1,5 +1,6 @@
-import moment, { Duration } from "moment";
+import { Duration } from "moment";
 
+import moment from "@/lib/moment";
 import { Availability } from "@/models/availability";
 import { Unavailability } from "@/models/unavailability";
 

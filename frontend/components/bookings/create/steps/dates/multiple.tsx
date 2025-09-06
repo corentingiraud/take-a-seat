@@ -1,11 +1,12 @@
 "use client";
 
 import { CalendarIcon } from "lucide-react";
-import moment, { Moment } from "moment";
 import { useState } from "react";
+import { Moment } from "moment";
 
 import { shouldDisableDate } from "../utils/should-disable-date";
 
+import moment from "@/lib/moment";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

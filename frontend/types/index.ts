@@ -1,3 +1,4 @@
+import { Moment } from "moment";
 import { SVGProps } from "react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -5,8 +6,8 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export type BookingSlot = {
-  start: moment.Moment;
-  end: moment.Moment;
+  start: Moment;
+  end: Moment;
 };
 
 export type TimeSlot = {

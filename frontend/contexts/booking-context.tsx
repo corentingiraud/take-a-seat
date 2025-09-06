@@ -8,12 +8,13 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 
 import { Booking } from "@/models/booking";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { BookingStatus } from "@/models/booking-status";
 import { User } from "@/models/user";
+import moment from "@/lib/moment";
 
 interface BookingContextType {
   bookings: Booking[];
@@ -22,6 +23,8 @@ interface BookingContextType {
   startDate: Moment;
   endDate: Moment;
   setWeekRange: (start: Moment, end: Moment) => void;
+  goToPreviousWeek: () => void; // <—
+  goToNextWeek: () => void; // <—
 }
 
 interface BookingProviderProps {
@@ -83,9 +86,32 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
     setEndDate(end);
   };
 
+  const goToPreviousWeek = () => {
+    const newStart = startDate.clone().subtract(1, "week").startOf("isoWeek");
+    const newEnd = newStart.clone().endOf("isoWeek");
+
+    setWeekRange(newStart, newEnd);
+  };
+
+  const goToNextWeek = () => {
+    const newStart = startDate.clone().add(1, "week").startOf("isoWeek");
+    const newEnd = newStart.clone().endOf("isoWeek");
+
+    setWeekRange(newStart, newEnd);
+  };
+
   return (
     <BookingContext.Provider
-      value={{ bookings, reload, cancel, startDate, endDate, setWeekRange }}
+      value={{
+        bookings,
+        reload,
+        cancel,
+        startDate,
+        endDate,
+        setWeekRange,
+        goToPreviousWeek,
+        goToNextWeek,
+      }}
     >
       {children}
     </BookingContext.Provider>

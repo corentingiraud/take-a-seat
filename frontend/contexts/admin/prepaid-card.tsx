@@ -7,9 +7,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import moment from "moment";
 import { toast } from "sonner";
 
+import moment from "@/lib/moment";
 import { User } from "@/models/user";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { SubscriptionType } from "@/config/constants";

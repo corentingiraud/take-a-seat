@@ -1,4 +1,4 @@
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 
 import { useDesiredDates } from "./use-desired-date";
 import { useDesiredBookings } from "./use-desired-bookings";
@@ -6,6 +6,7 @@ import { useFetchBookings } from "./use-fetch-bookings";
 import { useBookingAvailability } from "./use-booking-availability";
 import { useBulkCreateBookings } from "./use-bulk-create-bookings";
 
+import moment from "@/lib/moment";
 import { Service } from "@/models/service";
 import { HalfDay } from "@/models/half-day";
 import { Time } from "@/models/time";

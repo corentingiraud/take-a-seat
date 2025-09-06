@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from "@/lib/moment";
 
 type DurationType = "time" | "multipleDates" | "rangeOfDates";
 

@@ -7,7 +7,7 @@
 <body style="font-family: Arial, sans-serif; color: #333;">
   <h2>Merci pour votre réservation, <%= user.firstName %> 👋</h2>
 
-  <p>Voici le récapitulatif de vos réservations chez <strong>Le Pêle Coworking - Take a Seat</strong> :</p>
+  <p>Voici le récapitulatif de vos réservations chez <strong>Le Pêle Coworking</strong> :</p>
 
   <ul>
     <li><strong>Service :</strong> <%= service.name %></li>
@@ -29,8 +29,12 @@
   <% if (prepaidCardUsed) { %>
     <p><strong>Carte prépayée utilisée.</strong> Nouveau solde : <%= remainingBalance %> réservation(s)</p>
   <% } else { %>
-    <p>💳 Aucune carte prépayée utilisée. Le paiement est <strong>en attente</strong>.</p>
+    <p>💳 Aucune carte prépayée utilisée. Le paiement se fera <strong>sur place</strong>.</p>
   <% } %>
+
+  <br>
+  <p>✅ Votre réservation est <strong>confirmée automatiquement</strong>.  
+  Aucune action n’est nécessaire de votre part, il suffira simplement de régler le paiement lors de votre venue.</p>
 
   <p>📍 Vous pouvez gérer vos réservations depuis votre compte à tout moment.</p>
 
