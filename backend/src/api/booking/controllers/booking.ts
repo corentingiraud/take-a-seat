@@ -136,12 +136,20 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           name: service.coworkingSpace.name
         },
         bookings: bookingsToCreate.map(b => ({
-          startDate: new Date(b.startDate).toLocaleString('fr-FR'),
-          endDate: new Date(b.endDate).toLocaleString('fr-FR'),
+          startDate: new Date(b.startDate).toLocaleString('fr-FR', {
+            dateStyle: 'short',
+            timeStyle: 'short'
+          }),
+          endDate: new Date(b.endDate).toLocaleString('fr-FR', {
+            dateStyle: 'short',
+            timeStyle: 'short'
+          }),
         })),
         paymentStatus: prepaidCard ? 'PAYÉ' : 'EN ATTENTE',
         prepaidCardUsed: !!prepaidCard,
-        remainingBalance: prepaidCard ? prepaidCard.remainingBalance - bookings.length : null
+        remainingBalance: prepaidCard ? prepaidCard.remainingBalance - bookings.length : null,
+        adminUrl: process.env.FRONTEND_URL,
+        accountUrl: process.env.FRONTEND_URL,
       };
 
       // Send email to user

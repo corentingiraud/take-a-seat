@@ -49,8 +49,8 @@ export function useBulkCreateBookings(bookings: Booking[]) {
 
       const message =
         bookings.length > 1
-          ? "Vos réservations ont bien été enregistrées. Elles doivent néanmoins être validées par un administrateur."
-          : "Votre réservation a bien été enregistrée. Elle doit néanmoins être validée par un administrateur.";
+          ? "Vos réservations ont bien été enregistrées."
+          : "Votre réservation a bien été enregistrée.";
 
       toast.success(message);
     } catch (err) {
