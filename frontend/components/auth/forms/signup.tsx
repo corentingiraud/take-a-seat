@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,9 @@ export function SignupForm({
   const { user, signup, loading } = useAuth();
   const router = useRouter();
 
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const prevLoading = useRef<boolean>(loading);
+
   const [values, setValues] = useState<Values>({
     firstName: "",
     lastName: "",
@@ -75,6 +78,14 @@ export function SignupForm({
   useEffect(() => {
     if (user) router.push(siteConfig.path.dashboard.href);
   }, [user, router]);
+
+  useEffect(() => {
+    if (prevLoading.current && !loading) {
+      setHCaptchaToken(null);
+      setCaptchaKey((k) => k + 1);
+    }
+    prevLoading.current = loading;
+  }, [loading]);
 
   const rules = useMemo<Partial<Record<Fields, Validator<Values>>>>(
     () => ({
@@ -328,6 +339,7 @@ export function SignupForm({
               </div>
 
               <HCaptchaWidget
+                key={captchaKey}
                 className="self-center"
                 onChange={setHCaptchaToken}
               />

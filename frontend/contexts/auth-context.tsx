@@ -116,7 +116,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!res.ok) {
-        toast.error("Echec de la connexion. Veuillez essayer de nouveau.");
+        const errorData = await res.json();
+
+        if (
+          errorData?.error?.message === "Your account email is not confirmed"
+        ) {
+          toast.error(
+            "Vous devez confirmer votre adresse e-mail avant de vous connecter.",
+          );
+        } else {
+          toast.error("Échec de la connexion. Veuillez essayer de nouveau.");
+        }
+
         setLoading(false);
 
         return;
@@ -154,6 +165,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
         body: JSON.stringify({
           ...user.toJsonForRegistration(),
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
           password,
         }),
       });
@@ -166,6 +180,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           if (err?.error?.message) msg = err.error.message;
         } catch {}
+
         toast.error(msg);
         setLoading(false);
 
@@ -176,22 +191,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, data.jwt);
 
-      await fetch(`${API_URL}/users/me`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${data.jwt}`,
-        },
-        body: JSON.stringify({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phone: user.phone,
-        }),
-      });
+      toast.success(
+        "Compte créé. Veuillez confirmer votre adresse e-mail; un email de confirmation vous a été envoyé.",
+      );
 
-      await fetchUser();
-
-      toast.success("Compte créé avec succès. Bienvenue !");
       router.push(siteConfig.path.dashboard.href);
     } catch {
       toast.error("Échec de l'inscription. Veuillez réessayer.");
@@ -214,7 +217,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!res.ok) {
-        // Strapi usually returns { error: { message } }
         let msg = "Impossible d'envoyer l'e-mail de réinitialisation.";
 
         try {

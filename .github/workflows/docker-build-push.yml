@@ -23,7 +23,7 @@ env:
   REGISTRY: ghcr.io
   OWNER: corentingiraud
   IMAGE: take-a-seat
-  PLATFORMS: linux/amd64,linux/arm64
+  PLATFORMS: linux/amd64
 
 jobs:
   docker:
@@ -46,9 +46,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-
-      - name: set up qemu
-        uses: docker/setup-qemu-action@v3
 
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v3
@@ -81,3 +78,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
+          sbom: false
