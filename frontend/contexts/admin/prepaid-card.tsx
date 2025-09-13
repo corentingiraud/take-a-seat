@@ -115,6 +115,7 @@ export const AdminPrepaidCardsProvider = ({
             contentType: PrepaidCard.contentType,
             factory: PrepaidCard.fromJson,
             object: new PrepaidCard({
+              name: PrepaidCard.buildCardName(user, validFrom, hours),
               validFrom: validFrom,
               expirationDate: expirationDate,
               remainingBalance: hours,

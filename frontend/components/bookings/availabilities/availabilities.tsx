@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { Moment } from "moment";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { DialogHeader, DialogFooter, DialogContent } from "../../ui/dialog";
 import { Button } from "../../ui/button";
@@ -88,6 +88,23 @@ export const BookingAvailabilities = ({
   const [selectedPrepaidCard, setSelectedPrepaidCard] =
     useState<PrepaidCard | null>(null);
 
+  useEffect(() => {
+    if (prepaidCard.length === 1) {
+      setUseCard(true);
+      setSelectedPrepaidCard(prepaidCard[0]);
+    } else if (prepaidCard.length > 1) {
+      const cardWithMostCredits = prepaidCard.reduce((max, card) =>
+        card.remainingBalance > max.remainingBalance ? card : max,
+      );
+
+      setUseCard(true);
+      setSelectedPrepaidCard(cardWithMostCredits);
+    } else {
+      setUseCard(false);
+      setSelectedPrepaidCard(null);
+    }
+  }, [prepaidCard]);
+
   async function createAvailableBookings() {
     await bulkCreateAvailableBookings(selectedPrepaidCard);
     router.push(siteConfig.path.dashboard.href);
@@ -106,18 +123,18 @@ export const BookingAvailabilities = ({
 
       {/* Créneaux indisponibles */}
       {unavailableBookings.length > 0 && (
-        <div className="mt-6 rounded-md border border-red-300 bg-red-50 p-4">
-          <h4 className="flex items-center gap-2 text-sm font-semibold text-red-600">
+        <div className="mt-6 rounded-md border border-red-300 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950">
+          <h4 className="flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400">
             ❌ Créneaux indisponibles
           </h4>
-          <p className="text-xs text-red-500 mb-3">
+          <p className="text-xs text-red-500 mb-3 dark:text-red-300">
             Ces créneaux ne peuvent pas être réservés pour le moment.
           </p>
-          <ScrollArea className="rounded-md border h-32 bg-white">
+          <ScrollArea className="relative rounded-md border h-32 bg-white dark:bg-neutral-900 dark:border-neutral-700">
             <div className="p-4">
               {unavailableBookings.map((unavailableBooking, i) => (
                 <div key={i}>
-                  <div className="text-sm text-red-700">
+                  <div className="text-sm text-red-700 dark:text-red-200">
                     {unavailableBooking.booking.toString()} :{" "}
                     {unavailableBooking.cause}
                   </div>
@@ -125,30 +142,40 @@ export const BookingAvailabilities = ({
                 </div>
               ))}
             </div>
+            {unavailableBookings.length > 3 && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-neutral-900 text-center text-xs text-gray-500 dark:text-gray-400 py-1">
+                Faites défiler pour voir plus
+              </div>
+            )}
           </ScrollArea>
         </div>
       )}
 
       {/* Créneaux disponibles */}
       {availableBookings.length > 0 && (
-        <div className="mt-6 rounded-md border border-green-300 bg-green-50 p-4">
-          <h4 className="flex items-center gap-2 text-sm font-semibold text-green-600">
+        <div className="mt-6 rounded-md border border-green-300 bg-green-50 p-4 dark:border-green-900/50 dark:bg-green-950">
+          <h4 className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
             ✅ Créneaux disponibles
           </h4>
-          <p className="text-xs text-green-500 mb-3">
+          <p className="text-xs text-green-500 mb-3 dark:text-green-300">
             Ces créneaux sont prêts à être réservés.
           </p>
-          <ScrollArea className="rounded-md border h-32 bg-white">
+          <ScrollArea className="relative rounded-md border h-32 bg-white dark:bg-neutral-900 dark:border-neutral-700">
             <div className="p-4">
               {availableBookings.map((booking, i) => (
                 <div key={i}>
-                  <div className="text-sm text-green-700">
+                  <div className="text-sm text-green-700 dark:text-green-200">
                     {booking.toString()}
                   </div>
                   <Separator className="my-2" />
                 </div>
               ))}
             </div>
+            {availableBookings.length > 3 && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-neutral-900 text-center text-xs text-gray-500 dark:text-gray-400 py-1">
+                Faites défiler pour voir plus
+              </div>
+            )}
           </ScrollArea>
         </div>
       )}
@@ -173,6 +200,7 @@ export const BookingAvailabilities = ({
 
         {useCard && (
           <Select
+            value={selectedPrepaidCard?.documentId}
             onValueChange={(val) => {
               const card = prepaidCard.find((c) => c.documentId === val);
 

@@ -6,8 +6,8 @@
       "filterable": true,
       "searchable": true,
       "pageSize": 10,
-      "mainField": "id",
-      "defaultSortBy": "id",
+      "mainField": "name",
+      "defaultSortBy": "endDate",
       "defaultSortOrder": "ASC"
     },
     "metadatas": {
@@ -85,7 +85,21 @@
           "mainField": "name"
         },
         "list": {
-          "label": "service",
+          "label": "Service",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "name": {
+        "edit": {
+          "label": "Nom",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Nom",
           "searchable": true,
           "sortable": true
         }
@@ -153,6 +167,12 @@
       "edit": [
         [
           {
+            "name": "name",
+            "size": 12
+          }
+        ],
+        [
+          {
             "name": "service",
             "size": 12
           }
@@ -160,11 +180,11 @@
         [
           {
             "name": "startDate",
-            "size": 6
+            "size": 12
           },
           {
             "name": "endDate",
-            "size": 6
+            "size": 12
           }
         ],
         [
@@ -181,7 +201,7 @@
         ]
       ],
       "list": [
-        "id",
+        "name",
         "endDate",
         "startDate",
         "service"

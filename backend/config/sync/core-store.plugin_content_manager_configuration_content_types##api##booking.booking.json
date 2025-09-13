@@ -97,7 +97,7 @@
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "id"
+          "mainField": "name"
         },
         "list": {
           "label": "prepaidCard",
@@ -184,37 +184,37 @@
         [
           {
             "name": "user",
-            "size": 6
+            "size": 12
           }
         ],
         [
           {
             "name": "startDate",
-            "size": 6
+            "size": 12
           },
           {
             "name": "endDate",
-            "size": 6
+            "size": 12
           }
         ],
         [
           {
             "name": "bookingStatus",
-            "size": 6
+            "size": 12
           },
           {
             "name": "paymentStatus",
-            "size": 6
+            "size": 12
           }
         ],
         [
           {
             "name": "prepaidCard",
-            "size": 6
+            "size": 12
           },
           {
             "name": "service",
-            "size": 6
+            "size": 12
           }
         ]
       ],

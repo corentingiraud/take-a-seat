@@ -44,6 +44,9 @@
     },
     "validFrom": {
       "type": "date"
+    },
+    "name": {
+      "type": "string"
     }
   }
 }

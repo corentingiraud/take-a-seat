@@ -12,6 +12,7 @@ import { GeneralParams } from "@/types/strapi-api-params";
 interface PrepaidCardInterface {
   id?: number;
   documentId?: string;
+  name: string;
   validFrom?: Moment | null;
   expirationDate?: Moment | null;
   remainingBalance: number;
@@ -25,6 +26,7 @@ export type PrepaidCardStatus = "usable" | "upcoming" | "expired";
 export class PrepaidCard implements StrapiData {
   id: number;
   documentId: string;
+  name: string;
   validFrom?: Moment | null;
   expirationDate?: Moment | null;
   remainingBalance: number;
@@ -39,6 +41,7 @@ export class PrepaidCard implements StrapiData {
     documentId = UNDEFINED_DOCUMENT_ID,
     validFrom = null,
     expirationDate = null,
+    name,
     remainingBalance,
     paymentStatus = PaymentStatus.PENDING,
     user,
@@ -46,6 +49,7 @@ export class PrepaidCard implements StrapiData {
   }: PrepaidCardInterface) {
     this.id = id;
     this.documentId = documentId;
+    this.name = name;
     this.validFrom = validFrom;
     this.expirationDate = expirationDate;
     this.remainingBalance = remainingBalance;
@@ -58,6 +62,7 @@ export class PrepaidCard implements StrapiData {
     return new PrepaidCard({
       id: json.id ?? UNDEFINED_ID,
       documentId: json.documentId ?? UNDEFINED_DOCUMENT_ID,
+      name: json.name,
       validFrom: moment(json.validFrom),
       expirationDate: moment(json.expirationDate),
       remainingBalance: json.remainingBalance ?? 0,
@@ -65,6 +70,13 @@ export class PrepaidCard implements StrapiData {
       user: json.user ?? null,
       bookings: json.bookings ?? [],
     });
+  }
+
+  static buildCardName(user: User, month: Moment, hours: number) {
+    const monthLabel = month.format("MMMM YYYY");
+    const fullName = `${user.lastName} ${user.firstName}`.trim();
+
+    return `${fullName} — ${monthLabel} — ${hours}h`;
   }
 
   static get strapiAPIParams(): GeneralParams<PrepaidCard> {
@@ -76,6 +88,7 @@ export class PrepaidCard implements StrapiData {
 
   toJson(): object {
     const json: any = {
+      name: this.name,
       validFrom: this.validFrom?.format(),
       expirationDate: this.expirationDate?.format(),
       remainingBalance: this.remainingBalance,
@@ -90,7 +103,7 @@ export class PrepaidCard implements StrapiData {
   }
 
   toString() {
-    return `Carte N°${this.id} (${this.remainingBalance} heures restantes)`;
+    return `${this.name} (${this.remainingBalance}h restantes)`;
   }
 
   get status(): PrepaidCardStatus {

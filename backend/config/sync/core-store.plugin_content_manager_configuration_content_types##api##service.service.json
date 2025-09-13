@@ -169,13 +169,13 @@
       "edit": [
         [
           {
-            "name": "coworkingSpace",
+            "name": "name",
             "size": 12
           }
         ],
         [
           {
-            "name": "name",
+            "name": "coworkingSpace",
             "size": 12
           }
         ],

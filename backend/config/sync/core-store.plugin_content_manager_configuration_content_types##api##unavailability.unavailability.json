@@ -140,21 +140,21 @@
         [
           {
             "name": "name",
-            "size": 6
+            "size": 12
           },
           {
             "name": "coworking_spaces",
-            "size": 6
+            "size": 12
           }
         ],
         [
           {
             "name": "startDate",
-            "size": 6
+            "size": 12
           },
           {
             "name": "endDate",
-            "size": 6
+            "size": 12
           }
         ]
       ],

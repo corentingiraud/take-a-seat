@@ -511,6 +511,7 @@ export interface ApiPrepaidCardPrepaidCard extends Struct.CollectionTypeSchema {
       'api::prepaid-card.prepaid-card'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String;
     paymentStatus: Schema.Attribute.Enumeration<['PENDING', 'PAID']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'PENDING'>;

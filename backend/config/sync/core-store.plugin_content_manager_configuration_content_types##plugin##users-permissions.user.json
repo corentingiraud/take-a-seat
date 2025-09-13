@@ -281,42 +281,50 @@
       "edit": [
         [
           {
-            "name": "firstName",
-            "size": 6
-          },
-          {
             "name": "lastName",
-            "size": 6
+            "size": 12
           }
         ],
         [
           {
-            "name": "username",
-            "size": 6
-          },
-          {
-            "name": "role",
-            "size": 6
+            "name": "firstName",
+            "size": 12
           }
         ],
         [
           {
             "name": "email",
-            "size": 6
-          },
+            "size": 12
+          }
+        ],
+        [
           {
-            "name": "confirmed",
-            "size": 6
+            "name": "username",
+            "size": 12
+          }
+        ],
+        [
+          {
+            "name": "phone",
+            "size": 12
           }
         ],
         [
           {
             "name": "password",
-            "size": 6
-          },
+            "size": 12
+          }
+        ],
+        [
           {
-            "name": "phone",
-            "size": 6
+            "name": "role",
+            "size": 12
+          }
+        ],
+        [
+          {
+            "name": "confirmed",
+            "size": 12
           }
         ]
       ],

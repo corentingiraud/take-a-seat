@@ -6,12 +6,12 @@
       "icon": "sync",
       "options": {
         "from": {
-          "name": "Take a Seat",
-          "email": "no-reply@take-a-seat.fr"
+          "name": "Le Pêle Coworking",
+          "email": "no-reply@take-a-seat.local"
         },
         "response_email": "",
         "object": "Réinitialisation de votre mot de passe",
-        "message": "<p>Nous avons entendu dire que vous avez perdu votre mot de passe. Désolé pour cela !</p>\n<p>Mais ne vous inquiétez pas ! Vous pouvez utiliser le lien suivant pour réinitialiser votre mot de passe :</p> \n<p><%= URL %>?code=<%= TOKEN %></p>\n<p>Merci.</p>"
+        "message": "<div style=\"font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; color: #000; background: #fff; border: 1px solid #ddd;\">\n  <h2 style=\"text-align: center; font-weight: normal; border-bottom: 1px solid #eee; padding-bottom: 10px;\">\n    Réinitialisation de mot de passe\n  </h2>\n  \n  <p>Bonjour,</p>\n  <p>\n    Nous avons reçu une demande de réinitialisation de votre mot de passe pour \n    <strong>Le Pêle Coworking</strong>.\n  </p>\n  <p>\n    Si vous êtes à l'origine de cette demande, cliquez sur le lien ci-dessous pour créer un nouveau mot de passe :\n  </p>\n\n  <p style=\"text-align: center; margin: 30px 0;\">\n    <a href=\"<%= URL %>?code=<%= TOKEN %>\" \n       style=\"display: inline-block; padding: 12px 20px; color: #fff; background: #000; text-decoration: none; border-radius: 4px;\">\n      Réinitialiser mon mot de passe\n    </a>\n  </p>\n\n  <p>\n    Si vous n’avez pas demandé ce changement, vous pouvez ignorer cet e-mail. Votre mot de passe actuel restera inchangé.\n  </p>\n\n  <p style=\"margin-top: 40px; font-size: 12px; color: #555; border-top: 1px solid #eee; padding-top: 10px;\">\n    Cet e-mail a été envoyé automatiquement par l’application de gestion des réservations du \n    <strong>Pêle Coworking</strong>.\n  </p>\n</div>\n"
       }
     },
     "email_confirmation": {
@@ -19,12 +19,12 @@
       "icon": "check-square",
       "options": {
         "from": {
-          "name": "Take a Seat",
+          "name": "Le Pêle Coworking",
           "email": "no-reply@take-a-seat.fr"
         },
         "response_email": "",
         "object": "Confirmation de votre adresse email",
-        "message": "<p>Merci de vous être inscrit !</p>\n<p>Vous devez confirmer votre adresse e-mail. Veuillez cliquer sur le lien ci-dessous.</p>\n<p><%= URL %>?confirmation=<%= CODE %></p>\n<p>Merci.</p>"
+        "message": "<div style=\"font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; color: #000; background: #fff; border: 1px solid #ddd;\">\n  <h2 style=\"text-align: center; font-weight: normal; border-bottom: 1px solid #eee; padding-bottom: 10px;\">\n    Confirmation de votre inscription\n  </h2>\n  \n  <p>Bonjour,</p>\n  <p>\n    Merci de vous être inscrit à <strong>Le Pêle Coworking</strong>.\n  </p>\n  <p>\n    Pour activer votre compte, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous :\n  </p>\n\n  <p style=\"text-align: center; margin: 30px 0;\">\n    <a href=\"<%= URL %>?confirmation=<%= CODE %>\" \n       style=\"display: inline-block; padding: 12px 20px; color: #fff; background: #000; text-decoration: none; border-radius: 4px;\">\n      Confirmer mon adresse e-mail\n    </a>\n  </p>\n\n  <p>\n    Si vous n’êtes pas à l’origine de cette inscription, ignorez simplement cet e-mail.\n  </p>\n\n  <p style=\"margin-top: 40px; font-size: 12px; color: #555; border-top: 1px solid #eee; padding-top: 10px;\">\n    Cet e-mail a été envoyé automatiquement par l’application de gestion des réservations du \n    <strong>Pêle Coworking</strong>.\n  </p>\n</div>\n"
       }
     }
   },

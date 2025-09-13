@@ -6,8 +6,8 @@
       "filterable": true,
       "searchable": true,
       "pageSize": 10,
-      "mainField": "id",
-      "defaultSortBy": "expirationDate",
+      "mainField": "name",
+      "defaultSortBy": "validFrom",
       "defaultSortOrder": "ASC"
     },
     "metadatas": {
@@ -79,11 +79,11 @@
       "bookings": {
         "edit": {
           "label": "Réservations",
-          "description": "",
+          "description": "Réservations ayant été payées avec cette carte pré-payée.",
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "id"
+          "mainField": "startDate"
         },
         "list": {
           "label": "bookings",
@@ -101,6 +101,20 @@
         },
         "list": {
           "label": "Date d'activation",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "name": {
+        "edit": {
+          "label": "Nom",
+          "description": "Nom de la carte pré-payée",
+          "placeholder": "Abonnement septembre 2025",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Nom",
           "searchable": true,
           "sortable": true
         }
@@ -168,6 +182,12 @@
       "edit": [
         [
           {
+            "name": "name",
+            "size": 12
+          }
+        ],
+        [
+          {
             "name": "user",
             "size": 12
           }
@@ -175,21 +195,25 @@
         [
           {
             "name": "remainingBalance",
-            "size": 6
-          },
+            "size": 12
+          }
+        ],
+        [
           {
             "name": "paymentStatus",
-            "size": 6
+            "size": 12
           }
         ],
         [
           {
             "name": "validFrom",
-            "size": 6
-          },
+            "size": 12
+          }
+        ],
+        [
           {
             "name": "expirationDate",
-            "size": 6
+            "size": 12
           }
         ],
         [
@@ -200,11 +224,12 @@
         ]
       ],
       "list": [
-        "user",
+        "name",
         "remainingBalance",
         "validFrom",
         "expirationDate",
-        "paymentStatus"
+        "paymentStatus",
+        "user"
       ]
     },
     "uid": "api::prepaid-card.prepaid-card"
