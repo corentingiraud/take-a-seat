@@ -98,7 +98,10 @@ export const ServiceCalendarView = () => {
       {/* Calendar grid */}
       <div className="overflow-x-auto">
         <div
-          className={`grid grid-cols-[80px_repeat(${weekDays.length},minmax(120px,1fr))] border-t border-l dark:border-neutral-700`}
+          className="grid border-t border-l dark:border-neutral-700"
+          style={{
+            gridTemplateColumns: `80px repeat(${weekDays.length}, minmax(120px,1fr))`,
+          }}
         >
           {/* Header row */}
           <div className="border-b border-r p-2 font-medium text-sm bg-gray-100 dark:bg-neutral-800 dark:text-white">
