@@ -71,11 +71,11 @@ export const AuthMenu = () => {
             <DropdownMenuLabel className="text-muted-foreground">
               Admin
             </DropdownMenuLabel>
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               onClick={() => router.push(siteConfig.path.adminBookings.href)}
             >
               Gérer les réservations
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem
               onClick={() => router.push(siteConfig.path.adminPayments.href)}
             >

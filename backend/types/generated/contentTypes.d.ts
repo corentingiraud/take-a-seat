@@ -516,7 +516,7 @@ export interface ApiPrepaidCardPrepaidCard extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'PENDING'>;
     publishedAt: Schema.Attribute.DateTime;
-    remainingBalance: Schema.Attribute.Integer &
+    remainingBalance: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {

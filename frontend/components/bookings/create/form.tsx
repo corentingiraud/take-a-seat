@@ -46,6 +46,15 @@ export const CreateBookingForm = () => {
     }
 
     if (
+      duration.equals(AVAILABLE_DURATION.HALF_HOUR) &&
+      (!startDay || !startTime)
+    ) {
+      setFormIsValid(false);
+
+      return;
+    }
+
+    if (
       duration.equals(AVAILABLE_DURATION.ONE_HOUR) &&
       (!startDay || !startTime)
     ) {
@@ -121,6 +130,7 @@ export const CreateBookingForm = () => {
           </div>
           <DurationFormStep
             key={`service-${service.id}-duration`}
+            service={service}
             onDurationChange={(value) => {
               setStartDay(undefined);
               setEndDay(undefined);
@@ -145,14 +155,17 @@ export const CreateBookingForm = () => {
           }}
         />
       )}
-      {service && startDay && duration?.equals(AVAILABLE_DURATION.ONE_HOUR) && (
-        <TimeFormStep
-          key={`service-${service.id}-time-${startDay?.format("YYYY-MM-DD")}`}
-          date={startDay}
-          service={service}
-          onTimeChange={(value) => setStartTime(value)}
-        />
-      )}
+      {service &&
+        startDay &&
+        (duration?.equals(AVAILABLE_DURATION.ONE_HOUR) ||
+          duration?.equals(AVAILABLE_DURATION.HALF_HOUR)) && (
+          <TimeFormStep
+            key={`service-${service.id}-time-${startDay?.format("YYYY-MM-DD")}`}
+            date={startDay}
+            service={service}
+            onTimeChange={(value) => setStartTime(value)}
+          />
+        )}
       {service && startDay && duration?.equals(AVAILABLE_DURATION.HALF_DAY) && (
         <HalfDayFormStep
           key={`service-${service.id}-half-day-${startDay?.format("YYYY-MM-DD")}`}

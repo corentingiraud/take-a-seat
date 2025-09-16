@@ -115,7 +115,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           await strapi.documents('api::prepaid-card.prepaid-card').update({
             documentId: prepaidCard.documentId,
             data: {
-              remainingBalance: prepaidCard.remainingBalance - bookings.length
+              remainingBalance: prepaidCard.remainingBalance - (bookings.length * service.bookingDuration) / 60
             }
           });
         }

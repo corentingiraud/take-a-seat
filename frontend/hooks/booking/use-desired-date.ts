@@ -31,8 +31,15 @@ export function useDesiredDates({
     let start = startDay.clone();
     let end = moment();
 
+    const halfHour = AVAILABLE_DURATION.HALF_HOUR;
     const oneHour = AVAILABLE_DURATION.ONE_HOUR;
     const halfDayDuration = AVAILABLE_DURATION.HALF_DAY;
+
+    // half hour
+    if (duration.equals(halfHour) && startTime) {
+      start.hour(startTime.hour).minute(startTime.minute).second(0);
+      end = start.clone().add(halfHour.getDuration());
+    }
 
     // One hour
     if (duration.equals(oneHour) && startTime) {

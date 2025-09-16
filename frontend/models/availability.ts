@@ -96,6 +96,30 @@ export class Availability {
     return json;
   }
 
+  getAvailableDaysOfWeek(startDate: Moment): Moment[] {
+    const days: Moment[] = [];
+
+    const weekDays: Day[] = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ];
+
+    weekDays.forEach((day, i) => {
+      if (this.weeklyAvailabilities[day]?.length) {
+        const date = startDate.clone().startOf("isoWeek").add(i, "day");
+
+        days.push(date);
+      }
+    });
+
+    return days;
+  }
+
   includeSlot(date: Moment, duration: Duration): boolean {
     if (
       !this.includeInOverallAvailabilityRange(date) ||

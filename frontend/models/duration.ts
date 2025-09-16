@@ -32,6 +32,10 @@ export class DurationWrapper {
     return this.kind === "time";
   }
 
+  static halfHour() {
+    return new DurationWrapper("time", moment.duration(30, "minutes"));
+  }
+
   static oneHour() {
     return new DurationWrapper("time", moment.duration(1, "hours"));
   }
@@ -61,6 +65,7 @@ export class DurationWrapper {
 }
 
 export const AVAILABLE_DURATION = {
+  HALF_HOUR: DurationWrapper.halfHour(),
   ONE_HOUR: DurationWrapper.oneHour(),
   HALF_DAY: DurationWrapper.halfDay(),
   RANGE_OF_DATES: DurationWrapper.rangeOfDates(),
