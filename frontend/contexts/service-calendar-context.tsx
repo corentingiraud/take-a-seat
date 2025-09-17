@@ -70,7 +70,11 @@ export const ServiceCalendarProvider: React.FC<
     if (coworkingSpace?.documentId)
       current.set("coworkingSpaceId", coworkingSpace.documentId);
 
-    router.replace(`?${current.toString()}`);
+    const next = `?${current.toString()}`;
+
+    if (window.location.search !== next) {
+      window.history.replaceState(null, "", next);
+    }
   };
 
   const setService = (service: Service | null) => setServiceState(service);

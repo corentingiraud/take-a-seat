@@ -15,11 +15,16 @@ import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { BookingStatus } from "@/models/booking-status";
 import { User } from "@/models/user";
 import moment from "@/lib/moment";
+import { PaymentStatus } from "@/models/payment-status";
+import { PrepaidCard } from "@/models/prepaid-card";
 
 interface BookingContextType {
   bookings: Booking[];
   reload: () => void;
-  cancel: (booking: Booking) => void;
+  cancel: (booking: Booking) => Promise<void>;
+  cancelMany: (bookings: Booking[]) => Promise<void>;
+  payManyWithCard: (items: Booking[], card: PrepaidCard) => Promise<void>;
+  isLoading: boolean;
   startDate: Moment;
   endDate: Moment;
   setWeekRange: (start: Moment, end: Moment) => void;
@@ -47,10 +52,12 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
   );
   const [endDate, setEndDate] = useState<Moment>(moment().endOf("isoWeek"));
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const reload = () => {
     if (!user) return;
 
+    setIsLoading(true);
     fetchAll({
       ...Booking.strapiAPIParams,
       queryParams: {
@@ -62,23 +69,121 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
         },
         sort: ["startDate:asc"],
       },
-    }).then((bookings) => {
-      setBookings(bookings);
-    });
+    })
+      .then((bookings) => setBookings(bookings))
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(reload, [user, startDate, endDate]);
 
-  const cancel = (booking: Booking) => {
-    booking.bookingStatus = BookingStatus.CANCELLED;
-    update({
-      ...Booking.strapiAPIParams,
-      object: booking,
-      fieldsToUpdate: ["bookingStatus"],
-    }).then(() => {
+  const cancel = async (booking: Booking) => {
+    try {
+      setIsLoading(true);
+      booking.bookingStatus = BookingStatus.CANCELLED;
+      await update({
+        ...Booking.strapiAPIParams,
+        object: booking,
+        fieldsToUpdate: ["bookingStatus"],
+      });
       toast.success("Votre réservation a été annulée");
       reload();
-    });
+    } catch {
+      toast.error("Annulation impossible");
+      setIsLoading(false);
+    }
+  };
+
+  const cancelMany = async (items: Booking[]) => {
+    if (!items?.length) return;
+
+    setIsLoading(true);
+    let ok = 0;
+    let fail = 0;
+
+    try {
+      for (const b of items) {
+        try {
+          await update({
+            ...Booking.strapiAPIParams,
+            object: new Booking({
+              ...b,
+              bookingStatus: BookingStatus.CANCELLED,
+            }),
+            fieldsToUpdate: ["bookingStatus"],
+          });
+          ok += 1;
+        } catch {
+          fail += 1;
+        }
+      }
+
+      if (ok > 0) {
+        toast.success(
+          ok === 1 ? "1 réservation annulée" : `${ok} réservations annulées`,
+        );
+      }
+      if (fail > 0) {
+        toast.error(
+          fail === 1
+            ? "1 annulation a échoué"
+            : `${fail} annulations ont échoué`,
+        );
+      }
+
+      reload();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const payManyWithCard = async (items: Booking[], card: PrepaidCard) => {
+    if (!items?.length || !card) return;
+
+    if (card.remainingBalance < items.length) {
+      toast.error("Solde insuffisant sur la carte");
+
+      return;
+    }
+
+    setIsLoading(true);
+    let ok = 0;
+    let fail = 0;
+
+    try {
+      for (const b of items) {
+        try {
+          await update({
+            ...Booking.strapiAPIParams,
+            object: new Booking({
+              ...b,
+              paymentStatus: PaymentStatus.PAID,
+              prepaidCard: card,
+            }),
+            fieldsToUpdate: ["paymentStatus"],
+          });
+          ok += 1;
+        } catch {
+          fail += 1;
+        }
+      }
+
+      if (ok > 0) {
+        toast.success(
+          ok === 1 ? "1 réservation payée" : `${ok} réservations payées`,
+        );
+      }
+      if (fail > 0) {
+        toast.error(
+          fail === 1
+            ? "Le paiement a échoué pour 1 réservation"
+            : `Le paiement a échoué pour ${fail} réservations`,
+        );
+      }
+
+      reload();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const setWeekRange = (start: Moment, end: Moment) => {
@@ -106,6 +211,9 @@ export const BookingProvider: React.FC<BookingProviderProps> = ({
         bookings,
         reload,
         cancel,
+        cancelMany,
+        payManyWithCard,
+        isLoading,
         startDate,
         endDate,
         setWeekRange,

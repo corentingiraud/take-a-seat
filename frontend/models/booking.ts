@@ -5,6 +5,7 @@ import { PaymentStatus } from "./payment-status";
 import { Service } from "./service";
 import { User } from "./user";
 import { StrapiData } from "./utils/strapi-data";
+import { PrepaidCard } from "./prepaid-card";
 
 import moment from "@/lib/moment";
 import { GeneralParams } from "@/types/strapi-api-params";
@@ -15,8 +16,9 @@ interface BookingInterface {
   documentId?: string;
   startDate: Moment;
   endDate: Moment;
-  user?: User;
-  service?: Service;
+  user?: User | null;
+  service?: Service | null;
+  prepaidCard?: PrepaidCard | null;
   bookingStatus?: BookingStatus;
   paymentStatus?: PaymentStatus;
 }
@@ -30,6 +32,7 @@ export class Booking implements StrapiData {
   paymentStatus: PaymentStatus;
   user: User | null;
   service: Service | null;
+  prepaidCard: PrepaidCard | null;
 
   static readonly contentType = "bookings";
 
@@ -42,6 +45,7 @@ export class Booking implements StrapiData {
     paymentStatus = PaymentStatus.PENDING,
     user,
     service,
+    prepaidCard,
   }: BookingInterface) {
     this.id = id;
     this.documentId = documentId;
@@ -51,6 +55,7 @@ export class Booking implements StrapiData {
     this.paymentStatus = paymentStatus;
     this.user = user ?? null;
     this.service = service ?? null;
+    this.prepaidCard = prepaidCard ?? null;
   }
 
   static fromJson(json: any): Booking {
@@ -63,6 +68,9 @@ export class Booking implements StrapiData {
       paymentStatus: json.paymentStatus,
       user: json.user ? User.fromJson(json.user) : undefined,
       service: json.service ? Service.fromJson(json.service) : undefined,
+      prepaidCard: json.prepaidCard
+        ? PrepaidCard.fromJson(json.prepaidCard)
+        : undefined,
     });
   }
 
@@ -73,6 +81,14 @@ export class Booking implements StrapiData {
     };
   }
 
+  get isCancelable(): boolean {
+    return (
+      (this.bookingStatus === BookingStatus.PENDING ||
+        this.bookingStatus === BookingStatus.CONFIRMED) &&
+      !this.isPast
+    );
+  }
+
   toJson(): object {
     const json: any = {
       startDate: this.startDate.format(),
@@ -81,12 +97,16 @@ export class Booking implements StrapiData {
       paymentStatus: this.paymentStatus,
     };
 
-    if (this.user?.id) {
+    if (this.user?.documentId) {
       json.user = this.user.documentId;
     }
 
-    if (this.service?.id) {
+    if (this.service?.documentId) {
       json.service = this.service.documentId;
+    }
+
+    if (this.prepaidCard?.documentId) {
+      json.prepaidCard = this.prepaidCard.documentId;
     }
 
     return json;

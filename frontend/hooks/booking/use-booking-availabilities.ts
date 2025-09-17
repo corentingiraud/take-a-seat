@@ -15,7 +15,7 @@ import { DurationWrapper } from "@/models/duration";
 
 interface UseBookingAvailabilitiesParams {
   service: Service;
-  startDay: Moment;
+  startDay?: Moment;
   endDay?: Moment;
   multipleDays?: Moment[];
   duration: DurationWrapper;

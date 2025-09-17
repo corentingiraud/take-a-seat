@@ -8,7 +8,7 @@ import { Time } from "@/models/time";
 import { BookingSlot } from "@/types";
 
 interface UseDesiredDates {
-  startDay: Moment;
+  startDay?: Moment;
   endDay?: Moment;
   multipleDays?: Moment[];
   duration: DurationWrapper;
@@ -28,7 +28,7 @@ export function useDesiredDates({
 }: UseDesiredDates): BookingSlot[] {
   // Single day
   if (duration.isSingleDay) {
-    let start = startDay.clone();
+    let start = startDay!.clone();
     let end = moment();
 
     const halfHour = AVAILABLE_DURATION.HALF_HOUR;
@@ -69,7 +69,7 @@ export function useDesiredDates({
   const desiredDates = [];
 
   if (duration.equals(AVAILABLE_DURATION.RANGE_OF_DATES) && endDay) {
-    let currentDay = startDay.clone();
+    let currentDay = startDay!.clone();
 
     while (currentDay.isSameOrBefore(endDay)) {
       const availability = service.findAvailabilityFor(currentDay);
