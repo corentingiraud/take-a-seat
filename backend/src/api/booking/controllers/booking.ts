@@ -125,10 +125,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
 
       // Email payload
       const emailPayload = {
-        user: {
-          email: user.email,
-          firstName: user.firstName,
-        },
+        user,
         service: {
           name: service.name
         },
@@ -138,11 +135,13 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         bookings: bookingsToCreate.map(b => ({
           startDate: new Date(b.startDate).toLocaleString('fr-FR', {
             dateStyle: 'short',
-            timeStyle: 'short'
+            timeStyle: 'short',
+            timeZone: 'Europe/Paris',
           }),
           endDate: new Date(b.endDate).toLocaleString('fr-FR', {
             dateStyle: 'short',
-            timeStyle: 'short'
+            timeStyle: 'short',
+            timeZone: 'Europe/Paris',
           }),
         })),
         paymentStatus: prepaidCard ? 'PAYÉ' : 'EN ATTENTE',

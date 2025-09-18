@@ -17,7 +17,7 @@
     </p>
 
     <ul style="padding-left:18px; margin:16px 0;">
-      <li><strong>Utilisateur&nbsp;:</strong> <%= user.email %></li>
+      <li><strong>Utilisateur&nbsp;:</strong> <%= user.firstName %> <%= user.lastName %> (<%= user.email %>)</li>
       <li><strong>Service&nbsp;:</strong> <%= service.name %></li>
       <li><strong>Espace&nbsp;:</strong> <%= coworkingSpace.name %></li>
       <li><strong>Nombre de réservations&nbsp;:</strong> <%= bookings.length %></li>
