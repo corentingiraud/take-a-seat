@@ -10,10 +10,14 @@ import { Booking } from "@/models/booking";
 import { Availability } from "@/models/availability";
 import { WeekSelector } from "@/components/ui/week-selector";
 import { Button } from "@/components/ui/button";
+import { UserPreview } from "@/components/users/preview";
+import { useAuth } from "@/contexts/auth-context";
+import { RoleType } from "@/models/role";
 
 export const ServiceCalendarView = () => {
   const { bookings, startDate, endDate, service, setWeekRange, goToNextWeek } =
     useServiceCalendar();
+  const { hasRole } = useAuth();
 
   const [availability, setAvailability] = useState<Availability | null>(null);
   const [hours, setHours] = useState<number[]>([]);
@@ -132,11 +136,12 @@ export const ServiceCalendarView = () => {
                 {weekDays.map((day) => {
                   const key = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
                   const slotBookings = calendarData.get(key) || [];
+                  const isFull = slotBookings.length >= availability.numberOfSeats;
 
                   return (
                     <div
                       key={key}
-                      className="border-b border-r p-2 text-xs space-y-1 bg-white dark:bg-neutral-950 dark:border-neutral-700"
+                      className={`border-b border-r p-2 text-xs space-y-1 dark:border-neutral-700 ${isFull ? "bg-red-100 dark:bg-red-900/40" : "bg-white dark:bg-neutral-950"}`}
                     >
                       <div className="font-semibold text-gray-700 dark:text-gray-200">
                         {slotBookings.length} / {availability.numberOfSeats}
@@ -146,8 +151,11 @@ export const ServiceCalendarView = () => {
                           key={b.id}
                           className="bg-blue-100 dark:bg-blue-800/40 rounded px-1 py-0.5 text-[11px] text-blue-900 dark:text-blue-200"
                         >
-                          {b.user?.firstNameWithInitial ||
-                            "Utilisateur inconnu"}
+                          {hasRole(RoleType.SUPER_ADMIN) ? (
+                            <UserPreview user={b.user!} />
+                          ) : (
+                            b.user?.firstNameWithInitial || "Utilisateur inconnu"
+                          )}
                         </div>
                       ))}
                     </div>
