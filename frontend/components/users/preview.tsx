@@ -26,7 +26,7 @@ export const UserPreview = ({ user }: UserPreviewProps) => {
   const router = useRouter();
 
   const handleViewProfile = () => {
-    router.push(`/user/${user.id}`);
+    router.push(`/admin/users/${user.id}`);
     setOpen(false);
   };
 

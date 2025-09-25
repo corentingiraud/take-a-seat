@@ -28,7 +28,7 @@
           "editable": true
         },
         "list": {
-          "label": "Date de fin",
+          "label": "Date de début",
           "searchable": true,
           "sortable": true
         }
@@ -42,7 +42,7 @@
           "editable": true
         },
         "list": {
-          "label": "Date de début",
+          "label": "Date de fin",
           "searchable": true,
           "sortable": true
         }
@@ -202,8 +202,8 @@
       ],
       "list": [
         "name",
-        "endDate",
         "startDate",
+        "endDate",
         "service"
       ]
     },

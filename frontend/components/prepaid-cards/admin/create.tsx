@@ -49,6 +49,7 @@ export const AdminPrepaidCardsCreate = () => {
           <SelectContent>
             <SelectItem value="quarter">1/4 temps - 36h</SelectItem>
             <SelectItem value="half">1/2 temps - 72h</SelectItem>
+            <SelectItem value="threeQuarter">3/4 temps - 108h</SelectItem>
             <SelectItem value="full">Temps plein - illimité</SelectItem>
           </SelectContent>
         </Select>

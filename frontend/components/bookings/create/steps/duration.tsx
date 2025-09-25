@@ -25,15 +25,20 @@ export const DurationFormStep = ({
 }: DurationFormStepProps) => {
   const availableDuration = useMemo(() => {
     const base = {
-      ONE_HOUR: AVAILABLE_DURATION.ONE_HOUR,
       HALF_DAY: AVAILABLE_DURATION.HALF_DAY,
       RANGE_OF_DATES: AVAILABLE_DURATION.RANGE_OF_DATES,
       MULTIPLE_DATES: AVAILABLE_DURATION.MULTIPLE_DATES,
     } as const;
 
-    return service?.bookingDuration === 30
-      ? { HALF_HOUR: AVAILABLE_DURATION.HALF_HOUR, ...base }
-      : base;
+    if (service?.bookingDuration === 30) {
+      return { HALF_HOUR: AVAILABLE_DURATION.HALF_HOUR, ...base };
+    }
+
+    if (service?.bookingDuration === 60) {
+      return { ONE_HOUR: AVAILABLE_DURATION.ONE_HOUR, ...base };
+    }
+
+    return base;
   }, [service?.bookingDuration]);
 
   const onValueChange = (value: string) => {

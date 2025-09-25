@@ -6,7 +6,7 @@
   "locale": null,
   "permissions": [
     {
-      "documentId": "k46d95ui80xp4hsff09zfgzc",
+      "documentId": "oq97dnebembj5bixv7l2gjic",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::availability.availability",
@@ -16,7 +16,8 @@
           "endDate",
           "weeklyAvailabilities",
           "numberOfSeats",
-          "service"
+          "service",
+          "name"
         ]
       },
       "conditions": [],
@@ -41,7 +42,7 @@
       "locale": null
     },
     {
-      "documentId": "crc5h52j44cnx44aa7logdni",
+      "documentId": "snr2q8cjqspku51iw0uwodgo",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::availability.availability",
@@ -51,14 +52,15 @@
           "endDate",
           "weeklyAvailabilities",
           "numberOfSeats",
-          "service"
+          "service",
+          "name"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "xohn4dgai2jn99q4dsppuhl5",
+      "documentId": "tzpc68qaaog51cob9kef4k95",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::availability.availability",
@@ -68,7 +70,8 @@
           "endDate",
           "weeklyAvailabilities",
           "numberOfSeats",
-          "service"
+          "service",
+          "name"
         ]
       },
       "conditions": [],
@@ -216,7 +219,7 @@
       "locale": null
     },
     {
-      "documentId": "iy941gzi1yef6vey7mrh8qcx",
+      "documentId": "oocr7cbgys1agfpgdukzfvrg",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -227,7 +230,8 @@
           "paymentStatus",
           "user",
           "bookings",
-          "validFrom"
+          "validFrom",
+          "name"
         ]
       },
       "conditions": [],
@@ -252,7 +256,7 @@
       "locale": null
     },
     {
-      "documentId": "f5gt0a6qebntmbdsf839mnrv",
+      "documentId": "it13fpl8nc7hkfew4op7dmje",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -263,14 +267,15 @@
           "paymentStatus",
           "user",
           "bookings",
-          "validFrom"
+          "validFrom",
+          "name"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "h7b5nnlo8qm22f0t7857qd69",
+      "documentId": "xyu7ed32i4r4glhfdph0hwm5",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -281,7 +286,8 @@
           "paymentStatus",
           "user",
           "bookings",
-          "validFrom"
+          "validFrom",
+          "name"
         ]
       },
       "conditions": [],

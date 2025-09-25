@@ -115,7 +115,7 @@
           "mainField": "name"
         },
         "list": {
-          "label": "service",
+          "label": "Service",
           "searchable": true,
           "sortable": true
         }
@@ -223,7 +223,8 @@
         "endDate",
         "bookingStatus",
         "paymentStatus",
-        "user"
+        "user",
+        "service"
       ]
     },
     "uid": "api::booking.booking"

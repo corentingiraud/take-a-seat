@@ -60,6 +60,12 @@ export class DurationWrapper {
     if (this.kind && this.equals(AVAILABLE_DURATION.HALF_DAY))
       return "1/2 journée";
 
+    if (this.kind && this.equals(AVAILABLE_DURATION.ONE_HOUR))
+      return "1 heure ou plus";
+
+    if (this.kind && this.equals(AVAILABLE_DURATION.HALF_HOUR))
+      return "1/2 heure ou plus";
+
     return this.duration!.humanize();
   }
 }

@@ -33,7 +33,7 @@ export const CreateBookingForm = () => {
   const [multipleDays, setMultipleDates] = useState<Moment[]>([]);
   const [startDay, setStartDay] = useState<Moment | undefined>(undefined);
   const [endDay, setEndDay] = useState<Moment | undefined>(undefined);
-  const [startTime, setStartTime] = useState<Time | undefined>(undefined);
+  const [times, setTimes] = useState<Time[] | []>([]);
   const [halfDay, setHalfDay] = useState<HalfDay | undefined>(undefined);
 
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
@@ -47,7 +47,7 @@ export const CreateBookingForm = () => {
 
     if (
       duration.equals(AVAILABLE_DURATION.HALF_HOUR) &&
-      (!startDay || !startTime)
+      (!startDay || times.length === 0)
     ) {
       setFormIsValid(false);
 
@@ -56,7 +56,7 @@ export const CreateBookingForm = () => {
 
     if (
       duration.equals(AVAILABLE_DURATION.ONE_HOUR) &&
-      (!startDay || !startTime)
+      (!startDay || times.length === 0)
     ) {
       setFormIsValid(false);
 
@@ -96,7 +96,7 @@ export const CreateBookingForm = () => {
     startDay,
     endDay,
     multipleDays,
-    startTime,
+    times,
     halfDay,
   ]);
 
@@ -135,7 +135,7 @@ export const CreateBookingForm = () => {
               setStartDay(undefined);
               setEndDay(undefined);
               setHalfDay(undefined);
-              setStartTime(undefined);
+              setTimes([]);
               setFormIsValid(false);
               setDuration(value);
             }}
@@ -149,7 +149,7 @@ export const CreateBookingForm = () => {
           service={service}
           onDateChange={(value) => {
             setHalfDay(undefined);
-            setStartTime(undefined);
+            setTimes([]);
             setFormIsValid(false);
             setStartDay(value);
           }}
@@ -163,7 +163,7 @@ export const CreateBookingForm = () => {
             key={`service-${service.id}-time-${startDay?.format("YYYY-MM-DD")}`}
             date={startDay}
             service={service}
-            onTimeChange={(value) => setStartTime(value)}
+            onTimeChange={(value) => setTimes(value)}
           />
         )}
       {service && startDay && duration?.equals(AVAILABLE_DURATION.HALF_DAY) && (
@@ -216,7 +216,7 @@ export const CreateBookingForm = () => {
               multipleDays={multipleDays}
               service={service!}
               startDay={startDay!}
-              startTime={startTime}
+              times={times}
             />
           )}
         </Dialog>

@@ -8,8 +8,12 @@ export class Time {
   }
 
   static fromString(value: string) {
-    const hour = parseInt(value.split(":")[0]);
-    const minute = parseInt(value.split(":")[1]);
+    let separator = ":";
+
+    if (value.includes("h")) separator = "h";
+
+    const hour = parseInt(value.split(separator)[0]);
+    const minute = parseInt(value.split(separator)[1]);
 
     return new Time(hour, minute);
   }

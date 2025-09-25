@@ -35,7 +35,7 @@ interface BookingAvailabilitiesProps {
   startDay?: Moment;
   endDay?: Moment;
   multipleDays?: Moment[];
-  startTime?: Time;
+  times?: Time[];
   halfDay?: HalfDay;
 }
 
@@ -46,7 +46,7 @@ export const BookingAvailabilities = ({
   endDay,
   multipleDays,
   halfDay,
-  startTime,
+  times,
   duration,
 }: BookingAvailabilitiesProps) => {
   const { user } = useAuth();
@@ -62,7 +62,7 @@ export const BookingAvailabilities = ({
     endDay,
     multipleDays,
     halfDay,
-    startTime,
+    times,
     duration,
   });
 

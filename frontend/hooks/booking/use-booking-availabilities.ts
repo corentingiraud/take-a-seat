@@ -19,7 +19,7 @@ interface UseBookingAvailabilitiesParams {
   endDay?: Moment;
   multipleDays?: Moment[];
   duration: DurationWrapper;
-  startTime?: Time;
+  times?: Time[];
   halfDay?: HalfDay;
 }
 
@@ -29,7 +29,7 @@ export function useBookingAvailabilities({
   endDay,
   multipleDays,
   duration,
-  startTime,
+  times,
   halfDay,
 }: UseBookingAvailabilitiesParams) {
   const { user } = useAuth();
@@ -41,12 +41,17 @@ export function useBookingAvailabilities({
     endDay,
     multipleDays,
     duration,
-    startTime,
+    times,
     halfDay,
   });
 
   // Step 2: Generate desired booking slots
-  const desiredBookings = useDesiredBookings(desiredDates, user!, service);
+  const desiredBookings = useDesiredBookings({
+    times,
+    desiredDates,
+    user: user!,
+    service,
+  });
 
   let startDate = desiredBookings.length
     ? desiredBookings[0].startDate

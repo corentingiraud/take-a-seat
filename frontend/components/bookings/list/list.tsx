@@ -133,7 +133,7 @@ export function BookingsList() {
         onChange={setWeekRange}
       />
 
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
         <span className="text-sm text-muted-foreground">
           {selectedBookings.length} sélectionné(s)
         </span>
@@ -157,7 +157,6 @@ export function BookingsList() {
                 réservation(s).
               </DialogDescription>
             </DialogHeader>
-
             <div className="mt-4">
               <PrepaidCardSelect
                 autoSelectBest
@@ -174,7 +173,6 @@ export function BookingsList() {
                 </p>
               )}
             </div>
-
             <DialogClose asChild>
               <DialogFooter className="mt-6">
                 <Button variant="secondary">Annuler</Button>
@@ -188,7 +186,6 @@ export function BookingsList() {
             </DialogClose>
           </DialogContent>
         </Dialog>
-
         <Button
           disabled={
             selectedBookings.length === 0 ||

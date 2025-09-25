@@ -12,7 +12,7 @@ interface UseDesiredDates {
   endDay?: Moment;
   multipleDays?: Moment[];
   duration: DurationWrapper;
-  startTime?: Time;
+  times?: Time[];
   halfDay?: HalfDay;
   service: Service;
 }
@@ -22,7 +22,7 @@ export function useDesiredDates({
   endDay,
   multipleDays,
   duration,
-  startTime,
+  times,
   halfDay,
   service,
 }: UseDesiredDates): BookingSlot[] {
@@ -35,16 +35,22 @@ export function useDesiredDates({
     const oneHour = AVAILABLE_DURATION.ONE_HOUR;
     const halfDayDuration = AVAILABLE_DURATION.HALF_DAY;
 
-    // half hour
-    if (duration.equals(halfHour) && startTime) {
-      start.hour(startTime.hour).minute(startTime.minute).second(0);
-      end = start.clone().add(halfHour.getDuration());
-    }
+    if (times && times?.length > 0) {
+      start.hour(times[0].hour).minute(times[0].minute).second(0);
+      end = start
+        .clone()
+        .hour(times[times.length - 1].hour)
+        .minute(times[times.length - 1].minute);
 
-    // One hour
-    if (duration.equals(oneHour) && startTime) {
-      start.hour(startTime.hour).minute(0).second(0);
-      end = start.clone().add(oneHour.getDuration());
+      // Half hour
+      if (duration.equals(halfHour)) {
+        end.add(halfHour.getDuration());
+      }
+
+      // Half day
+      if (duration.equals(oneHour)) {
+        end.add(oneHour.getDuration());
+      }
     }
 
     // Half day

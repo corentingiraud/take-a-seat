@@ -61,7 +61,11 @@ export const UserSelect = ({ users, onChange, value }: UserSelectProps) => {
           <ScrollArea className="h-64">
             <CommandGroup>
               {filteredUsers.map((user) => (
-                <CommandItem key={user.id} onSelect={() => handleSelect(user)}>
+                <CommandItem
+                  key={user.id}
+                  value={`${user.id}`}
+                  onSelect={() => handleSelect(user)}
+                >
                   {user.firstName} {user.lastName}
                 </CommandItem>
               ))}

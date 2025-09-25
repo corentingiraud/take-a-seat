@@ -41,6 +41,9 @@ export const siteConfig = {
       href: "/my-information",
     },
     // ADMIN PAGES
+    adminUserDashboard: {
+      href: "/admin/users",
+    },
     adminBookings: {
       href: "/admin/bookings",
     },
