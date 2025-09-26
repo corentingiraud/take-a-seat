@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { UserPreview } from "@/components/users/preview";
 import { useAuth } from "@/contexts/auth-context";
 import { RoleType } from "@/models/role";
+import moment from "@/lib/moment";
 
 export const ServiceCalendarView = () => {
   const { bookings, startDate, endDate, service, setWeekRange, goToNextWeek } =
@@ -61,6 +62,36 @@ export const ServiceCalendarView = () => {
     setWeekDays(maybeAvailability.getAvailableDaysOfWeek(startDate));
   }, [service, startDate, endDate]);
 
+  const isClosedDay = React.useCallback(
+    (day: Moment) => {
+      if (!availability) return true;
+
+      const overlapsRange =
+        availability.startDate.isBefore(day, "day") &&
+        availability.endDate.isSameOrAfter(day, "day");
+
+      const hasSlots = availability.getBookingSlotsFor(day).length > 0;
+
+      return !overlapsRange || !hasSlots;
+    },
+    [availability],
+  );
+
+  const isTimeOpen = React.useCallback(
+    (day: Moment, hour: number, minute: number) => {
+      if (!availability || !service) return false;
+
+      const slotStart = day.clone().startOf("day").hour(hour).minute(minute);
+      const duration = moment.duration(
+        service.bookingDuration ?? 60,
+        "minutes",
+      );
+
+      return availability.includeSlot(slotStart, duration);
+    },
+    [availability, service],
+  );
+
   if (!service)
     return (
       <p className="mt-10 text-center text-muted-foreground">
@@ -96,10 +127,8 @@ export const ServiceCalendarView = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header nav */}
       {headerNav}
 
-      {/* Calendar grid */}
       <div className="overflow-x-auto">
         <div
           className="grid border-t border-l dark:border-neutral-700"
@@ -134,17 +163,50 @@ export const ServiceCalendarView = () => {
                 </div>
 
                 {weekDays.map((day) => {
-                  const key = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
-                  const slotBookings = calendarData.get(key) || [];
-                  const isFull = slotBookings.length >= availability.numberOfSeats;
+                  const cellKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
+
+                  // Entire day closed (mid-week end or no slots that weekday)
+                  if (isClosedDay(day)) {
+                    return (
+                      <div
+                        key={cellKey}
+                        aria-label="Fermé"
+                        className="border-b border-r p-2 text-xs text-center italic bg-gray-100 text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400"
+                      >
+                        Fermé
+                      </div>
+                    );
+                  }
+
+                  // Day open, but this specific time not inside any slot (e.g., lunch break)
+                  if (!isTimeOpen(day, h, m)) {
+                    return (
+                      <div
+                        key={cellKey}
+                        className="border-b border-r p-2 text-xs text-center italic bg-gray-50 text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400"
+                      >
+                        Fermé
+                      </div>
+                    );
+                  }
+
+                  // Slot is open → render bookings/availability as before
+                  const slotKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
+                  const slotBookings = calendarData.get(slotKey) || [];
+                  const isFull =
+                    slotBookings.length >= availability!.numberOfSeats;
 
                   return (
                     <div
-                      key={key}
-                      className={`border-b border-r p-2 text-xs space-y-1 dark:border-neutral-700 ${isFull ? "bg-red-100 dark:bg-red-900/40" : "bg-white dark:bg-neutral-950"}`}
+                      key={cellKey}
+                      className={`border-b border-r p-2 text-xs space-y-1 dark:border-neutral-700 ${
+                        isFull
+                          ? "bg-red-100 dark:bg-red-900/40"
+                          : "bg-white dark:bg-neutral-950"
+                      }`}
                     >
                       <div className="font-semibold text-gray-700 dark:text-gray-200">
-                        {slotBookings.length} / {availability.numberOfSeats}
+                        {slotBookings.length} / {availability!.numberOfSeats}
                       </div>
                       {slotBookings.map((b) => (
                         <div
@@ -154,7 +216,8 @@ export const ServiceCalendarView = () => {
                           {hasRole(RoleType.SUPER_ADMIN) ? (
                             <UserPreview user={b.user!} />
                           ) : (
-                            b.user?.firstNameWithInitial || "Utilisateur inconnu"
+                            b.user?.firstNameWithInitial ||
+                            "Utilisateur inconnu"
                           )}
                         </div>
                       ))}

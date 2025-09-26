@@ -146,7 +146,8 @@ export class Availability {
 
   includeInOverallAvailabilityRange(date: Moment): boolean {
     return (
-      date.isSameOrAfter(this.startDate) && date.isSameOrBefore(this.endDate)
+      date.isSameOrAfter(this.startDate, "day") &&
+      date.isSameOrBefore(this.endDate, "day")
     );
   }
 

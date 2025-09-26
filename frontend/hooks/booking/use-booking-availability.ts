@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import moment from "@/lib/moment";
 import { Booking } from "@/models/booking";
 import { Service } from "@/models/service";
 import { User } from "@/models/user";
@@ -27,8 +28,8 @@ export function useBookingAvailability({
     const unavailableBookings: UnavailableBooking[] = [];
 
     for (const desired of desiredBookings) {
-      // Skip if in the past
-      if (desired.endDate.isBefore()) continue;
+      // Skip if before start of day
+      if (desired.endDate.isBefore(moment().startOf("day"))) continue;
 
       const overlapping = existingBookings.filter(
         (existing) =>
