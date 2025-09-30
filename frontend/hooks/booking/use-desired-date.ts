@@ -57,13 +57,13 @@ export function useDesiredDates({
     if (duration.equals(halfDayDuration)) {
       // Morning
       if (halfDay === HalfDay.Morning) {
-        start = service.findAvailabilityFor(start)!.getStartTimeFor(start)!;
+        start = service.findAvailabilityForDate(start)!.getStartTimeFor(start)!;
         end = start.clone().add(halfDayDuration.getDuration());
       }
 
       // Afternoon
       if (halfDay === HalfDay.Afternoon) {
-        end = service.findAvailabilityFor(start)!.getEndTimeFor(start)!;
+        end = service.findAvailabilityForDate(start)!.getEndTimeFor(start)!;
         start = end.clone().subtract(halfDayDuration.getDuration());
       }
     }
@@ -78,7 +78,7 @@ export function useDesiredDates({
     let currentDay = startDay!.clone();
 
     while (currentDay.isSameOrBefore(endDay)) {
-      const availability = service.findAvailabilityFor(currentDay);
+      const availability = service.findAvailabilityForDate(currentDay);
 
       if (!availability) continue;
 
@@ -102,7 +102,7 @@ export function useDesiredDates({
   // Multiple date
   if (duration.equals(AVAILABLE_DURATION.MULTIPLE_DATES) && multipleDays) {
     for (const day of multipleDays) {
-      const availability = service.findAvailabilityFor(day);
+      const availability = service.findAvailabilityForDate(day);
 
       if (!availability) continue;
 

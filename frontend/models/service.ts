@@ -107,7 +107,7 @@ export class Service {
   getTimeSlot(date: Moment): Time[] {
     const slots: Time[] = [];
 
-    const availability = this.findAvailabilityFor(date);
+    const availability = this.findAvailabilityForDate(date);
 
     if (!availability) return [];
 
@@ -130,7 +130,7 @@ export class Service {
     return slots;
   }
 
-  findAvailabilityFor(date: Moment): Availability | null {
+  findAvailabilityForDate(date: Moment): Availability | null {
     return (
       this.availabilities.find(
         (av) =>
@@ -138,5 +138,26 @@ export class Service {
           moment(av.endDate).isSameOrAfter(date, "day"),
       ) ?? null
     );
+  }
+
+  findAvailabilitiesForDateRange(start: Moment, end: Moment): Availability[] {
+    if (!start || !end) return [];
+
+    const rangeStart = start.isAfter(end) ? end.clone() : start.clone();
+    const rangeEnd = start.isAfter(end) ? start.clone() : end.clone();
+
+    return this.availabilities
+      .filter((av) => {
+        const avStart = moment(av.startDate);
+        const avEnd = moment(av.endDate);
+
+        return (
+          avStart.isSameOrBefore(rangeEnd, "day") &&
+          avEnd.isSameOrAfter(rangeStart, "day")
+        );
+      })
+      .sort(
+        (a, b) => moment(a.startDate).valueOf() - moment(b.startDate).valueOf(),
+      );
   }
 }

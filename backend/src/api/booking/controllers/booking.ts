@@ -25,7 +25,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
       const futureAvailabilities = await strapi.db.query('api::availability.availability').findMany({
         where: {
           service: service.id,
-          endDate: { $gt: new Date().toISOString() },
+          endDate: { $gte: new Date().toISOString() },
         },
       });
 
@@ -64,6 +64,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         const isUnavailable = service.coworkingSpace.unavailabilities.some(unavailability => {
           const unStart = new Date(unavailability.startDate);
           const unEnd = new Date(unavailability.endDate);
+          unEnd.setHours(23, 59, 59, 999);
           return start < unEnd && end > unStart;
         });
 
@@ -75,6 +76,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         const matchedAvailability = futureAvailabilities.find(av => {
           const avStart = new Date(av.startDate);
           const avEnd = new Date(av.endDate);
+          avEnd.setHours(23, 59, 59, 999);
           return start >= avStart && end <= avEnd;
         });
 

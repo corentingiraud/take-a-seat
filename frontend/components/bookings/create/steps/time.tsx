@@ -55,19 +55,19 @@ export const TimeFormStep = ({
     onTimeChange(updatedTimes);
   };
 
-  const availableTimeSlots = service
-    .getTimeSlot(date)
-    .filter(
-      (timeSlot) =>
-        !selectedTimes.some(
-          (selected) => selected.toString() === timeSlot.toString(),
-        ),
-    );
+  const availableTimeSlots = service.getTimeSlot(date);
+
+  const selectableTimeSlots = availableTimeSlots.filter(
+    (timeSlot) =>
+      !selectedTimes.some(
+        (selected) => selected.toString() === timeSlot.toString(),
+      ),
+  );
 
   return (
     <div className="space-y-4">
       <Label className="text-foreground dark:text-foreground" htmlFor="service">
-        À quelle(s) heure(s) ?
+        Quel(s) créneau(x) ?
       </Label>
 
       {/* Display selected times */}
@@ -78,7 +78,13 @@ export const TimeFormStep = ({
               key={index}
               className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm"
             >
-              <span>{time.toString()}</span>
+              <span>
+                {time.toString()}
+                {" => "}
+                {availableTimeSlots[
+                  availableTimeSlots.findIndex((t) => t.equals(time)) + 1
+                ]?.toString()}
+              </span>
               <button
                 className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full p-0.5 transition-colors"
                 type="button"
@@ -101,21 +107,21 @@ export const TimeFormStep = ({
           <SelectValue
             placeholder={
               selectedTimes.length > 0
-                ? `${selectedTimes.length} heure(s) sélectionnée(s)`
-                : "Sélectionner une ou plusieurs heures"
+                ? `${selectedTimes.length} créneau(x) sélectionné(s)`
+                : "Sélectionner un ou plusieurs créneaux"
             }
           />
         </SelectTrigger>
         <SelectContent>
-          {availableTimeSlots.length > 0 ? (
-            availableTimeSlots.map((timeSlot, i) => (
+          {selectableTimeSlots.length > 0 ? (
+            selectableTimeSlots.map((timeSlot, i) => (
               <SelectItem key={i} value={timeSlot.toString()}>
                 {timeSlot.toString()}
               </SelectItem>
             ))
           ) : (
             <SelectItem disabled value="no-times-available">
-              Toutes les heures sont sélectionnées
+              Toutes les créneaux sont sélectionnés
             </SelectItem>
           )}
         </SelectContent>

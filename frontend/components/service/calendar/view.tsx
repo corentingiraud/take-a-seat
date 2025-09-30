@@ -8,6 +8,7 @@ import { Moment } from "moment";
 import { useServiceCalendar } from "@/contexts/service-calendar-context";
 import { Booking } from "@/models/booking";
 import { Availability } from "@/models/availability";
+import { Unavailability } from "@/models/unavailability";
 import { WeekSelector } from "@/components/ui/week-selector";
 import { Button } from "@/components/ui/button";
 import { UserPreview } from "@/components/users/preview";
@@ -20,10 +21,14 @@ export const ServiceCalendarView = () => {
     useServiceCalendar();
   const { hasRole } = useAuth();
 
-  const [availability, setAvailability] = useState<Availability | null>(null);
+  const [availabilities, setAvailabilities] = useState<Availability[]>([]);
+  const [unavailabilities, setUnavailabilities] = useState<Unavailability[]>(
+    [],
+  );
   const [hours, setHours] = useState<number[]>([]);
   const [weekDays, setWeekDays] = useState<Moment[]>([]);
 
+  // Map des bookings par slot "YYYY-MM-DD-HH-mm"
   const calendarData = useMemo(() => {
     const map = new Map<string, Booking[]>();
 
@@ -31,65 +36,163 @@ export const ServiceCalendarView = () => {
       const key = `${booking.startDate.format("YYYY-MM-DD-HH-mm")}`;
 
       if (!map.has(key)) map.set(key, []);
-      map.get(key)?.push(booking);
+      map.get(key)!.push(booking);
     }
 
     return map;
   }, [bookings]);
 
   useEffect(() => {
-    const maybeAvailability = service?.findAvailabilityFor(startDate);
-
-    if (!maybeAvailability) {
-      setAvailability(null);
+    if (!service) {
+      setAvailabilities([]);
+      setUnavailabilities([]);
       setHours([]);
+      setWeekDays([]);
 
       return;
     }
 
-    const openingTime = maybeAvailability.earliestOpeningOfWeek;
-    const latestClosingTime = maybeAvailability.latestClosingOfTheWeek;
+    // Availabilities qui chevauchent la semaine
+    const rangeAvailabilities =
+      service.findAvailabilitiesForDateRange(startDate, endDate) || [];
 
-    const duration = service?.bookingDuration ?? 60;
-    const totalMinutes = (latestClosingTime!.hour - openingTime!.hour) * 60;
-    const hours = Array.from(
+    // Unavailabilities du coworking space (si dispo) qui chevauchent la semaine
+    const rangeUnavailabilities =
+      service.coworkingSpace?.findUnavailabilitiesForDateRange(
+        startDate,
+        endDate,
+      ) || [];
+
+    if (rangeAvailabilities.length === 0) {
+      setAvailabilities([]);
+      setUnavailabilities(rangeUnavailabilities);
+      setHours([]);
+      setWeekDays([]);
+
+      return;
+    }
+
+    // Union des jours ouverts par availability
+    const daysSet = new Map<string, Moment>();
+
+    for (const av of rangeAvailabilities) {
+      for (const d of av.getAvailableDaysOfWeek(startDate)) {
+        const key = d.format("YYYY-MM-DD");
+
+        if (!daysSet.has(key)) daysSet.set(key, d);
+      }
+    }
+    const days = Array.from(daysSet.values()).sort(
+      (a, b) => a.valueOf() - b.valueOf(),
+    );
+
+    // Bornes horaires globales (min opening / max closing) pour la grille
+    let globalEarliestHour = Infinity;
+    let globalLatestHour = -Infinity;
+
+    for (const av of rangeAvailabilities) {
+      const earliest = av.earliestOpeningOfWeek?.hour ?? null;
+      const latest = av.latestClosingOfTheWeek?.hour ?? null;
+
+      if (earliest !== null && earliest < globalEarliestHour)
+        globalEarliestHour = earliest;
+      if (latest !== null && latest > globalLatestHour)
+        globalLatestHour = latest;
+    }
+
+    if (
+      !Number.isFinite(globalEarliestHour) ||
+      !Number.isFinite(globalLatestHour) ||
+      globalLatestHour <= globalEarliestHour
+    ) {
+      setAvailabilities(rangeAvailabilities);
+      setUnavailabilities(rangeUnavailabilities);
+      setHours([]);
+      setWeekDays(days);
+
+      return;
+    }
+
+    const duration = service.bookingDuration ?? 60;
+    const totalMinutes = (globalLatestHour - globalEarliestHour) * 60;
+    const hourOffsets = Array.from(
       { length: Math.floor(totalMinutes / duration) },
       (_, i) => i * duration,
     );
 
-    setAvailability(maybeAvailability);
-    setHours(hours);
-    setWeekDays(maybeAvailability.getAvailableDaysOfWeek(startDate));
+    setAvailabilities(rangeAvailabilities);
+    setUnavailabilities(rangeUnavailabilities);
+    setHours(hourOffsets);
+    setWeekDays(days);
   }, [service, startDate, endDate]);
 
-  const isClosedDay = React.useCallback(
-    (day: Moment) => {
-      if (!availability) return true;
-
-      const overlapsRange =
-        availability.startDate.isBefore(day, "day") &&
-        availability.endDate.isSameOrAfter(day, "day");
-
-      const hasSlots = availability.getBookingSlotsFor(day).length > 0;
-
-      return !overlapsRange || !hasSlots;
-    },
-    [availability],
-  );
-
-  const isTimeOpen = React.useCallback(
-    (day: Moment, hour: number, minute: number) => {
-      if (!availability || !service) return false;
-
+  // Availability couvrant un slot (si chevauchements, on prend la 1ère)
+  const findAvailabilityForSlot = React.useCallback(
+    (day: Moment, hour: number, minute: number): Availability | null => {
+      if (availabilities.length === 0 || !service) return null;
       const slotStart = day.clone().startOf("day").hour(hour).minute(minute);
       const duration = moment.duration(
         service.bookingDuration ?? 60,
         "minutes",
       );
 
-      return availability.includeSlot(slotStart, duration);
+      return (
+        availabilities.find((av) => av.includeSlot(slotStart, duration)) ?? null
+      );
     },
-    [availability, service],
+    [availabilities, service],
+  );
+
+  // Slot indisponible à cause d'une unavailability (chevauchement strict)
+  const isSlotUnavailable = React.useCallback(
+    (day: Moment, hour: number, minute: number): boolean => {
+      if (unavailabilities.length === 0 || !service) return false;
+
+      const slotStart = day.clone().startOf("day").hour(hour).minute(minute);
+      const slotEnd = slotStart
+        .clone()
+        .add(service.bookingDuration ?? 60, "minutes");
+
+      // Chevauchement si: uStart < slotEnd && uEnd > slotStart
+      return unavailabilities.some((u) => {
+        const uStart = moment(u.startDate);
+        const uEnd = moment(u.endDate);
+
+        return uStart.isBefore(slotEnd) && uEnd.isAfter(slotStart);
+      });
+    },
+    [unavailabilities, service],
+  );
+
+  // Jour fermé si aucune availability ne couvre le jour avec au moins un slot
+  // (les unavailabilities sont gérées au niveau du slot pour éviter de fermer tout le jour si partielle)
+  const isClosedDay = React.useCallback(
+    (day: Moment) => {
+      if (availabilities.length === 0) return true;
+      const covering = availabilities.filter(
+        (av) =>
+          av.startDate.isSameOrBefore(day, "day") &&
+          av.endDate.isSameOrAfter(day, "day"),
+      );
+
+      if (covering.length === 0) return true;
+
+      return !covering.some((av) => av.getBookingSlotsFor(day).length > 0);
+    },
+    [availabilities],
+  );
+
+  // Slot ouvert si une availability inclut le slot ET qu'aucune unavailability ne le bloque
+  const isTimeOpen = React.useCallback(
+    (day: Moment, hour: number, minute: number) => {
+      const av = findAvailabilityForSlot(day, hour, minute);
+
+      if (!av) return false;
+      if (isSlotUnavailable(day, hour, minute)) return false;
+
+      return true;
+    },
+    [findAvailabilityForSlot, isSlotUnavailable],
   );
 
   if (!service)
@@ -109,7 +212,12 @@ export const ServiceCalendarView = () => {
     />
   );
 
-  if (!availability)
+  // Aucun créneau affichable
+  if (
+    availabilities.length === 0 ||
+    weekDays.length === 0 ||
+    hours.length === 0
+  )
     return (
       <div className="space-y-10">
         {headerNav}
@@ -124,6 +232,12 @@ export const ServiceCalendarView = () => {
         </div>
       </div>
     );
+
+  const referenceOpeningHour = Math.min(
+    ...availabilities
+      .map((av) => av.earliestOpeningOfWeek?.hour)
+      .filter((h): h is number => typeof h === "number"),
+  );
 
   return (
     <div className="space-y-4">
@@ -151,8 +265,7 @@ export const ServiceCalendarView = () => {
 
           {/* Time slots */}
           {hours.map((offset) => {
-            const openingHour = availability!.earliestOpeningOfWeek!.hour;
-            const h = openingHour + Math.floor(offset / 60);
+            const h = referenceOpeningHour + Math.floor(offset / 60);
             const m = offset % 60;
             const label = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
@@ -165,7 +278,6 @@ export const ServiceCalendarView = () => {
                 {weekDays.map((day) => {
                   const cellKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
 
-                  // Entire day closed (mid-week end or no slots that weekday)
                   if (isClosedDay(day)) {
                     return (
                       <div
@@ -178,23 +290,31 @@ export const ServiceCalendarView = () => {
                     );
                   }
 
-                  // Day open, but this specific time not inside any slot (e.g., lunch break)
-                  if (!isTimeOpen(day, h, m)) {
+                  const avForSlot = findAvailabilityForSlot(day, h, m);
+                  const slotBlocked = isSlotUnavailable(day, h, m);
+
+                  if (!avForSlot || slotBlocked) {
+                    // Ouvert ce jour mais créneau fermé (pause ou indispo)
                     return (
                       <div
                         key={cellKey}
-                        className="border-b border-r p-2 text-xs text-center italic bg-gray-50 text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400"
+                        aria-label={slotBlocked ? "Indisponible" : "Fermé"}
+                        className={`border-b border-r p-2 text-xs text-center italic text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 ${
+                          slotBlocked
+                            ? "bg-red-50 dark:bg-red-900/20"
+                            : "bg-gray-50"
+                        }`}
                       >
-                        Fermé
+                        {slotBlocked ? "Indisponible" : "Fermé"}
                       </div>
                     );
                   }
 
-                  // Slot is open → render bookings/availability as before
+                  // Slot ouvert → capacité selon l'availability
                   const slotKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
                   const slotBookings = calendarData.get(slotKey) || [];
-                  const isFull =
-                    slotBookings.length >= availability!.numberOfSeats;
+                  const capacity = avForSlot.numberOfSeats;
+                  const isFull = slotBookings.length >= capacity;
 
                   return (
                     <div
@@ -206,7 +326,7 @@ export const ServiceCalendarView = () => {
                       }`}
                     >
                       <div className="font-semibold text-gray-700 dark:text-gray-200">
-                        {slotBookings.length} / {availability!.numberOfSeats}
+                        {slotBookings.length} / {capacity}
                       </div>
                       {slotBookings.map((b) => (
                         <div

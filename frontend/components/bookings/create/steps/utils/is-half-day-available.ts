@@ -16,7 +16,7 @@ export function isHalfDayAvailable(
   const halfDayDuration = AVAILABLE_DURATION.HALF_DAY.getDuration()!;
 
   // Find availability covering the given date
-  const availability = service.findAvailabilityFor(date);
+  const availability = service.findAvailabilityForDate(date);
 
   if (!availability) return false;
 

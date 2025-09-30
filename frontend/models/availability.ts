@@ -49,8 +49,8 @@ export class Availability {
   }: AvailabilityInterface) {
     this.id = id;
     this.documentId = documentId;
-    this.startDate = moment(startDate);
-    this.endDate = moment(endDate);
+    this.startDate = moment(startDate).startOf("day");
+    this.endDate = moment(endDate).endOf("day");
     this.service = service ?? null;
     this.weeklyAvailabilities = weeklyAvailabilities;
     this.numberOfSeats = numberOfSeats;

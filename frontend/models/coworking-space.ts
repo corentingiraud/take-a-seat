@@ -2,8 +2,10 @@ import { Service } from "./service";
 import { Unavailability } from "./unavailability";
 import { StrapiData } from "./utils/strapi-data";
 
+import moment from "@/lib/moment";
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
+import { Moment } from "moment";
 
 interface CoworkingSpaceInterface {
   id?: number;
@@ -90,5 +92,39 @@ export class CoworkingSpace implements StrapiData {
     }
 
     return json;
+  }
+
+  findUnavailabilityForDate(date: Moment): Unavailability | null {
+    return (
+      this.unavailabilities.find(
+        (u) =>
+          moment(u.startDate).isSameOrBefore(date, "day") &&
+          moment(u.endDate).isSameOrAfter(date, "day"),
+      ) ?? null
+    );
+  }
+
+  findUnavailabilitiesForDateRange(
+    start: Moment,
+    end: Moment,
+  ): Unavailability[] {
+    if (!start || !end) return [];
+
+    const rangeStart = start.isAfter(end) ? end.clone() : start.clone();
+    const rangeEnd = start.isAfter(end) ? start.clone() : end.clone();
+
+    return this.unavailabilities
+      .filter((u) => {
+        const uStart = moment(u.startDate);
+        const uEnd = moment(u.endDate);
+
+        return (
+          uStart.isSameOrBefore(rangeEnd, "day") &&
+          uEnd.isSameOrAfter(rangeStart, "day")
+        );
+      })
+      .sort(
+        (a, b) => moment(a.startDate).valueOf() - moment(b.startDate).valueOf(),
+      );
   }
 }

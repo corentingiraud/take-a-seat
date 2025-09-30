@@ -47,8 +47,8 @@ export class Unavailability implements StrapiData {
       id: json.id,
       documentId: json.documentId,
       name: json.name,
-      startDate: moment(json.startDate),
-      endDate: moment(json.endDate),
+      startDate: moment(json.startDate).startOf("day"),
+      endDate: moment(json.endDate).endOf("day"),
       coworkingSpaces: (json.coworkingSpaces || []).map((cs: any) =>
         CoworkingSpace.fromJson(cs),
       ),

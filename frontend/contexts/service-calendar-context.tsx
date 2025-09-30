@@ -47,7 +47,6 @@ export const ServiceCalendarProvider: React.FC<
 > = ({ children }) => {
   const { getJWT } = useAuth();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { fetchOne } = useStrapiAPI();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
