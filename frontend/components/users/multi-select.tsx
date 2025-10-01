@@ -74,6 +74,7 @@ export const MultiUserSelect = ({
                 <CommandItem
                   key={user.id}
                   className="flex items-center gap-2"
+                  value={`${user.firstName} ${user.lastName} ${user.id}`}
                   onSelect={() => toggleUser(user)}
                 >
                   <Checkbox

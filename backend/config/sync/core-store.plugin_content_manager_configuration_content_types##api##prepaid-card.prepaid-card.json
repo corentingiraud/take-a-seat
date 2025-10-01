@@ -7,8 +7,8 @@
       "searchable": true,
       "pageSize": 10,
       "mainField": "name",
-      "defaultSortBy": "validFrom",
-      "defaultSortOrder": "ASC"
+      "defaultSortBy": "createdAt",
+      "defaultSortOrder": "DESC"
     },
     "metadatas": {
       "id": {
@@ -128,7 +128,7 @@
           "editable": true
         },
         "list": {
-          "label": "createdAt",
+          "label": "Date de création",
           "searchable": true,
           "sortable": true
         }
@@ -226,10 +226,10 @@
       "list": [
         "name",
         "remainingBalance",
+        "createdAt",
         "validFrom",
         "expirationDate",
-        "paymentStatus",
-        "user"
+        "paymentStatus"
       ]
     },
     "uid": "api::prepaid-card.prepaid-card"
