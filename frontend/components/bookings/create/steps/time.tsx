@@ -81,9 +81,7 @@ export const TimeFormStep = ({
               <span>
                 {time.toString()}
                 {" => "}
-                {availableTimeSlots[
-                  availableTimeSlots.findIndex((t) => t.equals(time)) + 1
-                ]?.toString()}
+                {time.addMinutes(service.bookingDuration).toString()}
               </span>
               <button
                 className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full p-0.5 transition-colors"

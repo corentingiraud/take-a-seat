@@ -29,4 +29,15 @@ export class Time {
   equals(other: Time): boolean {
     return this.hour === other.hour && this.minute === other.minute;
   }
+
+  addMinutes(minutesToAdd: number): Time {
+    let totalMinutes = this.hour * 60 + this.minute + minutesToAdd;
+
+    totalMinutes = ((totalMinutes % (24 * 60)) + 24 * 60) % (24 * 60);
+
+    const newHour = Math.floor(totalMinutes / 60);
+    const newMinute = totalMinutes % 60;
+
+    return new Time(newHour, newMinute);
+  }
 }

@@ -29,6 +29,7 @@ export default factories.createCoreController('api::service.service', ({ strapi 
         endDate: {
           $gte: startDate,
         },
+        bookingStatus: 'CONFIRMED',
       },
       populate: ['user', 'service'],
     });

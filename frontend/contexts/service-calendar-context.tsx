@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { toast } from "sonner";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Moment } from "moment";
 
 import moment from "@/lib/moment";

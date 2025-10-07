@@ -4,6 +4,7 @@ import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { DateRange as ReactDayPickerDateRange } from "react-day-picker";
 import { Moment } from "moment";
+import { fr } from "date-fns/locale";
 
 import { shouldDisableDate } from "../utils/should-disable-date";
 
@@ -85,6 +86,7 @@ export const RangeOfDatesFormStep = ({
                 })
               }
               fromMonth={currentMonth.toDate()}
+              locale={fr}
               mode="range"
               selected={dateRange}
               toMonth={nextMonth.toDate()}

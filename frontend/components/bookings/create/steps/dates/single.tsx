@@ -3,6 +3,7 @@
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { Moment } from "moment";
+import { fr } from "date-fns/locale";
 
 import { shouldDisableDate } from "../utils/should-disable-date";
 
@@ -77,6 +78,7 @@ export const SingleDateFormStep = ({
                 })
               }
               fromMonth={currentMonth.toDate()}
+              locale={fr}
               mode="single"
               selected={date}
               toMonth={nextMonth.toDate()}

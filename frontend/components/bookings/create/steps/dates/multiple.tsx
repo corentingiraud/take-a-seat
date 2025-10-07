@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Service } from "@/models/service";
+import { fr } from "date-fns/locale";
 
 interface MultipleDateFormStepProps {
   service: Service;
@@ -80,10 +81,11 @@ export const MultipleDatesFormStep = ({
                 })
               }
               fromMonth={currentMonth.toDate()}
+              locale={fr}
               mode="multiple"
               selected={selectedDates}
               toMonth={nextMonth.toDate()}
-              onDayClick={() => {}} // keep required interaction
+              onDayClick={() => {}}
               onSelect={onValueChange}
             />
           </PopoverContent>
