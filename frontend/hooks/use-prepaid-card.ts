@@ -6,6 +6,7 @@ import moment from "@/lib/moment";
 import { useAuth } from "@/contexts/auth-context";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { DEFAULT_DATE_FORMAT } from "@/models/utils/strapi-data";
+import { PaymentStatus } from "@/models/payment-status";
 
 export function usePrepaidCard({
   userDocumentId,
@@ -40,7 +41,8 @@ export function usePrepaidCard({
     const usableCards = allCards.filter((card: PrepaidCard) => {
       return (
         moment(card.validFrom).isSameOrBefore(today) &&
-        moment(card.expirationDate).isAfter(today)
+        moment(card.expirationDate).isAfter(today) &&
+        card.paymentStatus === PaymentStatus.PAID
       );
     });
 

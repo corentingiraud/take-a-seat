@@ -122,7 +122,7 @@ export default function UserProfile({ initialUserId = null }: Props) {
 
           <Section title="Réservations">
             <BookingProvider user={selectedUser}>
-              <BookingsList />
+              <BookingsList user={selectedUser} />
             </BookingProvider>
           </Section>
         </>

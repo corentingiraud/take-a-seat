@@ -26,7 +26,6 @@ import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { Booking } from "@/models/booking";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { usePrepaidCard } from "@/hooks/use-prepaid-card";
-import { useAuth } from "@/contexts/auth-context";
 import PrepaidCardSelect from "@/components/prepaid-cards/select";
 import {
   DialogHeader,
@@ -38,8 +37,9 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import { User } from "@/models/user";
 
-export function BookingsList() {
+export function BookingsList({ user = undefined }: { user?: User }) {
   const {
     bookings,
     reload,
@@ -51,8 +51,6 @@ export function BookingsList() {
     payManyWithCard,
     isLoading,
   } = useBooking();
-  const { user } = useAuth();
-
   const confirm = useConfirm();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
