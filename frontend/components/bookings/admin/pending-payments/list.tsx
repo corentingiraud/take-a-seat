@@ -11,8 +11,7 @@ import {
 import { useAdminPayments } from "@/contexts/admin/payments";
 
 export function AdminBookingPendingPaymentsList() {
-  const { usersWithPendingPayments: usersWithPendingPayments } =
-    useAdminPayments();
+  const { usersWithPendingBookingPayments } = useAdminPayments();
 
   return (
     <div>
@@ -25,7 +24,7 @@ export function AdminBookingPendingPaymentsList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {usersWithPendingPayments.map((user) => (
+          {usersWithPendingBookingPayments.map((user) => (
             <TableRow key={user.documentId}>
               <TableCell>
                 {user.firstName} {user.lastName}
@@ -38,7 +37,7 @@ export function AdminBookingPendingPaymentsList() {
           ))}
         </TableBody>
       </Table>
-      {usersWithPendingPayments.length === 0 && (
+      {usersWithPendingBookingPayments.length === 0 && (
         <p className="mt-10 text-center">Vous êtes à jour 👌👏</p>
       )}
     </div>

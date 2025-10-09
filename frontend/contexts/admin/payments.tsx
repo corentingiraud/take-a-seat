@@ -15,11 +15,14 @@ import { User } from "@/models/user";
 import { Booking } from "@/models/booking";
 import { BookingStatus } from "@/models/booking-status";
 import { PaymentStatus } from "@/models/payment-status";
+import { PrepaidCard } from "@/models/prepaid-card";
 
 interface AdminPaymentsContextType {
-  usersWithPendingPayments: User[];
+  usersWithPendingBookingPayments: User[];
+  prepaidCardsWithPendingPayments: PrepaidCard[];
   reload: () => void;
-  markAsPaid: (bookings: Booking[]) => void;
+  markBookingsAsPaid: (bookings: Booking[]) => void;
+  markPrepaidCardAsPaid: (prepaidCard: PrepaidCard) => void;
 }
 
 interface AdminPaymentsProviderProps {
@@ -34,14 +37,16 @@ export const AdminPaymentsProvider: React.FC<AdminPaymentsProviderProps> = ({
   children,
 }) => {
   const { fetchAll, update } = useStrapiAPI();
-  const [usersWithPendingPayments, setUsersWithPendingPayments] = useState<
-    User[]
-  >([]);
+  const [usersWithPendingBookingPayments, setUsersWithPendingBookingPayments] =
+    useState<User[]>([]);
+  const [prepaidCardsWithPendingPayments, setPrepaidCardsWithPendingPayments] =
+    useState<PrepaidCard[]>([]);
 
   const reload = () => {
     const now = moment().toDate();
 
-    const queryParams = {
+    // Pending booking payments
+    const bookingQueryParams = {
       populate: {
         [Booking.contentType]: {
           filters: {
@@ -65,13 +70,28 @@ export const AdminPaymentsProvider: React.FC<AdminPaymentsProviderProps> = ({
 
     fetchAll({
       ...User.strapiAPIParams,
-      queryParams,
-    }).then(setUsersWithPendingPayments);
+      queryParams: bookingQueryParams,
+    }).then(setUsersWithPendingBookingPayments);
+
+    // Pending prepaid card payments
+    const prepaidQueryParams = {
+      populate: {
+        user: true,
+      },
+      filters: {
+        paymentStatus: { $eq: PaymentStatus.PENDING },
+      },
+    };
+
+    fetchAll({
+      ...PrepaidCard.strapiAPIParams,
+      queryParams: prepaidQueryParams,
+    }).then(setPrepaidCardsWithPendingPayments);
   };
 
   useEffect(reload, []);
 
-  const markAsPaid = (bookings: Booking[]) => {
+  const markBookingsAsPaid = (bookings: Booking[]) => {
     const promises = [];
 
     for (const booking of bookings) {
@@ -97,12 +117,27 @@ export const AdminPaymentsProvider: React.FC<AdminPaymentsProviderProps> = ({
     });
   };
 
+  const markPrepaidCardAsPaid = (prepaidCard: PrepaidCard) => {
+    prepaidCard.paymentStatus = PaymentStatus.PAID;
+
+    update({
+      ...PrepaidCard.strapiAPIParams,
+      object: prepaidCard,
+      fieldsToUpdate: ["paymentStatus"],
+    }).then(() => {
+      toast.success("La carte prépayée a été marquée comme payée");
+      reload();
+    });
+  };
+
   return (
     <AdminPaymentsContext.Provider
       value={{
-        usersWithPendingPayments,
+        usersWithPendingBookingPayments,
+        prepaidCardsWithPendingPayments,
         reload,
-        markAsPaid,
+        markBookingsAsPaid,
+        markPrepaidCardAsPaid,
       }}
     >
       {children}

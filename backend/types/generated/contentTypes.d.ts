@@ -430,7 +430,9 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
       'api::booking.booking'
     > &
       Schema.Attribute.Private;
-    paymentStatus: Schema.Attribute.Enumeration<['PENDING', 'PAID']> &
+    paymentStatus: Schema.Attribute.Enumeration<
+      ['PENDING', 'PAID', 'REFUNDED']
+    > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'PENDING'>;
     prepaidCard: Schema.Attribute.Relation<

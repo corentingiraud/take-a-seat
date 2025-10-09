@@ -79,20 +79,24 @@ export default {
     const newStatus = event.params.data.bookingStatus;
     const previousStatus = existingBooking?.bookingStatus;
 
-    const shouldIncrementOnCancel =
+    const isCancelling =
       !!newStatus &&
-      ((previousStatus === 'PENDING' && newStatus === 'CANCELLED') ||
-        (previousStatus === 'CONFIRMED' && newStatus === 'CANCELLED'));
+      newStatus === 'CANCELLED' &&
+      previousStatus !== 'CANCELLED';
 
-    if (shouldIncrementOnCancel) {
-      await incrementPrepaidCardBalance(existingBooking);
-      return;
+    if (isCancelling) {
+      const hasCard = !!existingBooking?.prepaidCard?.documentId;
+      event.params.data.paymentStatus = hasCard ? 'REFUNDED' : 'CANCELLED';
+
+      if (hasCard) {
+        await incrementPrepaidCardBalance(existingBooking);
+      }
     }
 
     const addedCardId = getPrepaidCardIdFromUpdateData(event.params.data);
     const nowHasCard = !!addedCardId;
 
-    if (nowHasCard && existingBooking.paymentStatus === "PENDING") {
+    if (nowHasCard && existingBooking.paymentStatus === 'PENDING') {
       const addedCard = await prepaidCardService.findFirst({
         filters: { id: addedCardId },
       });

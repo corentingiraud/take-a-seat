@@ -22,7 +22,7 @@ interface AdminPendingPaymentsActionMenuProps {
 export function AdminBookingPendingPaymentsActionMenu({
   user,
 }: AdminPendingPaymentsActionMenuProps) {
-  const { markAsPaid } = useAdminPayments();
+  const { markBookingsAsPaid: markAsPaid } = useAdminPayments();
   const askConfirm = useConfirm();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);

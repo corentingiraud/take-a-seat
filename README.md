@@ -23,3 +23,20 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 docker image prune -f
 ```
+
+## Default credentials in dev env
+
+- Admin account
+
+admin1@fake.com
+admin1@fake.com
+
+- Coworker 1
+
+coworker1@fake.com
+coworker1@fake.com
+
+- Coworker 2
+
+coworker2@fake.com
+coworker2@fake.com

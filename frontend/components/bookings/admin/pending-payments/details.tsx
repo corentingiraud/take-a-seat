@@ -24,7 +24,7 @@ interface BookingPendingPaymentsDetailsDrawerProps {
 export function BookingPendingPaymentsDetailsDrawer({
   user,
 }: BookingPendingPaymentsDetailsDrawerProps) {
-  const { markAsPaid } = useAdminPayments();
+  const { markBookingsAsPaid: markAsPaid } = useAdminPayments();
   const askConfirm = useConfirm();
 
   if (!user) return null;

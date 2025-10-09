@@ -34,7 +34,8 @@
       "type": "enumeration",
       "enum": [
         "PENDING",
-        "PAID"
+        "PAID",
+        "REFUNDED"
       ],
       "default": "PENDING",
       "required": true

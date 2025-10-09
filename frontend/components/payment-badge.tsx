@@ -19,6 +19,18 @@ export function PaymentStatusBadge({ status }: PaymentBadgeProps) {
           Payée
         </Badge>
       );
+    case PaymentStatus.REFUNDED:
+      return (
+        <Badge className="bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800">
+          Remboursée
+        </Badge>
+      );
+    case PaymentStatus.CANCELLED:
+      return (
+        <Badge className="bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-800">
+          Annulée
+        </Badge>
+      );
     default:
       return null;
   }
