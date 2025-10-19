@@ -7,7 +7,6 @@ import { siteConfig } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 import { BookingsList } from "@/components/bookings/list/list";
 import { PrepaidCardsList } from "@/components/prepaid-cards/list/list";
-import { BookingProvider } from "@/contexts/booking-context";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 
@@ -41,9 +40,7 @@ export default function HomePageClient() {
         }
         title="Mes réservations"
       >
-        <BookingProvider user={user}>
-          <BookingsList />
-        </BookingProvider>
+        <BookingsList />
       </Section>
     </div>
   );

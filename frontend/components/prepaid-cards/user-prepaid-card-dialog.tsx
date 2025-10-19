@@ -13,7 +13,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import PrepaidCardSelect from "@/components/prepaid-cards/select";
-import { usePrepaidCard } from "@/hooks/use-prepaid-card";
+import { usePrepaidCard } from "@/hooks/use-prepaid-cards";
 import { PrepaidCard } from "@/models/prepaid-card";
 
 type Props = {

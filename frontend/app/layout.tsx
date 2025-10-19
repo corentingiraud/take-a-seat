@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import clsx from "clsx";
 import { PublicEnvScript } from "next-runtime-env";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import moment from "@/lib/moment";
 import { siteConfig } from "@/config/site";
@@ -9,8 +10,9 @@ import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbars/navbar";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { ConfirmDialogProvider } from "@/contexts/confirm-dialog-context";
+import { QueryProvider } from "@/providers/query-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -39,26 +41,30 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <ThemeProvider enableSystem attribute="class" defaultTheme="dark">
-          <AuthProvider>
-            <ConfirmDialogProvider>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="container mx-auto max-w-7xl pt-8 md:pt-16 px-4 flex-grow">
-                  {children}
-                </main>
-                <footer className="w-full flex items-center justify-center py-3">
-                  <div className="flex items-center gap-1 text-current">
-                    <span className="text-default-600">
-                      © Le Pêle Coworking - {moment().format("YYYY")}
-                    </span>
+        <NuqsAdapter>
+          <QueryProvider>
+            <ThemeProvider enableSystem attribute="class" defaultTheme="dark">
+              <AuthProvider>
+                <ConfirmDialogProvider>
+                  <div className="flex min-h-screen flex-col">
+                    <Navbar />
+                    <main className="container mx-auto max-w-7xl pt-8 md:pt-16 px-4 flex-grow">
+                      {children}
+                    </main>
+                    <footer className="w-full flex items-center justify-center py-3">
+                      <div className="flex items-center gap-1 text-current">
+                        <span className="text-default-600">
+                          © Le Pêle Coworking - {moment().format("YYYY")}
+                        </span>
+                      </div>
+                    </footer>
                   </div>
-                </footer>
-              </div>
-              <Toaster closeButton richColors />
-            </ConfirmDialogProvider>
-          </AuthProvider>
-        </ThemeProvider>
+                  <Toaster closeButton richColors />
+                </ConfirmDialogProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </QueryProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

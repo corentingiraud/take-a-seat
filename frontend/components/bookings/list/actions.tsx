@@ -1,3 +1,5 @@
+"use client";
+
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
@@ -9,11 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Booking } from "@/models/booking";
-import { useBooking } from "@/contexts/booking-context";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { UserPrepaidCardDialog } from "@/components/prepaid-cards/user-prepaid-card-dialog";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { User } from "@/models/user";
+import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 
 interface BookingActionMenuProps {
   user?: User;
@@ -21,9 +23,17 @@ interface BookingActionMenuProps {
 }
 
 export function BookingActionMenu({ booking, user }: BookingActionMenuProps) {
-  const { cancel, isLoading, payManyWithCard } = useBooking();
+  const { cancel, payManyWithCard, isCancelling } = useBookingActions();
   const confirm = useConfirm();
+
   const [isPrepaidDialogOpen, setIsPrepaidDialogOpen] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+
+  const canCancel = booking.isCancelable;
+  const canPay = booking.paymentStatus === "PENDING";
+  const hasAnyAction = canCancel || canPay;
+
+  const loading = isCancelling || isPaying;
 
   const handleCancel = async () => {
     const confirmed = await confirm({
@@ -31,41 +41,62 @@ export function BookingActionMenu({ booking, user }: BookingActionMenuProps) {
       description: "Cette action est irréversible.",
     });
 
-    if (confirmed) {
-      await cancel(booking);
-    }
+    if (!confirmed) return;
+
+    await cancel(booking);
   };
 
   const handleConfirmPrepaid = async (card: PrepaidCard) => {
-    await payManyWithCard([booking], card);
+    try {
+      setIsPaying(true);
+      await payManyWithCard([booking], card);
+    } finally {
+      setIsPaying(false);
+      setIsPrepaidDialogOpen(false);
+    }
   };
 
   return (
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button disabled={isLoading} size="icon" variant="outline">
+          <Button
+            aria-disabled={!hasAnyAction || loading}
+            disabled={!hasAnyAction || loading}
+            size="icon"
+            title={!hasAnyAction ? "Aucune action disponible" : undefined}
+            variant="outline"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {booking.isCancelable && (
-            <DropdownMenuItem
-              className="text-red-600"
-              disabled={isLoading}
-              onClick={handleCancel}
-            >
-              Annuler
-            </DropdownMenuItem>
-          )}
 
-          {booking.paymentStatus === "PENDING" && (
-            <DropdownMenuItem
-              className="text-green-600"
-              disabled={isLoading}
-              onClick={() => setIsPrepaidDialogOpen(true)}
-            >
-              Payer avec une carte prépayée
+        <DropdownMenuContent>
+          {hasAnyAction ? (
+            <>
+              {canCancel && (
+                <DropdownMenuItem
+                  className="text-red-600"
+                  disabled={loading}
+                  onClick={handleCancel}
+                >
+                  Annuler
+                </DropdownMenuItem>
+              )}
+
+              {canPay && (
+                <DropdownMenuItem
+                  className="text-green-600"
+                  disabled={loading}
+                  onClick={() => setIsPrepaidDialogOpen(true)}
+                >
+                  Payer avec une carte prépayée
+                </DropdownMenuItem>
+              )}
+            </>
+          ) : (
+            <DropdownMenuItem disabled className="text-muted-foreground">
+              Aucune action disponible
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePrepaidCard } from "@/hooks/use-prepaid-card";
+import { usePrepaidCard } from "@/hooks/use-prepaid-cards";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { User } from "@/models/user";
 import { PaymentStatusBadge } from "@/components/payment-badge";
