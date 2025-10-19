@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { CalendarIcon, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 import { BookingStatusBadge } from "../badge";
 
@@ -38,6 +39,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { User } from "@/models/user";
+import { getServiceCalendarHref } from "@/lib/urls";
 
 export function BookingsList({ user = undefined }: { user?: User }) {
   const {
@@ -245,7 +247,29 @@ export function BookingsList({ user = undefined }: { user?: User }) {
                     {booking.endDate.format("HH[h]mm")}
                   </TableCell>
                   <TableCell>{booking.service?.coworkingSpace?.name}</TableCell>
-                  <TableCell>{booking.service?.name}</TableCell>
+                  <TableCell>
+                    {booking.service ? (
+                      <div className="flex items-center gap-2">
+                        <span className="truncate">{booking.service.name}</span>
+
+                        <Link
+                          aria-label={`Voir le calendrier du service ${booking.service.name}`}
+                          className="transition-colors text-muted-foreground hover:text-primary"
+                          href={getServiceCalendarHref({
+                            coworkingSpaceId:
+                              booking.service.coworkingSpace?.documentId,
+                            serviceId: booking.service.documentId,
+                            startDate,
+                            endDate,
+                          })}
+                        >
+                          <CalendarIcon className="shrink-0" size={16} />
+                        </Link>
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
                   <TableCell>
                     <BookingStatusBadge booking={booking} />
                   </TableCell>
