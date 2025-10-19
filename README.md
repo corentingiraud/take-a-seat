@@ -26,17 +26,30 @@ docker image prune -f
 
 ## Default credentials in dev env
 
-- Admin account
+**Standart users (http://localhost:3000/)**
 
-admin1@fake.com
-admin1@fake.com
+- Admin account
+```
+Admin1@fake.com
+Admin1@fake.com
+```
 
 - Coworker 1
-
-coworker1@fake.com
-coworker1@fake.com
+```
+Coworker1@fake.com
+Coworker1@fake.com
+```
 
 - Coworker 2
+```
+Coworker2@fake.com
+Coworker2@fake.com
+```
 
-coworker2@fake.com
-coworker2@fake.com
+**Strapi user (http://localhost:1337/)**
+
+- Admin
+```
+Admin1@fake.com
+Admin1@fake.com
+```

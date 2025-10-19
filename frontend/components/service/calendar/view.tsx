@@ -245,13 +245,13 @@ export const ServiceCalendarView = () => {
 
       <div className="overflow-x-auto">
         <div
-          className="grid border-t border-l dark:border-neutral-700"
+          className="grid relative border-t border-l dark:border-neutral-700"
           style={{
             gridTemplateColumns: `80px repeat(${weekDays.length}, minmax(120px,1fr))`,
           }}
         >
           {/* Header row */}
-          <div className="border-b border-r p-2 font-medium text-sm bg-gray-100 dark:bg-neutral-800 dark:text-white">
+          <div className="border-b border-r p-2 font-medium text-sm bg-gray-100 dark:bg-neutral-800 dark:text-white sticky left-0 z-20">
             Heure
           </div>
           {weekDays.map((day) => (
@@ -271,7 +271,7 @@ export const ServiceCalendarView = () => {
 
             return (
               <React.Fragment key={label}>
-                <div className="border-b border-r p-2 text-sm font-medium bg-gray-50 dark:bg-neutral-900 dark:text-white">
+                <div className="border-b border-r p-2 text-sm font-medium bg-gray-50 dark:bg-neutral-900 dark:text-white sticky left-0 z-10">
                   {label}
                 </div>
 
