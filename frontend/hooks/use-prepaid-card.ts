@@ -15,48 +15,57 @@ export function usePrepaidCard({
 }) {
   const { user } = useAuth();
   const { fetchAll } = useStrapiAPI();
+
   const [allPrepaidCards, setAllPrepaidCards] = useState<PrepaidCard[]>([]);
-  const [usablePrepaidCards, setUsablePrepaidCards] = useState<PrepaidCard[]>(
-    [],
-  );
+  const [usablePrepaidCards, setUsablePrepaidCards] = useState<PrepaidCard[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const reload = async () => {
-    if (!user) return;
+    if (!user && !userDocumentId) return;
 
-    const allCards = await fetchAll({
-      ...PrepaidCard.strapiAPIParams,
-      queryParams: {
-        filters: {
-          user: {
-            documentId: {
-              $eq: userDocumentId ?? user.documentId,
+    try {
+      setIsLoading(true);
+
+      const allCards = await fetchAll({
+        ...PrepaidCard.strapiAPIParams,
+        queryParams: {
+          filters: {
+            user: {
+              documentId: {
+                $eq: userDocumentId ?? user?.documentId,
+              },
             },
           },
         },
-      },
-    });
+      });
 
-    const today = moment().format(DEFAULT_DATE_FORMAT);
+      const today = moment().format(DEFAULT_DATE_FORMAT);
 
-    const usableCards = allCards.filter((card: PrepaidCard) => {
-      return (
-        moment(card.validFrom).isSameOrBefore(today) &&
-        moment(card.expirationDate).isAfter(today) &&
-        card.paymentStatus === PaymentStatus.PAID
-      );
-    });
+      const usableCards = allCards.filter((card: PrepaidCard) => {
+        return (
+          moment(card.validFrom).isSameOrBefore(today) &&
+          moment(card.expirationDate).isAfter(today) &&
+          card.paymentStatus === PaymentStatus.PAID
+        );
+      });
 
-    setAllPrepaidCards(allCards);
-    setUsablePrepaidCards(usableCards);
+      setAllPrepaidCards(allCards);
+      setUsablePrepaidCards(usableCards);
+    } catch (error) {
+      console.error("Erreur lors du chargement des cartes prépayées :", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     reload();
-  }, [user]);
+  }, [userDocumentId, user]);
 
   return {
     reload,
     allPrepaidCards,
     usablePrepaidCards,
+    isLoading,
   };
 }

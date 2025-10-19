@@ -21,7 +21,7 @@ interface AdminPaymentsContextType {
   usersWithPendingBookingPayments: User[];
   prepaidCardsWithPendingPayments: PrepaidCard[];
   reload: () => void;
-  markBookingsAsPaid: (bookings: Booking[]) => void;
+  markBookingsAsPaid: (bookings: Booking[], prepaidCard?: PrepaidCard) => void;
   markPrepaidCardAsPaid: (prepaidCard: PrepaidCard) => void;
 }
 
@@ -91,30 +91,50 @@ export const AdminPaymentsProvider: React.FC<AdminPaymentsProviderProps> = ({
 
   useEffect(reload, []);
 
-  const markBookingsAsPaid = (bookings: Booking[]) => {
-    const promises = [];
-
+  const markBookingsAsPaid = async (
+    bookings: Booking[],
+    prepaidCard?: PrepaidCard,
+  ) => {
     for (const booking of bookings) {
-      booking.paymentStatus = PaymentStatus.PAID;
-      promises.push(
-        update({
+      try {
+        booking.paymentStatus = PaymentStatus.PAID;
+
+        if (prepaidCard) {
+          booking.prepaidCard = prepaidCard;
+        }
+
+        await update({
           ...Booking.strapiAPIParams,
           object: booking,
-          fieldsToUpdate: ["paymentStatus"],
-        }),
-      );
+          fieldsToUpdate: prepaidCard
+            ? ["paymentStatus", "prepaidCard"]
+            : ["paymentStatus"],
+        });
+      } catch (e) {
+        console.error(
+          `Erreur lors de la mise à jour de la réservation ${booking.id}:`,
+          e,
+        );
+        toast.error(`Échec de la mise à jour de la réservation ${booking.id}.`);
+      }
     }
 
-    Promise.all(promises).then(() => {
-      let notificationMessage =
-        "Les réservations ont été marquées comme payées";
+    let notificationMessage: string;
 
-      if (bookings.length === 1) {
-        notificationMessage = "La réservation a été marquée comme payée";
-      }
-      toast.success(notificationMessage);
-      reload();
-    });
+    if (prepaidCard) {
+      notificationMessage =
+        bookings.length === 1
+          ? "La réservation a été marquée comme payée (carte prépayée)"
+          : "Les réservations ont été marquées comme payées (carte prépayée)";
+    } else {
+      notificationMessage =
+        bookings.length === 1
+          ? "La réservation a été marquée comme payée (CB / espèce)"
+          : "Les réservations ont été marquées comme payées (CB / espèce)";
+    }
+
+    toast.success(notificationMessage);
+    reload();
   };
 
   const markPrepaidCardAsPaid = (prepaidCard: PrepaidCard) => {

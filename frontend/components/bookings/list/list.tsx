@@ -26,20 +26,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { Booking } from "@/models/booking";
 import { PrepaidCard } from "@/models/prepaid-card";
-import { usePrepaidCard } from "@/hooks/use-prepaid-card";
-import PrepaidCardSelect from "@/components/prepaid-cards/select";
-import {
-  DialogHeader,
-  DialogFooter,
-  DialogTrigger,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog";
 import { User } from "@/models/user";
 import { getServiceCalendarHref } from "@/lib/urls";
+import { UserPrepaidCardDialog } from "@/components/prepaid-cards/user-prepaid-card-dialog";
 
 export function BookingsList({ user = undefined }: { user?: User }) {
   const {
@@ -56,28 +45,12 @@ export function BookingsList({ user = undefined }: { user?: User }) {
   const confirm = useConfirm();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [selectedCard, setSelectedCard] = useState<PrepaidCard | null>(null);
-
-  const { usablePrepaidCards } = usePrepaidCard({
-    userDocumentId: user?.documentId,
-  });
+  const [isPrepaidDialogOpen, setIsPrepaidDialogOpen] = useState(false);
 
   const selectedBookings: Booking[] = useMemo(
     () => bookings.filter((b) => selectedIds.has(b.documentId)),
     [bookings, selectedIds],
   );
-
-  const neededCredits = selectedBookings.length;
-  const eligibleCards = useMemo(
-    () => usablePrepaidCards.filter((c) => c.remainingBalance >= neededCredits),
-    [usablePrepaidCards, neededCredits],
-  );
-
-  const handleConfirmPayWithCard = async () => {
-    if (!selectedCard) return;
-    await payManyWithCard(selectedBookings, selectedCard);
-    await reload();
-  };
 
   useEffect(() => {
     reload();
@@ -137,55 +110,36 @@ export function BookingsList({ user = undefined }: { user?: User }) {
         <span className="text-sm text-muted-foreground">
           {selectedBookings.length} sélectionné(s)
         </span>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              disabled={
-                selectedBookings.length === 0 ||
-                isLoading ||
-                !selectedBookings.every((b) => b.paymentStatus === "PENDING")
-              }
-            >
-              Payer avec une carte
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Sélectionner une carte</DialogTitle>
-              <DialogDescription>
-                Choisissez une carte pour payer {selectedBookings.length}{" "}
-                réservation(s).
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-4">
-              <PrepaidCardSelect
-                autoSelectBest
-                cards={eligibleCards}
-                disabled={isLoading}
-                placeholder="Sélectionnez une carte"
-                value={selectedCard}
-                onChange={setSelectedCard}
-              />
-              {eligibleCards.length === 0 && selectedBookings.length > 0 && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Aucune carte ne possède assez de crédits pour{" "}
-                  {selectedBookings.length} réservation(s).
-                </p>
-              )}
-            </div>
-            <DialogClose asChild>
-              <DialogFooter className="mt-6">
-                <Button variant="secondary">Annuler</Button>
-                <Button
-                  disabled={!selectedCard || isLoading}
-                  onClick={handleConfirmPayWithCard}
-                >
-                  Confirmer le paiement
-                </Button>
-              </DialogFooter>
-            </DialogClose>
-          </DialogContent>
-        </Dialog>
+        <UserPrepaidCardDialog
+          disabled={
+            selectedBookings.length === 0 ||
+            isLoading ||
+            !selectedBookings.every((b) => b.paymentStatus === "PENDING")
+          }
+          minCredits={selectedBookings.length}
+          open={isPrepaidDialogOpen}
+          selectionLabel={
+            selectedBookings.length > 0
+              ? `Choisissez une carte pour payer ${selectedBookings.length} réservation(s).`
+              : undefined
+          }
+          userDocumentId={user?.documentId}
+          onConfirm={async (card: PrepaidCard) => {
+            await payManyWithCard(selectedBookings, card);
+            await reload();
+          }}
+          onOpenChange={setIsPrepaidDialogOpen}
+        />
+        <Button
+          disabled={
+            selectedBookings.length === 0 ||
+            isLoading ||
+            !selectedBookings.every((b) => b.paymentStatus === "PENDING")
+          }
+          onClick={() => setIsPrepaidDialogOpen(true)}
+        >
+          Payer avec une carte
+        </Button>
         <Button
           disabled={
             selectedBookings.length === 0 ||
@@ -277,7 +231,7 @@ export function BookingsList({ user = undefined }: { user?: User }) {
                     <PaymentStatusBadge status={booking.paymentStatus} />
                   </TableCell>
                   <TableCell>
-                    <BookingActionMenu booking={booking} />
+                    <BookingActionMenu booking={booking} user={user} />
                   </TableCell>
                 </TableRow>
               );
