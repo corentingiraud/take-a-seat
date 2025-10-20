@@ -34,8 +34,9 @@ export function PrepaidCardsList({ user }: { user: User }) {
   const sortedCards = [...filteredCards].sort((a, b) => {
     const priority = {
       usable: 0,
-      upcoming: 1,
-      expired: 2,
+      unusable: 1,
+      upcoming: 2,
+      expired: 3,
     };
 
     return priority[a.status] - priority[b.status];
