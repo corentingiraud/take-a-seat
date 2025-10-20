@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 import { User } from "@/models/user";
-import { generateDynamicPageTitle } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Section } from "@/components/ui/section";
 import { UserDetails } from "@/components/users/details";

@@ -3,6 +3,7 @@
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { Moment } from "moment";
+import { fr } from "date-fns/locale";
 
 import { shouldDisableDate } from "../utils/should-disable-date";
 
@@ -17,7 +18,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Service } from "@/models/service";
-import { fr } from "date-fns/locale";
 
 interface MultipleDateFormStepProps {
   service: Service;

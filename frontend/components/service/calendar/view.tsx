@@ -182,19 +182,6 @@ export const ServiceCalendarView = () => {
     [availabilities],
   );
 
-  // Slot ouvert si une availability inclut le slot ET qu'aucune unavailability ne le bloque
-  const isTimeOpen = React.useCallback(
-    (day: Moment, hour: number, minute: number) => {
-      const av = findAvailabilityForSlot(day, hour, minute);
-
-      if (!av) return false;
-      if (isSlotUnavailable(day, hour, minute)) return false;
-
-      return true;
-    },
-    [findAvailabilityForSlot, isSlotUnavailable],
-  );
-
   if (!service)
     return (
       <p className="mt-10 text-center text-muted-foreground">
