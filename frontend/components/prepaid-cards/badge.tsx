@@ -27,6 +27,12 @@ export function PrepaidCardStatusBadge({
           Expirée
         </Badge>
       );
+    case "unusable":
+      return (
+        <Badge className="bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800">
+          Non utilisable
+        </Badge>
+      );
     default:
       return null;
   }

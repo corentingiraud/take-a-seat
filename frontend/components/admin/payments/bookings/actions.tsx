@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Loader2 } from "lucide-react";
 
 import { BookingPendingPaymentsDetailsDrawer } from "./details";
 
@@ -13,24 +13,31 @@ import {
 import { User } from "@/models/user";
 import { Drawer } from "@/components/ui/drawer";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
-import { useAdminPayments } from "@/contexts/admin/payments";
 import { PaymentMethod, paymentMethodToString } from "@/models/payment-method";
 import { UserPrepaidCardDialog } from "@/components/prepaid-cards/user-prepaid-card-dialog";
 import { PrepaidCard } from "@/models/prepaid-card";
+import { useAdminBookingPaymentActions } from "@/hooks/admin/payments/bookings/use-admin-booking-payment-actions";
 
 interface AdminPendingPaymentsActionMenuProps {
   user: User;
 }
+
 export function AdminBookingPendingPaymentsActionMenu({
   user,
 }: AdminPendingPaymentsActionMenuProps) {
-  const { markBookingsAsPaid } = useAdminPayments();
+  const { markBookingsAsPaid, isMarkingBookingsAsPaid } =
+    useAdminBookingPaymentActions();
+
   const askConfirm = useConfirm();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isPrepaidDialogOpen, setIsPrepaidDialogOpen] = useState(false);
 
-  if (!(user.bookings && user.bookings.length >= 1)) return null;
+  const [submitting, setSubmitting] = useState(false);
+
+  const isBusy = isMarkingBookingsAsPaid || submitting;
+
+  if (!user.bookings || user.bookings.length < 1) return null;
 
   const handleViewDetails = () => {
     setSelectedUser(user);
@@ -43,42 +50,62 @@ export function AdminBookingPendingPaymentsActionMenu({
       description: `${user.bookings!.length} réservation(s) seront marquée(s) comme payée(s) (${paymentMethodToString(paymentMethod)}).`,
     });
 
-    if (confirmed) {
-      markBookingsAsPaid(user.bookings!);
+    if (!confirmed) return;
+
+    try {
+      setSubmitting(true);
+      await markBookingsAsPaid(user.bookings!);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleConfirmPrepaid = async (card: PrepaidCard) => {
-    await markBookingsAsPaid(user.bookings!, card);
+    try {
+      setSubmitting(true);
+      await markBookingsAsPaid(user.bookings!, card);
+    } finally {
+      setIsPrepaidDialogOpen(false);
+      setSubmitting(false);
+    }
   };
 
   return (
     <>
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DropdownMenu /* modal={false} optionnel ici */>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="outline">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button
+              aria-busy={isBusy}
+              disabled={isBusy}
+              size="icon"
+              variant="outline"
+            >
+              {isBusy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <MoreHorizontal className="h-4 w-4" />
+              )}
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleViewDetails}>
+            <DropdownMenuItem disabled={isBusy} onClick={handleViewDetails}>
               Voir le détail
             </DropdownMenuItem>
 
             <DropdownMenuItem
               className="text-green-600"
+              disabled={isBusy}
               onClick={() => handleMarkAllAsPaid(PaymentMethod.EXTERNAL)}
             >
-              Marquer tout payé (CB / espèce)
+              Marquer tout comme payé (CB / espèce)
             </DropdownMenuItem>
 
             <DropdownMenuItem
               className="text-green-600"
+              disabled={isBusy}
               onClick={() => setIsPrepaidDialogOpen(true)}
-              // Option: éviter la fermeture auto du menu
-              // onSelect={(e) => e.preventDefault()}
             >
               Marquer tout payé (carte prépayée)
             </DropdownMenuItem>
@@ -88,14 +115,15 @@ export function AdminBookingPendingPaymentsActionMenu({
         </DropdownMenu>
       </Drawer>
 
-      {/* <-- Dialog rendue hors du menu */}
       <UserPrepaidCardDialog
         autoSelectBest
         minCredits={0}
         open={isPrepaidDialogOpen}
         userDocumentId={user.documentId}
         onConfirm={handleConfirmPrepaid}
-        onOpenChange={setIsPrepaidDialogOpen}
+        onOpenChange={(open) => {
+          if (!isBusy) setIsPrepaidDialogOpen(open);
+        }}
       />
     </>
   );

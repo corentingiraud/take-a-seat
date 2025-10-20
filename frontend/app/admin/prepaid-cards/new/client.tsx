@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminPrepaidCardsCreate } from "@/components/prepaid-cards/admin/create";
+import { AdminPrepaidCardsCreate } from "@/components/admin/prepaid-cards/create";
 import { AdminPrepaidCardsProvider } from "@/contexts/admin/prepaid-card";
 import { Section } from "@/components/ui/section";
 

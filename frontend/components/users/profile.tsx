@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { generateDynamicPageTitle } from "@/lib/utils";
 import { UserDetails } from "@/components/users/details";
 import { PrepaidCardsList } from "@/components/prepaid-cards/list/list";
-import { BookingProvider } from "@/contexts/booking-context";
 import { BookingsList } from "@/components/bookings/list/list";
 import { Section } from "@/components/ui/section";
 import { User } from "@/models/user";
@@ -34,9 +33,7 @@ export default function UserProfile({ user }: { user: User }) {
       </Section>
 
       <Section title="Bookings">
-        <BookingProvider user={user}>
-          <BookingsList />
-        </BookingProvider>
+        <BookingsList />
       </Section>
     </div>
   );

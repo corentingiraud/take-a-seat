@@ -8,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Section } from "@/components/ui/section";
 import { UserDetails } from "@/components/users/details";
 import { PrepaidCardsList } from "@/components/prepaid-cards/list/list";
-import { BookingProvider } from "@/contexts/booking-context";
 import { BookingsList } from "@/components/bookings/list/list";
 import { UserSelect } from "@/components/users/select";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
@@ -43,12 +42,13 @@ export default function UserProfile({ initialUserId = null }: Props) {
         `${selectedUser.firstName} ${selectedUser.lastName}`,
       );
 
-      // Update URL by replacing/appending the id
-      if (selectedUser.id) {
-        const basePath = window.location.pathname.replace(/\/\d+$/, ""); // Remove existing ID
-        const newUrl = `${basePath}/${selectedUser.id}`;
+      if (selectedUser?.id) {
+        const url = new URL(window.location.href);
 
-        window.history.replaceState(null, "", newUrl);
+        url.pathname = url.pathname.replace(/\/\d+$/, `/${selectedUser.id}`);
+        if (window.location.href !== url.toString()) {
+          window.history.replaceState(null, "", url.toString());
+        }
       }
     } else {
       document.title = generateDynamicPageTitle("Profil utilisateur");
@@ -121,9 +121,7 @@ export default function UserProfile({ initialUserId = null }: Props) {
           </Section>
 
           <Section title="Réservations">
-            <BookingProvider user={selectedUser}>
-              <BookingsList user={selectedUser} />
-            </BookingProvider>
+            <BookingsList user={selectedUser} />
           </Section>
         </>
       )}

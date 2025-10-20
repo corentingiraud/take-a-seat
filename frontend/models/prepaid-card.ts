@@ -22,7 +22,7 @@ interface PrepaidCardInterface {
   createdAt?: Moment | null;
 }
 
-export type PrepaidCardStatus = "usable" | "upcoming" | "expired";
+export type PrepaidCardStatus = "usable" | "upcoming" | "expired" | "unusable";
 
 export class PrepaidCard implements StrapiData {
   id: number;
@@ -114,9 +114,14 @@ export class PrepaidCard implements StrapiData {
   get status(): PrepaidCardStatus {
     const today = moment();
 
+    if (this.expirationDate?.isBefore(today, "d")) {
+      return "expired";
+    }
+
     if (
-      this.validFrom?.isSameOrBefore(today) &&
-      this.expirationDate?.isAfter(today)
+      this.validFrom?.isSameOrBefore(today, "d") &&
+      this.expirationDate?.isSameOrAfter(today, "d") &&
+      this.paymentStatus === PaymentStatus.PAID
     ) {
       return "usable";
     }
@@ -125,6 +130,6 @@ export class PrepaidCard implements StrapiData {
       return "upcoming";
     }
 
-    return "expired";
+    return "unusable";
   }
 }

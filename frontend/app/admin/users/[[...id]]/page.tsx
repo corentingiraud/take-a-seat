@@ -6,13 +6,10 @@ export const metadata: Metadata = {
   title: "Profil utilisateur",
 };
 
-type Params = Promise<{ id?: string[] }>;
+type Params = { id?: string | string[] };
 
-export default async function UserProfilePage({ params }: { params: Params }) {
-  const resolvedParams = await params;
-  const id = Array.isArray(resolvedParams.id)
-    ? resolvedParams.id[0]
-    : undefined;
+export default function UserProfilePage({ params }: { params: Params }) {
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
   return <UserProfile initialUserId={id ?? null} />;
 }
