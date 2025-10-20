@@ -37,23 +37,21 @@ export default function UserProfile({ initialUserId = null }: Props) {
   }, [initialUserId, users]);
 
   useEffect(() => {
-    if (selectedUser?.firstName && selectedUser?.lastName) {
-      document.title = generateDynamicPageTitle(
-        `${selectedUser.firstName} ${selectedUser.lastName}`,
-      );
+    if (!selectedUser?.id) return;
 
-      if (selectedUser?.id) {
-        const url = new URL(window.location.href);
+    const url = new URL(window.location.href);
+    const pathname = url.pathname;
 
-        url.pathname = url.pathname.replace(/\/\d+$/, `/${selectedUser.id}`);
-        if (window.location.href !== url.toString()) {
-          window.history.replaceState(null, "", url.toString());
-        }
-      }
-    } else {
-      document.title = generateDynamicPageTitle("Profil utilisateur");
+    const hasTrailingId = /\/\d+$/.test(pathname);
+    const nextPath = hasTrailingId
+      ? pathname.replace(/\/\d+$/, `/${selectedUser.id}`)
+      : `${pathname.replace(/\/$/, "")}/${selectedUser.id}`;
+
+    if (nextPath !== pathname) {
+      url.pathname = nextPath;
+      window.history.replaceState(null, "", url.toString());
     }
-  }, [selectedUser]);
+  }, [selectedUser?.id]);
 
   if (loadingUsers) {
     return (
