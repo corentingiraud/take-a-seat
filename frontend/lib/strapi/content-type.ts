@@ -1,7 +1,11 @@
 import qs from "qs";
 
 import { API_URL } from "@/config/site";
-import { FactoryStrapiData, StrapiData } from "@/models/utils/strapi-data";
+import {
+  FactoryStrapiData,
+  StrapiData,
+  StrapiRawResponse,
+} from "@/models/utils/strapi-data";
 
 async function fetchFromStrapi<T>(
   url: string,
@@ -36,6 +40,41 @@ async function fetchAll<T extends StrapiData>(
     if (typeof jsonData === "object") return [factory(jsonData)];
 
     return [];
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function fetchAllPaginated<T extends StrapiData>(
+  contentType: string,
+  factory: FactoryStrapiData<T>,
+  params: Record<string, unknown> = {},
+  headers: HeadersInit = {},
+): Promise<StrapiRawResponse<T>> {
+  try {
+    const queryParams = { ...params };
+    const url = `${API_URL}/${contentType}?${qs.stringify(queryParams)}`;
+
+    const jsonData = await fetchFromStrapi<{
+      data: any[];
+      meta?: { pagination: any };
+    }>(url, headers);
+
+    return {
+      data: (jsonData?.data ?? []).map(factory),
+      meta: {
+        pagination: {
+          page: jsonData?.meta?.pagination?.page ?? 1,
+          pageSize:
+            jsonData?.meta?.pagination?.pageSize ??
+            (params["pagination[pageSize]"] as number) ??
+            25,
+          pageCount: jsonData?.meta?.pagination?.pageCount ?? 1,
+          total:
+            jsonData?.meta?.pagination?.total ?? (jsonData?.data ?? []).length,
+        },
+      },
+    };
   } catch (error) {
     throw error;
   }
@@ -114,4 +153,4 @@ async function update<T extends StrapiData>(
   }
 }
 
-export default { fetchAll, fetchOne, create, update };
+export default { fetchAll, fetchAllPaginated, fetchOne, create, update };

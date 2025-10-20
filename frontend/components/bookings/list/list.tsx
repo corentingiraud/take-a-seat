@@ -18,7 +18,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
 } from "@/components/ui/table";
 import { PaymentStatusBadge } from "@/components/payment-badge";
 import { WeekSelector } from "@/components/ui/week-selector";
@@ -32,10 +31,10 @@ import { Booking } from "@/models/booking";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { User } from "@/models/user";
 import moment from "@/lib/moment";
-import { useBookings } from "@/hooks/bookings/use-bookings";
+import { useBookings } from "@/hooks/bookings/use-bookings"; // pagination intégrée
 import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 
-export function BookingsList({ user = undefined }: { user?: User }) {
+export function BookingsList({ user }: { user?: User }) {
   const [startParam, setStartParam] = useQueryState(
     "start",
     parseAsString.withDefault(moment().startOf("isoWeek").format("YYYY-MM-DD")),
@@ -57,14 +56,21 @@ export function BookingsList({ user = undefined }: { user?: User }) {
     return m.isValid() ? m.endOf("day") : moment().endOf("isoWeek");
   }, [endParam]);
 
-  const { bookings, isLoading, isFetching, reload } = useBookings({
+  const {
+    bookings,
+    isLoading,
+    isFetching,
+    reload,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useBookings({
     userDocumentId: user?.documentId,
     startDate,
     endDate,
   });
 
   const { cancelMany, payManyWithCard } = useBookingActions();
-
   const confirm = useConfirm();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -76,12 +82,8 @@ export function BookingsList({ user = undefined }: { user?: User }) {
   );
 
   useEffect(() => {
-    reload();
-  }, []);
-
-  useEffect(() => {
     setSelectedIds(new Set());
-  }, [bookings]);
+  }, [startParam, endParam, user?.documentId]);
 
   const setWeekRange = async (start: Moment, end: Moment) => {
     const s = start.clone().startOf("day").format("YYYY-MM-DD");
@@ -218,71 +220,76 @@ export function BookingsList({ user = undefined }: { user?: User }) {
 
         <TableBody>
           {bookings.length > 0 ? (
-            bookings.map((booking) => {
-              const isChecked = selectedIds.has(booking.documentId);
+            <>
+              {bookings.map((booking) => {
+                const isChecked = selectedIds.has(booking.documentId);
 
-              return (
-                <TableRow key={booking.documentId}>
-                  <TableCell>
-                    <Checkbox
-                      aria-label="Sélectionner"
-                      checked={isChecked}
-                      disabled={isLoading || isFetching}
-                      onCheckedChange={(v) =>
-                        toggleOne(booking.documentId, Boolean(v))
-                      }
-                    />
-                  </TableCell>
+                return (
+                  <TableRow key={booking.documentId}>
+                    <TableCell>
+                      <Checkbox
+                        aria-label="Sélectionner"
+                        checked={isChecked}
+                        disabled={isLoading || isFetching}
+                        onCheckedChange={(v) =>
+                          toggleOne(booking.documentId, Boolean(v))
+                        }
+                      />
+                    </TableCell>
 
-                  <TableCell>
-                    {capitalizeFirstLetter(
-                      booking.startDate.format("dddd DD/MM - HH[h]mm"),
-                    )}
-                    {" → "}
-                    {booking.endDate.format("HH[h]mm")}
-                  </TableCell>
+                    <TableCell>
+                      {capitalizeFirstLetter(
+                        booking.startDate.format("dddd DD/MM - HH[h]mm"),
+                      )}
+                      {" → "}
+                      {booking.endDate.format("HH[h]mm")}
+                    </TableCell>
 
-                  <TableCell>{booking.service?.coworkingSpace?.name}</TableCell>
+                    <TableCell>
+                      {booking.service?.coworkingSpace?.name}
+                    </TableCell>
 
-                  <TableCell>
-                    {booking.service ? (
-                      <div className="flex items-center gap-2">
-                        <span className="truncate">{booking.service.name}</span>
-                        <Link
-                          aria-label={`Voir le calendrier du service ${booking.service.name}`}
-                          className="transition-colors text-muted-foreground hover:text-primary"
-                          href={getServiceCalendarHref({
-                            coworkingSpaceId:
-                              booking.service.coworkingSpace?.documentId,
-                            serviceId: booking.service.documentId,
-                            startDate,
-                            endDate,
-                          })}
-                        >
-                          <CalendarIcon className="shrink-0" size={16} />
-                        </Link>
-                      </div>
-                    ) : (
-                      "—"
-                    )}
-                  </TableCell>
+                    <TableCell>
+                      {booking.service ? (
+                        <div className="flex items-center gap-2">
+                          <span className="truncate">
+                            {booking.service.name}
+                          </span>
+                          <Link
+                            aria-label={`Voir le calendrier du service ${booking.service.name}`}
+                            className="transition-colors text-muted-foreground hover:text-primary"
+                            href={getServiceCalendarHref({
+                              coworkingSpaceId:
+                                booking.service.coworkingSpace?.documentId,
+                              serviceId: booking.service.documentId,
+                              startDate,
+                              endDate,
+                            })}
+                          >
+                            <CalendarIcon className="shrink-0" size={16} />
+                          </Link>
+                        </div>
+                      ) : (
+                        "—"
+                      )}
+                    </TableCell>
 
-                  <TableCell>
-                    <BookingStatusBadge booking={booking} />
-                  </TableCell>
+                    <TableCell>
+                      <BookingStatusBadge booking={booking} />
+                    </TableCell>
 
-                  <TableCell>
-                    <PaymentStatusBadge status={booking.paymentStatus} />
-                  </TableCell>
+                    <TableCell>
+                      <PaymentStatusBadge status={booking.paymentStatus} />
+                    </TableCell>
 
-                  <TableCell>
-                    <BookingActionMenu booking={booking} user={user} />
-                  </TableCell>
-                </TableRow>
-              );
-            })
+                    <TableCell>
+                      <BookingActionMenu booking={booking} user={user} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </>
           ) : (
-            // État vide
             <TableRow>
               <TableCell className="py-16" colSpan={7}>
                 <div className="flex flex-col items-center gap-3">
@@ -301,28 +308,20 @@ export function BookingsList({ user = undefined }: { user?: User }) {
             </TableRow>
           )}
         </TableBody>
-
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={7}>
-              <div className="flex items-center justify-between">
-                <p className="text-muted-foreground">
-                  Semaine du {startDate.format("D MMMM")} au{" "}
-                  {endDate.format("D MMMM YYYY")}
-                </p>
-                <div className="w-fit">
-                  <WeekSelector
-                    compact
-                    endDate={endDate}
-                    startDate={startDate}
-                    onChange={setWeekRange}
-                  />
-                </div>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
       </Table>
+      {hasNextPage && (
+        <div className="flex justify-center py-4">
+          <Button disabled={isFetchingNextPage} onClick={() => fetchNextPage()}>
+            {isFetchingNextPage ? "Chargement..." : "Charger plus"}
+          </Button>
+        </div>
+      )}
+      <div className="mt-7" />
+      <WeekSelector
+        endDate={endDate}
+        startDate={startDate}
+        onChange={setWeekRange}
+      />
     </div>
   );
 }

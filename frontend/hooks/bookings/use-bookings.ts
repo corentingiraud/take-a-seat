@@ -1,7 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Moment } from "moment";
+import type { Moment } from "moment";
+
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/contexts/auth-context";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
@@ -11,31 +12,52 @@ type UseBookingsParams = {
   userDocumentId?: string;
   startDate: Moment;
   endDate: Moment;
+  pageSize?: number; // défaut 25
+};
+
+type StrapiPagination = {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+};
+
+type StrapiResponse<T> = {
+  data: T[];
+  meta: { pagination: StrapiPagination };
 };
 
 export function useBookings({
   userDocumentId,
   startDate,
   endDate,
+  pageSize = 25,
 }: UseBookingsParams) {
   const { user } = useAuth();
-  const { fetchAll } = useStrapiAPI();
+  const { fetchAllPaginated } = useStrapiAPI();
 
   const effectiveUserId = userDocumentId ?? user?.documentId;
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: [
       "bookings",
       effectiveUserId,
       startDate.format("YYYY-MM-DD"),
       endDate.format("YYYY-MM-DD"),
+      pageSize,
     ],
     enabled: !!effectiveUserId,
-    queryFn: async () => {
-      if (!effectiveUserId) return [] as Booking[];
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }): Promise<StrapiResponse<Booking>> => {
+      if (!effectiveUserId) {
+        return {
+          data: [],
+          meta: { pagination: { page: 1, pageSize, pageCount: 1, total: 0 } },
+        };
+      }
 
-      const rows = await fetchAll({
-        ...Booking.strapiAPIParams,
+      const res = await fetchAllPaginated<Booking>({
+        ...Booking.strapiAPIParams, // contentType, factory
         queryParams: {
           populate: ["service", "service.coworkingSpace", "prepaidCard"],
           filters: {
@@ -44,17 +66,36 @@ export function useBookings({
             endDate: { $lte: endDate.toDate() },
           },
           sort: ["startDate:asc"],
+          "pagination[page]": pageParam,
+          "pagination[pageSize]": pageSize,
         },
       });
 
-      return rows as Booking[];
+      return res;
+    },
+    getNextPageParam: (lastPage) => {
+      const { page, pageCount } = lastPage.meta.pagination;
+
+      return page < pageCount ? page + 1 : undefined;
     },
   });
 
+  const pages = query.data?.pages ?? [];
+  const bookings = pages.flatMap((p) => p.data);
+
+  const meta = pages[0]?.meta ?? {
+    pagination: { page: 1, pageSize, pageCount: 0, total: 0 },
+  };
+
   return {
-    bookings: query.data ?? [],
+    bookings,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     reload: query.refetch,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    fetchNextPage: query.fetchNextPage,
+    total: meta.pagination.total,
+    pageCount: meta.pagination.pageCount,
   };
 }
