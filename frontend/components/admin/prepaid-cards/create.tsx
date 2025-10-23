@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { format, startOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Loader2 } from "lucide-react";
 
 import { MultiUserSelect } from "@/components/users/multi-select";
 import { Label } from "@/components/ui/label";
@@ -15,14 +16,20 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAdminPrepaidCards } from "@/contexts/admin/prepaid-card";
 import { User } from "@/models/user";
 import { SubscriptionType, HOURS_PER_TYPE } from "@/config/constants";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { useCreatePrepaidCards } from "@/hooks/admin/create-prepaid-cards";
 
 export const AdminPrepaidCardsCreate = () => {
-  const { users, handleSubmit, upcomingMonths, isFormValid } =
-    useAdminPrepaidCards();
+  const {
+    users,
+    isLoadingUsers,
+    handleSubmit,
+    upcomingMonths,
+    isFormValid,
+    isSubmitting,
+  } = useCreatePrepaidCards();
 
   const [subscription, setSubscription] = useState<SubscriptionType | null>(
     null,
@@ -38,11 +45,24 @@ export const AdminPrepaidCardsCreate = () => {
     setCustomHours(String(HOURS_PER_TYPE[val]));
   };
 
+  // --- Loading state for users
+  if (isLoadingUsers) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+        <Loader2 className="animate-spin w-6 h-6 mb-3" />
+        <p>Chargement des utilisateurs...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <Label>Type d’abonnement</Label>
-        <Select onValueChange={handleSubscriptionChange}>
+        <Select
+          value={subscription || undefined}
+          onValueChange={handleSubscriptionChange}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Choisir un abonnement" />
           </SelectTrigger>
@@ -118,10 +138,12 @@ export const AdminPrepaidCardsCreate = () => {
 
       <div>
         <Button
-          disabled={!isFormValid(selectedMonth, selectedUsers, customHours)}
-          onClick={() => {
-            handleSubmit({
-              subscription,
+          disabled={
+            !isFormValid(selectedMonth, selectedUsers, customHours) ||
+            isSubmitting
+          }
+          onClick={async () => {
+            await handleSubmit({
               selectedMonth,
               selectedUsers,
               customHours,
@@ -132,7 +154,14 @@ export const AdminPrepaidCardsCreate = () => {
             setCustomHours("");
           }}
         >
-          Soumettre
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Création en
+              cours...
+            </>
+          ) : (
+            "Soumettre"
+          )}
         </Button>
       </div>
     </div>
