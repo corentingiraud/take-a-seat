@@ -119,6 +119,7 @@ export const AdminPrepaidCardsProvider = ({
               validFrom: validFrom,
               expirationDate: expirationDate,
               remainingBalance: hours,
+              initialBalance: hours,
               user: user,
               paymentStatus: PaymentStatus.PENDING,
             }),

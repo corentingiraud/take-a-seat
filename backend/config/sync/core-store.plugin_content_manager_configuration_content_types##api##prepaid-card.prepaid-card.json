@@ -68,7 +68,7 @@
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "email"
+          "mainField": "lastName"
         },
         "list": {
           "label": "Coworker",
@@ -115,6 +115,20 @@
         },
         "list": {
           "label": "Nom",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "initialBalance": {
+        "edit": {
+          "label": "Solde initial",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "initialBalance",
           "searchable": true,
           "sortable": true
         }
@@ -200,6 +214,12 @@
         ],
         [
           {
+            "name": "initialBalance",
+            "size": 12
+          }
+        ],
+        [
+          {
             "name": "paymentStatus",
             "size": 12
           }
@@ -226,10 +246,8 @@
       "list": [
         "name",
         "remainingBalance",
-        "createdAt",
-        "validFrom",
-        "expirationDate",
-        "paymentStatus"
+        "paymentStatus",
+        "createdAt"
       ]
     },
     "uid": "api::prepaid-card.prepaid-card"

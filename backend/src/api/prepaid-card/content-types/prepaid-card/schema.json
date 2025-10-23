@@ -47,6 +47,10 @@
     },
     "name": {
       "type": "string"
+    },
+    "initialBalance": {
+      "type": "integer",
+      "min": 0
     }
   }
 }

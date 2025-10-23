@@ -9,6 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UserPreview } from "@/components/users/preview";
+import { PrepaidCardBalanceProgressBar } from "@/components/prepaid-cards/balance-progress-bar";
 
 export function AdminPrepaidCardPendingPaymentsList() {
   const { prepaidCardsWithPendingPayments, isLoading, isFetching } =
@@ -21,7 +23,7 @@ export function AdminPrepaidCardPendingPaymentsList() {
           <TableRow>
             <TableHead>Coworker</TableHead>
             <TableHead>Nom de la carte</TableHead>
-            <TableHead>Solde actuel</TableHead>
+            <TableHead>Solde</TableHead>
             <TableHead>Date de création</TableHead>
             <TableHead>Date de début de validité</TableHead>
             <TableHead>Date d&apos;expiration</TableHead>
@@ -61,10 +63,19 @@ export function AdminPrepaidCardPendingPaymentsList() {
             prepaidCardsWithPendingPayments.map((prepaidCard) => (
               <TableRow key={prepaidCard.documentId} aria-busy={isFetching}>
                 <TableCell>
-                  {prepaidCard.user?.firstName} {prepaidCard.user?.lastName}
+                  {prepaidCard.user ? (
+                    <UserPreview user={prepaidCard.user} />
+                  ) : (
+                    "-"
+                  )}
                 </TableCell>
                 <TableCell>{prepaidCard.name}</TableCell>
-                <TableCell>{prepaidCard.remainingBalance}h</TableCell>
+                <TableCell>
+                  <PrepaidCardBalanceProgressBar
+                    initial={prepaidCard.initialBalance}
+                    remaining={prepaidCard.remainingBalance}
+                  />
+                </TableCell>
                 <TableCell>
                   {prepaidCard.createdAt
                     ? prepaidCard.createdAt.format("DD/MM/YYYY")

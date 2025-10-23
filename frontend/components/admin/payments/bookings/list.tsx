@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UserPreview } from "@/components/users/preview";
 export function AdminBookingPendingPaymentsList() {
   const { usersWithPendingBookingPayments, isLoading, isFetching } =
     useAdminBookingPayments();
@@ -46,7 +47,7 @@ export function AdminBookingPendingPaymentsList() {
             usersWithPendingBookingPayments.map((user) => (
               <TableRow key={user.documentId} aria-busy={isFetching}>
                 <TableCell>
-                  {user.firstName} {user.lastName}
+                  <UserPreview user={user} />
                 </TableCell>
                 <TableCell>{user.bookings?.length ?? 0}</TableCell>
                 <TableCell>

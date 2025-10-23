@@ -219,7 +219,7 @@
       "locale": null
     },
     {
-      "documentId": "x553mvpucss0o466mcpaxanv",
+      "documentId": "i9qiw7tekfckorfdkurseb48",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -231,7 +231,8 @@
           "user",
           "bookings",
           "validFrom",
-          "name"
+          "name",
+          "initialBalance"
         ]
       },
       "conditions": [],
@@ -256,7 +257,7 @@
       "locale": null
     },
     {
-      "documentId": "tphe1tf38cbqyp13v5kc07ga",
+      "documentId": "bjhhwhjcq6rytxl79at8ps2z",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -268,14 +269,15 @@
           "user",
           "bookings",
           "validFrom",
-          "name"
+          "name",
+          "initialBalance"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "rtwmw9cto4u2ce5x13ifqi6j",
+      "documentId": "wzm28847ay3ogebuxjnc6xo7",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -287,7 +289,8 @@
           "user",
           "bookings",
           "validFrom",
-          "name"
+          "name",
+          "initialBalance"
         ]
       },
       "conditions": [],

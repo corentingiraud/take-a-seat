@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import { PrepaidCardStatusBadge } from "../badge";
 
+import { PaymentStatusBadge } from "@/components/payment-badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -13,8 +15,7 @@ import {
 import { usePrepaidCard } from "@/hooks/use-prepaid-cards";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { User } from "@/models/user";
-import { PaymentStatusBadge } from "@/components/payment-badge";
-import { Switch } from "@/components/ui/switch";
+import { PrepaidCardBalanceProgressBar } from "../balance-progress-bar";
 
 export function PrepaidCardsList({ user }: { user: User }) {
   const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard({
@@ -62,7 +63,6 @@ export function PrepaidCardsList({ user }: { user: User }) {
         <TableHeader>
           <TableRow>
             <TableHead>Statut</TableHead>
-            <TableHead>Numéro</TableHead>
             <TableHead>Date d&apos;activation</TableHead>
             <TableHead>Date d&apos;expiration</TableHead>
             <TableHead>Solde</TableHead>
@@ -70,30 +70,32 @@ export function PrepaidCardsList({ user }: { user: User }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedCards.map((prepaidCard) => {
-            return (
-              <TableRow key={prepaidCard.documentId}>
-                <TableCell>
-                  <PrepaidCardStatusBadge status={prepaidCard.status} />
-                </TableCell>
-                <TableCell>{prepaidCard.id}</TableCell>
-                <TableCell>
-                  {capitalizeFirstLetter(
-                    prepaidCard.validFrom?.format("dddd D MMM YYYY"),
-                  )}
-                </TableCell>
-                <TableCell>
-                  {capitalizeFirstLetter(
-                    prepaidCard.expirationDate?.format("dddd D MMM YYYY"),
-                  )}
-                </TableCell>
-                <TableCell>{prepaidCard.remainingBalance}</TableCell>
-                <TableCell>
-                  <PaymentStatusBadge status={prepaidCard.paymentStatus} />
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {sortedCards.map((prepaidCard) => (
+            <TableRow key={prepaidCard.documentId}>
+              <TableCell>
+                <PrepaidCardStatusBadge status={prepaidCard.status} />
+              </TableCell>
+              <TableCell>
+                {capitalizeFirstLetter(
+                  prepaidCard.validFrom?.format("dddd D MMM YYYY"),
+                )}
+              </TableCell>
+              <TableCell>
+                {capitalizeFirstLetter(
+                  prepaidCard.expirationDate?.format("dddd D MMM YYYY"),
+                )}
+              </TableCell>
+              <TableCell>
+                <PrepaidCardBalanceProgressBar
+                  initial={prepaidCard.initialBalance}
+                  remaining={prepaidCard.remainingBalance}
+                />
+              </TableCell>
+              <TableCell>
+                <PaymentStatusBadge status={prepaidCard.paymentStatus} />
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
 

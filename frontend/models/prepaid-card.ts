@@ -16,6 +16,7 @@ interface PrepaidCardInterface {
   validFrom?: Moment | null;
   expirationDate?: Moment | null;
   remainingBalance: number;
+  initialBalance?: number;
   paymentStatus: PaymentStatus;
   user?: User;
   bookings?: Booking[];
@@ -31,6 +32,7 @@ export class PrepaidCard implements StrapiData {
   validFrom?: Moment | null;
   expirationDate?: Moment | null;
   remainingBalance: number;
+  initialBalance?: number;
   paymentStatus: PaymentStatus;
   user?: User;
   bookings: Booking[];
@@ -45,6 +47,7 @@ export class PrepaidCard implements StrapiData {
     expirationDate = null,
     name,
     remainingBalance,
+    initialBalance = 0,
     paymentStatus = PaymentStatus.PENDING,
     user,
     bookings = [],
@@ -56,6 +59,7 @@ export class PrepaidCard implements StrapiData {
     this.validFrom = validFrom;
     this.expirationDate = expirationDate;
     this.remainingBalance = remainingBalance;
+    this.initialBalance = initialBalance;
     this.user = user;
     this.bookings = bookings ?? [];
     this.paymentStatus = paymentStatus;
@@ -70,6 +74,7 @@ export class PrepaidCard implements StrapiData {
       validFrom: moment(json.validFrom),
       expirationDate: moment(json.expirationDate),
       remainingBalance: json.remainingBalance ?? 0,
+      initialBalance: json.initialBalance ?? 0,
       paymentStatus: json.paymentStatus,
       user: json.user ?? null,
       bookings: json.bookings ?? [],
@@ -97,6 +102,7 @@ export class PrepaidCard implements StrapiData {
       validFrom: this.validFrom?.format(),
       expirationDate: this.expirationDate?.format(),
       remainingBalance: this.remainingBalance,
+      initialBalance: this.initialBalance,
       paymentStatus: this.paymentStatus,
     };
 
