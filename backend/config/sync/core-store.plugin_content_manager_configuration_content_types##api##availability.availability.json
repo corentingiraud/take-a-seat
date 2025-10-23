@@ -161,9 +161,23 @@
           "searchable": true,
           "sortable": true
         }
+      },
+      "documentId": {
+        "edit": {},
+        "list": {
+          "label": "documentId",
+          "searchable": true,
+          "sortable": true
+        }
       }
     },
     "layouts": {
+      "list": [
+        "name",
+        "startDate",
+        "endDate",
+        "service"
+      ],
       "edit": [
         [
           {
@@ -199,12 +213,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "name",
-        "startDate",
-        "endDate",
-        "service"
       ]
     },
     "uid": "api::availability.availability"

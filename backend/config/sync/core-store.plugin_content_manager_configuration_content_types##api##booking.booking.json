@@ -177,9 +177,25 @@
           "searchable": true,
           "sortable": true
         }
+      },
+      "documentId": {
+        "edit": {},
+        "list": {
+          "label": "documentId",
+          "searchable": true,
+          "sortable": true
+        }
       }
     },
     "layouts": {
+      "list": [
+        "startDate",
+        "endDate",
+        "bookingStatus",
+        "paymentStatus",
+        "user",
+        "service"
+      ],
       "edit": [
         [
           {
@@ -217,14 +233,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "startDate",
-        "endDate",
-        "bookingStatus",
-        "paymentStatus",
-        "user",
-        "service"
       ]
     },
     "uid": "api::booking.booking"

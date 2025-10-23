@@ -163,9 +163,23 @@
           "searchable": true,
           "sortable": true
         }
+      },
+      "documentId": {
+        "edit": {},
+        "list": {
+          "label": "documentId",
+          "searchable": true,
+          "sortable": true
+        }
       }
     },
     "layouts": {
+      "list": [
+        "coworkingSpace",
+        "name",
+        "bookingDuration",
+        "documentId"
+      ],
       "edit": [
         [
           {
@@ -197,11 +211,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "coworkingSpace",
-        "name",
-        "bookingDuration"
       ]
     },
     "uid": "api::service.service"

@@ -190,9 +190,23 @@
           "searchable": true,
           "sortable": true
         }
+      },
+      "documentId": {
+        "edit": {},
+        "list": {
+          "label": "documentId",
+          "searchable": true,
+          "sortable": true
+        }
       }
     },
     "layouts": {
+      "list": [
+        "name",
+        "remainingBalance",
+        "paymentStatus",
+        "createdAt"
+      ],
       "edit": [
         [
           {
@@ -242,12 +256,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "name",
-        "remainingBalance",
-        "paymentStatus",
-        "createdAt"
       ]
     },
     "uid": "api::prepaid-card.prepaid-card"

@@ -133,9 +133,23 @@
           "searchable": true,
           "sortable": true
         }
+      },
+      "documentId": {
+        "edit": {},
+        "list": {
+          "label": "documentId",
+          "searchable": true,
+          "sortable": true
+        }
       }
     },
     "layouts": {
+      "list": [
+        "name",
+        "startDate",
+        "endDate",
+        "coworking_spaces"
+      ],
       "edit": [
         [
           {
@@ -157,12 +171,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "name",
-        "startDate",
-        "endDate",
-        "coworking_spaces"
       ]
     },
     "uid": "api::unavailability.unavailability"

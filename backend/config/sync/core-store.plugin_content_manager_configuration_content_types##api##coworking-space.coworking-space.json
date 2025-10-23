@@ -134,9 +134,22 @@
           "searchable": true,
           "sortable": true
         }
+      },
+      "documentId": {
+        "edit": {},
+        "list": {
+          "label": "documentId",
+          "searchable": true,
+          "sortable": true
+        }
       }
     },
     "layouts": {
+      "list": [
+        "name",
+        "locationURL",
+        "documentId"
+      ],
       "edit": [
         [
           {
@@ -150,10 +163,6 @@
             "size": 12
           }
         ]
-      ],
-      "list": [
-        "name",
-        "locationURL"
       ]
     },
     "uid": "api::coworking-space.coworking-space"

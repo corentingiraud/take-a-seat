@@ -1,13 +1,13 @@
 {
-  "key": "plugin_content_manager_configuration_content_types::plugin::users-permissions.user",
+  "key": "plugin_content_manager_configuration_content_types::admin::session",
   "value": {
     "settings": {
       "bulkable": true,
       "filterable": true,
       "searchable": true,
       "pageSize": 10,
-      "mainField": "lastName",
-      "defaultSortBy": "lastName",
+      "mainField": "userId",
+      "defaultSortBy": "userId",
       "defaultSortOrder": "ASC"
     },
     "metadatas": {
@@ -19,201 +19,128 @@
           "sortable": true
         }
       },
-      "username": {
+      "userId": {
         "edit": {
-          "label": "Nom d'utilisateur",
+          "label": "userId",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "username",
+          "label": "userId",
           "searchable": true,
           "sortable": true
         }
       },
-      "email": {
+      "sessionId": {
         "edit": {
-          "label": "Email",
+          "label": "sessionId",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "Email",
+          "label": "sessionId",
           "searchable": true,
           "sortable": true
         }
       },
-      "provider": {
+      "childId": {
         "edit": {
-          "label": "provider",
-          "description": "",
-          "placeholder": "",
-          "visible": false,
-          "editable": true
-        },
-        "list": {
-          "label": "provider",
-          "searchable": true,
-          "sortable": true
-        }
-      },
-      "password": {
-        "edit": {
-          "label": "Mot de passe",
+          "label": "childId",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "password",
+          "label": "childId",
           "searchable": true,
           "sortable": true
         }
       },
-      "resetPasswordToken": {
+      "deviceId": {
         "edit": {
-          "label": "resetPasswordToken",
-          "description": "",
-          "placeholder": "",
-          "visible": false,
-          "editable": true
-        },
-        "list": {
-          "label": "resetPasswordToken",
-          "searchable": true,
-          "sortable": true
-        }
-      },
-      "confirmationToken": {
-        "edit": {
-          "label": "confirmationToken",
-          "description": "",
-          "placeholder": "",
-          "visible": false,
-          "editable": true
-        },
-        "list": {
-          "label": "confirmationToken",
-          "searchable": true,
-          "sortable": true
-        }
-      },
-      "confirmed": {
-        "edit": {
-          "label": "Email confirmé",
+          "label": "deviceId",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "confirmed",
+          "label": "deviceId",
           "searchable": true,
           "sortable": true
         }
       },
-      "blocked": {
+      "origin": {
         "edit": {
-          "label": "blocked",
+          "label": "origin",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "blocked",
+          "label": "origin",
           "searchable": true,
           "sortable": true
         }
       },
-      "role": {
+      "expiresAt": {
         "edit": {
-          "label": "Role",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "name"
-        },
-        "list": {
-          "label": "role",
-          "searchable": true,
-          "sortable": true
-        }
-      },
-      "bookings": {
-        "edit": {
-          "label": "bookings",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "id"
-        },
-        "list": {
-          "label": "bookings",
-          "searchable": false,
-          "sortable": false
-        }
-      },
-      "prepaidCards": {
-        "edit": {
-          "label": "prepaidCards",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true,
-          "mainField": "id"
-        },
-        "list": {
-          "label": "prepaidCards",
-          "searchable": false,
-          "sortable": false
-        }
-      },
-      "phone": {
-        "edit": {
-          "label": "Téléphone",
+          "label": "expiresAt",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "Téléphone",
+          "label": "expiresAt",
           "searchable": true,
           "sortable": true
         }
       },
-      "firstName": {
+      "absoluteExpiresAt": {
         "edit": {
-          "label": "Prénom",
+          "label": "absoluteExpiresAt",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "Prénom",
+          "label": "absoluteExpiresAt",
           "searchable": true,
           "sortable": true
         }
       },
-      "lastName": {
+      "status": {
         "edit": {
-          "label": "Nom",
+          "label": "status",
           "description": "",
           "placeholder": "",
           "visible": true,
           "editable": true
         },
         "list": {
-          "label": "Nom",
+          "label": "status",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "type": {
+        "edit": {
+          "label": "type",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "type",
           "searchable": true,
           "sortable": true
         }
@@ -287,63 +214,61 @@
     },
     "layouts": {
       "list": [
-        "lastName",
-        "firstName",
-        "phone",
-        "email"
+        "id",
+        "userId",
+        "sessionId",
+        "childId"
       ],
       "edit": [
         [
           {
-            "name": "lastName",
-            "size": 12
+            "name": "userId",
+            "size": 6
+          },
+          {
+            "name": "sessionId",
+            "size": 6
           }
         ],
         [
           {
-            "name": "firstName",
-            "size": 12
+            "name": "childId",
+            "size": 6
+          },
+          {
+            "name": "deviceId",
+            "size": 6
           }
         ],
         [
           {
-            "name": "email",
-            "size": 12
+            "name": "origin",
+            "size": 6
+          },
+          {
+            "name": "expiresAt",
+            "size": 6
           }
         ],
         [
           {
-            "name": "username",
-            "size": 12
+            "name": "absoluteExpiresAt",
+            "size": 6
+          },
+          {
+            "name": "status",
+            "size": 6
           }
         ],
         [
           {
-            "name": "phone",
-            "size": 12
-          }
-        ],
-        [
-          {
-            "name": "password",
-            "size": 12
-          }
-        ],
-        [
-          {
-            "name": "role",
-            "size": 12
-          }
-        ],
-        [
-          {
-            "name": "confirmed",
-            "size": 12
+            "name": "type",
+            "size": 6
           }
         ]
       ]
     },
-    "uid": "plugin::users-permissions.user"
+    "uid": "admin::session"
   },
   "type": "object",
   "environment": null,
