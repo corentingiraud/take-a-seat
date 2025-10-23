@@ -33,7 +33,6 @@ export function useAdminBookingPayments() {
             $and: [
               { bookingStatus: { $eq: BookingStatus.CONFIRMED } },
               { paymentStatus: { $eq: PaymentStatus.PENDING } },
-              { endDate: { $gt: now } },
             ],
           },
         },
