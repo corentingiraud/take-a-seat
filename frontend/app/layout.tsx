@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "./global.css";
 import { Metadata } from "next";
 import clsx from "clsx";
 import { PublicEnvScript } from "next-runtime-env";
