@@ -70,7 +70,7 @@ export const BookingAvailabilities = ({
   const [selectedPrepaidCard, setSelectedPrepaidCard] =
     useState<PrepaidCard | null>(null);
 
-  let { usablePrepaidCards: prepaidCard } = usePrepaidCard({
+  const { usablePrepaidCards: prepaidCard } = usePrepaidCard({
     userDocumentId: user?.documentId,
   });
   const eligibleCards = prepaidCard.filter(

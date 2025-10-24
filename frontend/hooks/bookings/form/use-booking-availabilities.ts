@@ -53,10 +53,10 @@ export function useBookingAvailabilities({
     service,
   });
 
-  let startDate = desiredBookings.length
+  const startDate = desiredBookings.length
     ? desiredBookings[0].startDate
     : moment();
-  let endDate = desiredBookings.length
+  const endDate = desiredBookings.length
     ? desiredBookings[desiredBookings.length - 1].endDate
     : moment();
 

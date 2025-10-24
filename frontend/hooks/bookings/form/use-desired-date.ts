@@ -75,7 +75,7 @@ export function useDesiredDates({
   const desiredDates = [];
 
   if (duration.equals(AVAILABLE_DURATION.RANGE_OF_DATES) && endDay) {
-    let currentDay = startDay!.clone();
+    const currentDay = startDay!.clone();
 
     while (currentDay.isSameOrBefore(endDay)) {
       const availability = service.findAvailabilityForDate(currentDay);
@@ -92,7 +92,7 @@ export function useDesiredDates({
           continue;
         }
       }
-      let timeSlots = availability.getBookingSlotsFor(currentDay);
+      const timeSlots = availability.getBookingSlotsFor(currentDay);
 
       desiredDates.push(...timeSlots);
       currentDay.add(1, "day");
@@ -106,7 +106,7 @@ export function useDesiredDates({
 
       if (!availability) continue;
 
-      let timeSlots = availability.getBookingSlotsFor(day);
+      const timeSlots = availability.getBookingSlotsFor(day);
 
       desiredDates.push(...timeSlots);
     }
