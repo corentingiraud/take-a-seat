@@ -26,7 +26,7 @@ export function PrepaidCardsList({ user }: { user: User }) {
 
   useEffect(() => {
     reload();
-  }, []);
+  });
 
   const filteredCards = showExpired
     ? prepaidCards
@@ -59,7 +59,9 @@ export function PrepaidCardsList({ user }: { user: User }) {
         </label>
       </div>
 
-      <Table>
+      <Table
+        style={prepaidCards.length > 0 ? { minWidth: "900px" } : {}}
+      >
         <TableHeader>
           <TableRow>
             <TableHead>Statut</TableHead>

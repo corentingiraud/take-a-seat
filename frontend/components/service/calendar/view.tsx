@@ -230,111 +230,109 @@ export const ServiceCalendarView = () => {
     <div className="space-y-4">
       {headerNav}
 
-      <div className="overflow-x-auto">
-        <div
-          className="grid relative border-t border-l dark:border-neutral-700"
-          style={{
-            gridTemplateColumns: `80px repeat(${weekDays.length}, minmax(120px,1fr))`,
-          }}
-        >
-          {/* Header row */}
-          <div className="border-b border-r p-2 font-medium text-sm bg-gray-100 dark:bg-neutral-800 dark:text-white sticky left-0 z-20">
-            Heure
+      <div
+        className="overflow-x-auto relative grid border-t border-l dark:border-neutral-700"
+        style={{
+          gridTemplateColumns: `80px repeat(${weekDays.length}, minmax(120px,1fr))`,
+        }}
+      >
+        {/* Header row */}
+        <div className="border-b border-r p-2 font-medium text-sm bg-gray-100 dark:bg-neutral-800 dark:text-white sticky left-0 z-20">
+          Heure
+        </div>
+        {weekDays.map((day) => (
+          <div
+            key={day.format("YYYY-MM-DD")}
+            className="border-b border-r p-2 text-center text-sm font-medium bg-gray-100 dark:bg-neutral-800 dark:text-white sticky"
+          >
+            {day.format("ddd DD/MM")}
           </div>
-          {weekDays.map((day) => (
-            <div
-              key={day.format("YYYY-MM-DD")}
-              className="border-b border-r p-2 text-center text-sm font-medium bg-gray-100 dark:bg-neutral-800 dark:text-white"
-            >
-              {day.format("ddd DD/MM")}
-            </div>
-          ))}
+        ))}
 
-          {/* Time slots */}
-          {hours.map((offset) => {
-            const h = referenceOpeningHour + Math.floor(offset / 60);
-            const m = offset % 60;
-            const label = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+        {/* Time slots */}
+        {hours.map((offset) => {
+          const h = referenceOpeningHour + Math.floor(offset / 60);
+          const m = offset % 60;
+          const label = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
-            return (
-              <React.Fragment key={label}>
-                <div className="border-b border-r p-2 text-sm font-medium bg-gray-50 dark:bg-neutral-900 dark:text-white sticky left-0 z-10">
-                  {label}
-                </div>
+          return (
+            <React.Fragment key={label}>
+              <div className="border-b border-r p-2 text-sm font-medium bg-gray-50 dark:bg-neutral-900 dark:text-white sticky left-0 z-10">
+                {label}
+              </div>
 
-                {weekDays.map((day) => {
-                  const cellKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
+              {weekDays.map((day) => {
+                const cellKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
 
-                  if (isClosedDay(day)) {
-                    return (
-                      <div
-                        key={cellKey}
-                        aria-label="Fermé"
-                        className="border-b border-r p-2 text-xs text-center italic bg-gray-100 text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400"
-                      >
-                        Fermé
-                      </div>
-                    );
-                  }
-
-                  const avForSlot = findAvailabilityForSlot(day, h, m);
-                  const slotBlocked = isSlotUnavailable(day, h, m);
-
-                  if (!avForSlot || slotBlocked) {
-                    // Ouvert ce jour mais créneau fermé (pause ou indispo)
-                    return (
-                      <div
-                        key={cellKey}
-                        aria-label={slotBlocked ? "Indisponible" : "Fermé"}
-                        className={`border-b border-r p-2 text-xs text-center italic text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 ${
-                          slotBlocked
-                            ? "bg-red-50 dark:bg-red-900/20"
-                            : "bg-gray-50"
-                        }`}
-                      >
-                        {slotBlocked ? "Indisponible" : "Fermé"}
-                      </div>
-                    );
-                  }
-
-                  // Slot ouvert → capacité selon l'availability
-                  const slotKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
-                  const slotBookings = calendarData.get(slotKey) || [];
-                  const capacity = avForSlot.numberOfSeats;
-                  const isFull = slotBookings.length >= capacity;
-
+                if (isClosedDay(day)) {
                   return (
                     <div
                       key={cellKey}
-                      className={`border-b border-r p-2 text-xs space-y-1 dark:border-neutral-700 ${
-                        isFull
-                          ? "bg-red-100 dark:bg-red-900/40"
-                          : "bg-white dark:bg-neutral-950"
-                      }`}
+                      aria-label="Fermé"
+                      className="border-b border-r p-2 text-xs text-center italic bg-gray-100 text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400"
                     >
-                      <div className="font-semibold text-gray-700 dark:text-gray-200">
-                        {slotBookings.length} / {capacity}
-                      </div>
-                      {slotBookings.map((b) => (
-                        <div
-                          key={b.id}
-                          className="bg-blue-100 dark:bg-blue-800/40 rounded px-1 py-0.5 text-[11px] text-blue-900 dark:text-blue-200"
-                        >
-                          {hasRole(RoleType.SUPER_ADMIN) ? (
-                            <UserPreview user={b.user!} />
-                          ) : (
-                            b.user?.firstNameWithInitial ||
-                            "Utilisateur inconnu"
-                          )}
-                        </div>
-                      ))}
+                      Fermé
                     </div>
                   );
-                })}
-              </React.Fragment>
-            );
-          })}
-        </div>
+                }
+
+                const avForSlot = findAvailabilityForSlot(day, h, m);
+                const slotBlocked = isSlotUnavailable(day, h, m);
+
+                if (!avForSlot || slotBlocked) {
+                  // Ouvert ce jour mais créneau fermé (pause ou indispo)
+                  return (
+                    <div
+                      key={cellKey}
+                      aria-label={slotBlocked ? "Indisponible" : "Fermé"}
+                      className={`border-b border-r p-2 text-xs text-center italic text-muted-foreground dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 ${
+                        slotBlocked
+                          ? "bg-red-50 dark:bg-red-900/20"
+                          : "bg-gray-50"
+                      }`}
+                    >
+                      {slotBlocked ? "Indisponible" : "Fermé"}
+                    </div>
+                  );
+                }
+
+                // Slot ouvert → capacité selon l'availability
+                const slotKey = `${day.format("YYYY-MM-DD")}-${String(h).padStart(2, "0")}-${String(m).padStart(2, "0")}`;
+                const slotBookings = calendarData.get(slotKey) || [];
+                const capacity = avForSlot.numberOfSeats;
+                const isFull = slotBookings.length >= capacity;
+
+                return (
+                  <div
+                    key={cellKey}
+                    className={`border-b border-r p-2 text-xs space-y-1 dark:border-neutral-700 ${
+                      isFull
+                        ? "bg-red-100 dark:bg-red-900/40"
+                        : "bg-white dark:bg-neutral-950"
+                    }`}
+                  >
+                    <div className="font-semibold text-gray-700 dark:text-gray-200">
+                      {slotBookings.length} / {capacity}
+                    </div>
+                    {slotBookings.map((b) => (
+                      <div
+                        key={b.id}
+                        className="bg-blue-100 dark:bg-blue-800/40 rounded px-1 py-0.5 text-[11px] text-blue-900 dark:text-blue-200"
+                      >
+                        {hasRole(RoleType.SUPER_ADMIN) ? (
+                          <UserPreview user={b.user!} />
+                        ) : (
+                          b.user?.firstNameWithInitial ||
+                          "Utilisateur inconnu"
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
       </div>
     </div>
   );

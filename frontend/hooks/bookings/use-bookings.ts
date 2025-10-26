@@ -12,7 +12,7 @@ type UseBookingsParams = {
   userDocumentId?: string;
   startDate: Moment;
   endDate: Moment;
-  pageSize?: number; // défaut 25
+  pageSize?: number;
 };
 
 type StrapiPagination = {
@@ -57,7 +57,7 @@ export function useBookings({
       }
 
       const res = await fetchAllPaginated<Booking>({
-        ...Booking.strapiAPIParams, // contentType, factory
+        ...Booking.strapiAPIParams,
         queryParams: {
           populate: ["service", "service.coworkingSpace", "prepaidCard"],
           filters: {
