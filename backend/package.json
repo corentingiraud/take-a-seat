@@ -17,9 +17,10 @@
   "dependencies": {
     "@strapi/plugin-cloud": "5.29.0",
     "@strapi/plugin-users-permissions": "5.29.0",
+    "@strapi/provider-email-mailgun": "5.29.0",
     "@strapi/strapi": "5.29.0",
     "ejs": "^3.1.10",
-    "pg": "8.8.0",
+    "pg": "^8.16.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
