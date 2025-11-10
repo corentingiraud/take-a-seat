@@ -12,9 +12,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { UserPreview } from "@/components/users/preview";
+import { Drawer } from "@/components/ui/drawer";
+import { BookingPendingPaymentsDetailsDrawer } from "./details";
+import { useState } from "react";
+import { User } from "@/models/user";
 export function AdminBookingPendingPaymentsList() {
   const { usersWithPendingBookingPayments, isLoading, isFetching } =
     useAdminBookingPayments();
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   return (
     <div>
@@ -51,7 +58,10 @@ export function AdminBookingPendingPaymentsList() {
                 </TableCell>
                 <TableCell>{user.bookings?.length ?? 0}</TableCell>
                 <TableCell>
-                  <AdminBookingPendingPaymentsActionMenu user={user} />
+                  <AdminBookingPendingPaymentsActionMenu user={user} onViewDetails={() => {
+                    setSelectedUser(user)
+                    setIsDrawerOpen(true)
+                  }} />
                 </TableCell>
               </TableRow>
             ))}
@@ -67,6 +77,12 @@ export function AdminBookingPendingPaymentsList() {
           Actualisation en cours…
         </p>
       )}
+
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <BookingPendingPaymentsDetailsDrawer
+          user={selectedUser}
+        />
+      </Drawer>
     </div>
   );
 }
