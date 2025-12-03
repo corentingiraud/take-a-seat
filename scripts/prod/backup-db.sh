@@ -16,7 +16,7 @@ BACKUP_FILE="$BACKUP_DIR/$DATABASE_NAME-$DATE-$TIME.dump"
 mkdir -p "$BACKUP_DIR"
 
 # Create backup inside Docker container using pg_dump (RO env vars expected in container)
-docker exec -t "$CONTAINER_NAME" sh -c 'export PGUSER="$DATABASE_USERNAME_RO" PGPASSWORD="$DATABASE_PASSWORD_RO"; pg_dump -U "$DATABASE_USERNAME_RO" -F c "$DATABASE_NAME"' > "$BACKUP_FILE"
+docker exec "$CONTAINER_NAME" sh -c 'export PGUSER="$DATABASE_USERNAME_RO" PGPASSWORD="$DATABASE_PASSWORD_RO"; pg_dump -U "$DATABASE_USERNAME_RO" -F c "$DATABASE_NAME"' > "$BACKUP_FILE"
 
 # --- Retention policy ---
 # 1) Delete anything older than 14 days
