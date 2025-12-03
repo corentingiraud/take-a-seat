@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
-import ServiceCalendar from "./client";
+import Calendar from "./client";
 
 export const metadata: Metadata = {
-  title: "Calendrier des services",
+  title: "Calendrier",
 };
 
 export default function ServiceCalendarPage() {
-  return <ServiceCalendar />;
+  return <Calendar />;
 }

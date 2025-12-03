@@ -127,4 +127,14 @@ export class CoworkingSpace implements StrapiData {
         (a, b) => moment(a.startDate).valueOf() - moment(b.startDate).valueOf(),
       );
   }
+
+  getAvailabilitiesForDateRange(
+    start: Moment,
+    end: Moment,
+  ) {
+    return this.services.flatMap((service) => service.findAvailabilitiesForDateRange(
+      start,
+      end,
+    ))
+  }
 }

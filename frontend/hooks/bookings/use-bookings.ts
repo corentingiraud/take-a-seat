@@ -7,24 +7,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/auth-context";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Booking } from "@/models/booking";
+import { StrapiResponse } from "@/types/strapi-api-params";
 
 type UseBookingsParams = {
   userDocumentId?: string;
   startDate: Moment;
   endDate: Moment;
   pageSize?: number;
-};
-
-type StrapiPagination = {
-  page: number;
-  pageSize: number;
-  pageCount: number;
-  total: number;
-};
-
-type StrapiResponse<T> = {
-  data: T[];
-  meta: { pagination: StrapiPagination };
 };
 
 export function useBookings({

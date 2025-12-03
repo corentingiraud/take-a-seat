@@ -22,3 +22,15 @@ export type UpdateParams<T extends StrapiData> = GeneralParams<T> & {
   object: T;
   fieldsToUpdate: Array<keyof T>;
 };
+
+export type StrapiPagination = {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+};
+
+export type StrapiResponse<T> = {
+  data: T[];
+  meta: { pagination: StrapiPagination };
+};

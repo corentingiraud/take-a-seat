@@ -40,4 +40,29 @@ export class Time {
 
     return new Time(newHour, newMinute);
   }
+
+  isBefore(other: Time): boolean {
+    if (this.hour < other.hour) return true;
+
+    if (this.hour === other.hour)
+      return this.minute < other.minute;
+
+    return false;
+  }
+
+  isAfter(other: Time): boolean {
+    if (this.hour > other.hour) return true;
+
+    if (this.hour === other.hour)
+      return this.minute > other.minute;
+
+    return false;
+  }
+
+  isBeforeOrEqual(other: Time): boolean {
+    return this.isBefore(other) || this.equals(other);
+  }
+  clone(): Time {
+    return new Time(this.hour, this.minute);
+  }
 }

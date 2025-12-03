@@ -26,7 +26,7 @@ export function PrepaidCardsList({ user }: { user: User }) {
 
   useEffect(() => {
     reload();
-  });
+  }, []);
 
   const filteredCards = showExpired
     ? prepaidCards

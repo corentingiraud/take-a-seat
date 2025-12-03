@@ -65,7 +65,7 @@ export class Service {
   }
 
   static fromJson(json: any): Service {
-    return new Service({
+    const service = new Service({
       id: json.id,
       documentId: json.documentId,
       name: json.name,
@@ -81,6 +81,14 @@ export class Service {
       updatedAt: json.updatedAt,
       publishedAt: json.publishedAt,
     });
+
+    if (service.bookings) {
+      for (const booking of service.bookings) {
+        booking.service = service;
+      }
+    }
+
+    return service;
   }
 
   static get strapiAPIParams(): GeneralParams<Service> {

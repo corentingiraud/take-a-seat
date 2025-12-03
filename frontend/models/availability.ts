@@ -263,4 +263,25 @@ export class Availability {
 
     return this.weeklyAvailabilities?.[dayOfWeek] ?? [];
   }
+
+  contains(momentToCheck: Moment): boolean {
+    if (!this.includeInOverallAvailabilityRange(momentToCheck)) return false;
+
+    const dailySlots = this.getDailySlots(momentToCheck);
+    if (!dailySlots || dailySlots.length === 0) return false;
+
+    return dailySlots.some((slot) => {
+      const slotStart = moment(
+        momentToCheck.format("YYYY-MM-DD") + "T" + slot.start
+      );
+      const slotEnd = moment(
+        momentToCheck.format("YYYY-MM-DD") + "T" + slot.end
+      );
+
+      return (
+        momentToCheck.isSameOrAfter(slotStart) &&
+        momentToCheck.isSameOrBefore(slotEnd)
+      );
+    });
+  }
 }

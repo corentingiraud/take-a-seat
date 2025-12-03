@@ -16,7 +16,7 @@ export default function NotFound() {
             Hey, cette page n&apos;existe pas 🛸
           </p>
           <Button asChild>
-            <Link href={siteConfig.path.login.href}>Back to home</Link>
+            <Link href={siteConfig.path.dashboard.href}>Back to home</Link>
           </Button>
         </CardContent>
       </Card>

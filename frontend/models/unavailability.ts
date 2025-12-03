@@ -72,4 +72,11 @@ export class Unavailability implements StrapiData {
       coworkingSpaces: this.coworkingSpaces.map((cs) => cs.toJson()),
     };
   }
+
+  contains(momentToCheck: Moment): boolean {
+    return (
+      momentToCheck.isSameOrAfter(this.startDate) &&
+      momentToCheck.isSameOrBefore(this.endDate)
+    );
+  }
 }
