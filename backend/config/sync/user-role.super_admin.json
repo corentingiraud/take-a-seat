@@ -61,6 +61,11 @@
       "locale": null
     },
     {
+      "documentId": "egvi4p53h0e6gj2b8dhkd1ox",
+      "action": "api::coworking-space.coworking-space.calendar",
+      "locale": null
+    },
+    {
       "documentId": "ntgo3coxyauxwvlhpehctxfu",
       "action": "api::coworking-space.coworking-space.find",
       "locale": null

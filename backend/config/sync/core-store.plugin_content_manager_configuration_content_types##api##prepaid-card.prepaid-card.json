@@ -68,7 +68,7 @@
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "lastName"
+          "mainField": "email"
         },
         "list": {
           "label": "Coworker",
@@ -121,7 +121,7 @@
       },
       "initialBalance": {
         "edit": {
-          "label": "Solde initial",
+          "label": "initialBalance",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -204,8 +204,10 @@
       "list": [
         "name",
         "remainingBalance",
-        "paymentStatus",
-        "createdAt"
+        "createdAt",
+        "validFrom",
+        "expirationDate",
+        "paymentStatus"
       ],
       "edit": [
         [
@@ -223,12 +225,6 @@
         [
           {
             "name": "remainingBalance",
-            "size": 12
-          }
-        ],
-        [
-          {
-            "name": "initialBalance",
             "size": 12
           }
         ],
@@ -254,6 +250,12 @@
           {
             "name": "bookings",
             "size": 12
+          }
+        ],
+        [
+          {
+            "name": "initialBalance",
+            "size": 4
           }
         ]
       ]

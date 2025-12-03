@@ -219,7 +219,7 @@
       "locale": null
     },
     {
-      "documentId": "i9qiw7tekfckorfdkurseb48",
+      "documentId": "g4j2nw3weogqp0j904t7ja99",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -257,7 +257,7 @@
       "locale": null
     },
     {
-      "documentId": "bjhhwhjcq6rytxl79at8ps2z",
+      "documentId": "aq8ityf45zqzhdnb9gynsfha",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -277,7 +277,7 @@
       "locale": null
     },
     {
-      "documentId": "wzm28847ay3ogebuxjnc6xo7",
+      "documentId": "df365ja0r5ap5s9qrvjpzwml",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
