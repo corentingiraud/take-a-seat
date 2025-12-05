@@ -9,6 +9,7 @@ interface DisableDateOptions {
   unavailabilities: Unavailability[];
   availabilities: Availability[];
   duration?: Duration;
+  canBookInPast?: boolean;
 }
 
 export function shouldDisableDate({
@@ -16,11 +17,12 @@ export function shouldDisableDate({
   unavailabilities,
   availabilities,
   duration,
+  canBookInPast,
 }: DisableDateOptions): boolean {
   const mDate = moment(date).startOf("day");
 
   // 1. Disable past dates
-  if (mDate.isBefore(moment().startOf("day"))) return true;
+  if (!canBookInPast && mDate.isBefore(moment().startOf("day"))) return true;
 
   // 2. Get all availability start times for that day
   const startTimes = availabilities

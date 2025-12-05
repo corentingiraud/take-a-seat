@@ -6,8 +6,8 @@ import {
   DialogClose,
 } from "@radix-ui/react-dialog";
 import { Moment } from "moment";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { DialogHeader, DialogFooter, DialogContent } from "../../ui/dialog";
 import { Button } from "../../ui/button";
@@ -27,6 +27,10 @@ import { useAuth } from "@/contexts/auth-context";
 import PrepaidCardSelect from "@/components/prepaid-cards/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { RoleType } from "@/models/role";
+import { User } from "@/models/user";
+import { useStrapiAPI } from "@/hooks/use-strapi-api";
+import { UserSelect } from "@/components/users/select";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
@@ -49,9 +53,29 @@ export const BookingAvailabilities = ({
   times,
   duration,
 }: BookingAvailabilitiesProps) => {
-  const { user } = useAuth();
   const router = useRouter();
+  const { user: authUser, hasRole } = useAuth();
+  const { fetchAll } = useStrapiAPI();
 
+  // ----- ADMIN: select target user -----
+  const isSuperAdmin = hasRole(RoleType.SUPER_ADMIN) ?? false;
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+
+    setLoadingUsers(true);
+    fetchAll<User>({ ...User.strapiAPIParams })
+      .then(setUsers)
+      .finally(() => setLoadingUsers(false));
+  }, [isSuperAdmin]);
+
+  const effectiveUser = (isSuperAdmin && selectedUser) ? selectedUser : authUser ?? null;
+
+  // Hook pour les créneaux (utilise maintenant targetUser)
   const {
     availableBookings,
     unavailableBookings,
@@ -64,37 +88,46 @@ export const BookingAvailabilities = ({
     halfDay,
     times,
     duration,
+    targetUser: effectiveUser ?? undefined,
+  });
+
+  // Cartes prépayées du user ciblé
+  const { usablePrepaidCards: prepaidCard } = usePrepaidCard({
+    userDocumentId: effectiveUser?.documentId,
   });
 
   const [useCard, setUseCard] = useState(false);
   const [selectedPrepaidCard, setSelectedPrepaidCard] =
     useState<PrepaidCard | null>(null);
 
-  const { usablePrepaidCards: prepaidCard } = usePrepaidCard({
-    userDocumentId: user?.documentId,
-  });
   const eligibleCards = prepaidCard.filter(
     (c) => c.remainingBalance >= availableBookings.length,
   );
 
   useEffect(() => {
+    if (prepaidCard.length === 0) {
+      setUseCard(false);
+      setSelectedPrepaidCard(null);
+      return;
+    }
+
     if (prepaidCard.length === 1) {
       setUseCard(true);
       setSelectedPrepaidCard(prepaidCard[0]);
-    } else if (prepaidCard.length > 1) {
-      const cardWithMostCredits = prepaidCard.reduce((max, card) =>
-        card.remainingBalance > max.remainingBalance ? card : max,
-      );
-
-      setUseCard(true);
-      setSelectedPrepaidCard(cardWithMostCredits);
-    } else {
-      setUseCard(false);
-      setSelectedPrepaidCard(null);
+      return;
     }
+
+    const cardWithMostCredits = prepaidCard.reduce((max, card) =>
+      card.remainingBalance > max.remainingBalance ? card : max,
+    );
+
+    setUseCard(true);
+    setSelectedPrepaidCard(cardWithMostCredits);
   }, [prepaidCard]);
 
   async function createAvailableBookings() {
+    if (!effectiveUser) return;
+
     await bulkCreateAvailableBookings(selectedPrepaidCard);
     router.push(siteConfig.path.dashboard.href);
   }
@@ -109,6 +142,22 @@ export const BookingAvailabilities = ({
           Vérifiez les créneaux disponibles pour cette réservation
         </DialogDescription>
       </DialogHeader>
+
+      {/* ADMIN ONLY: sélection de l'utilisateur */}
+      {isSuperAdmin && (
+        <div className="mt-4 space-y-2">
+          <Label>Réserver pour</Label>
+          <UserSelect
+            users={users}
+            value={selectedUser}
+            onChange={setSelectedUser}
+            modal={true}
+          />
+          {loadingUsers && (
+            <p className="text-xs text-muted-foreground">Chargement des utilisateurs…</p>
+          )}
+        </div>
+      )}
 
       {/* Créneaux indisponibles */}
       {unavailableBookings.length > 0 && (
@@ -177,8 +226,7 @@ export const BookingAvailabilities = ({
               checked={useCard}
               id="use-card"
               onCheckedChange={(v) => {
-                const next = Boolean(v);
-
+                const next = v === true;
                 setUseCard(next);
                 if (!next) setSelectedPrepaidCard(null);
               }}
@@ -202,7 +250,10 @@ export const BookingAvailabilities = ({
       <DialogFooter className="mt-6">
         <DialogClose asChild>
           <Button
-            disabled={availableBookings.length === 0}
+            disabled={
+              availableBookings.length === 0 ||
+              (isSuperAdmin && !effectiveUser)
+            }
             onClick={async () => await createAvailableBookings()}
           >
             Réserver les {availableBookings.length} créneaux disponibles

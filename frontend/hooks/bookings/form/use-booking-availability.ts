@@ -4,6 +4,7 @@ import moment from "@/lib/moment";
 import { Booking } from "@/models/booking";
 import { Service } from "@/models/service";
 import { User } from "@/models/user";
+import { useAuth } from "@/contexts/auth-context";
 
 type UnavailableBooking = {
   booking: Booking;
@@ -23,13 +24,15 @@ export function useBookingAvailability({
   service,
   user,
 }: UseBookingAvailabilityParams) {
+  const { isSuperAdmin } = useAuth();
+
   const { availableBookings, unavailableBookings } = useMemo(() => {
     const availableBookings: Booking[] = [];
     const unavailableBookings: UnavailableBooking[] = [];
 
     for (const desired of desiredBookings) {
       // Skip if before start of day
-      if (desired.endDate.isBefore(moment().startOf("day"))) continue;
+      if (!isSuperAdmin && desired.endDate.isBefore(moment().startOf("day"))) continue;
 
       const overlapping = existingBookings.filter(
         (existing) =>
@@ -65,7 +68,7 @@ export function useBookingAvailability({
     }
 
     return { availableBookings, unavailableBookings };
-  }, [desiredBookings, existingBookings, service, user]);
+  }, [desiredBookings, existingBookings, service, user, isSuperAdmin]);
 
   return { availableBookings, unavailableBookings };
 }

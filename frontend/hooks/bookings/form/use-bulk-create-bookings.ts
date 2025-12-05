@@ -5,7 +5,12 @@ import { PrepaidCard } from "@/models/prepaid-card";
 import { API_URL } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 
-export function useBulkCreateBookings(bookings: Booking[]) {
+interface UseBulkCreateBookingsParams {
+  bookings: Booking[],
+  userDocumentId?: string,
+}
+
+export function useBulkCreateBookings({bookings, userDocumentId}: UseBulkCreateBookingsParams) {
   const { getJWT } = useAuth();
 
   async function bulkCreate(prepaidCard: PrepaidCard | null) {
@@ -28,14 +33,21 @@ export function useBulkCreateBookings(bookings: Booking[]) {
         headers.set("Authorization", `Bearer ${token}`);
       }
 
-      const body = {
-        prepaidCardDocumentId: prepaidCard?.documentId,
+      const body: any = {
         serviceDocumentId: bookings[0].service?.documentId,
         bookings: bookings.map((booking) => ({
           startDate: booking.startDate.toISOString(),
           endDate: booking.endDate.toISOString(),
         })),
       };
+
+      if (prepaidCard) {
+        body.prepaidCardDocumentId = prepaidCard.documentId;
+      }
+
+      if (userDocumentId) {
+        body.userDocumentId = userDocumentId;
+      }
 
       const response = await fetch(url, {
         method: "POST",

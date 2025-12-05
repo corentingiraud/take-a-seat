@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/popover";
 import { DurationWrapper } from "@/models/duration";
 import { Service } from "@/models/service";
+import { useGetMonthRange } from "../utils/use-get-month-range";
+import { useAuth } from "@/contexts/auth-context";
 
 interface SingleDateFormStepProps {
   service: Service;
@@ -31,6 +33,8 @@ export const SingleDateFormStep = ({
   duration,
   onDateChange,
 }: SingleDateFormStepProps) => {
+  const { isSuperAdmin } = useAuth();
+
   const [date, setDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
@@ -43,8 +47,7 @@ export const SingleDateFormStep = ({
     }
   };
 
-  const currentMonth = moment();
-  const nextMonth = currentMonth.clone().add(1, "month");
+  const { startMonth, endMonth } = useGetMonthRange();
 
   return (
     <div className="flex flex-col mt-2">
@@ -67,7 +70,7 @@ export const SingleDateFormStep = ({
           </PopoverTrigger>
           <PopoverContent align="center" className="w-auto p-0">
             <Calendar
-              initialFocus
+              autoFocus
               disabled={(date) =>
                 shouldDisableDate({
                   date,
@@ -75,13 +78,14 @@ export const SingleDateFormStep = ({
                     service.coworkingSpace?.unavailabilities ?? [],
                   availabilities: service.availabilities,
                   duration: duration.getDuration()!,
+                  canBookInPast: isSuperAdmin,
                 })
               }
-              fromMonth={currentMonth.toDate()}
+              startMonth={startMonth.toDate()}
               locale={fr}
               mode="single"
               selected={date}
-              toMonth={nextMonth.toDate()}
+              endMonth={endMonth.toDate()}
               onDayClick={() => setCalendarOpen(false)}
               onSelect={onValueChange}
             />

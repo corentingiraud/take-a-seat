@@ -12,10 +12,12 @@ import { useRouter } from "next/navigation";
 
 import { API_URL, siteConfig } from "@/config/site";
 import { User } from "@/models/user";
+import { RoleType } from "@/models/role";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isSuperAdmin: boolean;
   loading: boolean;
   getJWT: () => string | null;
   login: (
@@ -306,12 +308,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return user.role?.type === role;
   };
 
+  const isSuperAdmin = hasRole(RoleType.SUPER_ADMIN);
+
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated,
         loading,
+        isSuperAdmin,
         getJWT,
         login,
         logout,

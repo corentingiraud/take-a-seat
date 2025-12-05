@@ -20,10 +20,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface UserSelectProps {
   users: User[];
   onChange: (user: User | null) => void;
+  modal?: boolean;
   value?: User | null;
 }
 
-export const UserSelect = ({ users, onChange, value }: UserSelectProps) => {
+export const UserSelect = ({ users, onChange, value, modal }: UserSelectProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -41,7 +42,7 @@ export const UserSelect = ({ users, onChange, value }: UserSelectProps) => {
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
         <Button
           className="w-full justify-start bg-transparent"

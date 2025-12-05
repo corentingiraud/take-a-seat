@@ -12,6 +12,7 @@ import { HalfDay } from "@/models/half-day";
 import { Time } from "@/models/time";
 import { useAuth } from "@/contexts/auth-context";
 import { DurationWrapper } from "@/models/duration";
+import { User } from "@/models/user";
 
 interface UseBookingAvailabilitiesParams {
   service: Service;
@@ -21,6 +22,7 @@ interface UseBookingAvailabilitiesParams {
   duration: DurationWrapper;
   times?: Time[];
   halfDay?: HalfDay;
+  targetUser?: User | null;
 }
 
 export function useBookingAvailabilities({
@@ -31,8 +33,11 @@ export function useBookingAvailabilities({
   duration,
   times,
   halfDay,
+  targetUser,
 }: UseBookingAvailabilitiesParams) {
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
+
+  const effectiveUser = (targetUser ?? authUser)!;
 
   // Step 1: Get array of desired dates
   const desiredDates = useDesiredDates({
@@ -49,7 +54,7 @@ export function useBookingAvailabilities({
   const desiredBookings = useDesiredBookings({
     times,
     desiredDates,
-    user: user!,
+    user: effectiveUser,
     service,
   });
 
@@ -72,11 +77,14 @@ export function useBookingAvailabilities({
     desiredBookings,
     existingBookings,
     service,
-    user: user!,
+    user: effectiveUser,
   });
 
   // Step 5: Hook to trigger bulk creation of bookings
-  const bulkCreateAvailableBookings = useBulkCreateBookings(availableBookings);
+  const bulkCreateAvailableBookings = useBulkCreateBookings({
+    bookings: availableBookings,
+    userDocumentId: effectiveUser.documentId
+  });
 
   return {
     availableBookings,

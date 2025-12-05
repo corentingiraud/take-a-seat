@@ -18,6 +18,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Service } from "@/models/service";
+import { useAuth } from "@/contexts/auth-context";
+import { RoleType } from "@/models/role";
+import { useGetMonthRange } from "../utils/use-get-month-range";
 
 interface MultipleDateFormStepProps {
   service: Service;
@@ -28,6 +31,8 @@ export const MultipleDatesFormStep = ({
   service,
   onDatesChange,
 }: MultipleDateFormStepProps) => {
+  const { isSuperAdmin } = useAuth();
+
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [calendarOpen, setCalendarOpen] = useState<boolean>(false);
 
@@ -42,8 +47,7 @@ export const MultipleDatesFormStep = ({
     onDatesChange(sortedDates.map((d) => moment(d)));
   };
 
-  const currentMonth = moment();
-  const nextMonth = currentMonth.clone().add(1, "month");
+  const { startMonth, endMonth } = useGetMonthRange();
 
   return (
     <div className="flex flex-col mt-2">
@@ -71,20 +75,21 @@ export const MultipleDatesFormStep = ({
           </PopoverTrigger>
           <PopoverContent align="center" className="w-auto p-0">
             <Calendar
-              initialFocus
+              autoFocus
               disabled={(date) =>
                 shouldDisableDate({
                   date,
                   unavailabilities:
                     service.coworkingSpace?.unavailabilities ?? [],
                   availabilities: service.availabilities,
+                  canBookInPast: isSuperAdmin,
                 })
               }
-              fromMonth={currentMonth.toDate()}
+              startMonth={startMonth.toDate()}
               locale={fr}
               mode="multiple"
               selected={selectedDates}
-              toMonth={nextMonth.toDate()}
+              endMonth={endMonth.toDate()}
               onDayClick={() => {}}
               onSelect={onValueChange}
             />

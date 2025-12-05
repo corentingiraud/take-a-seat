@@ -19,6 +19,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Service } from "@/models/service";
+import { RoleType } from "@/models/role";
+import { useAuth } from "@/contexts/auth-context";
+import { useGetMonthRange } from "../utils/use-get-month-range";
 
 interface DateRange {
   from: Moment | undefined;
@@ -34,6 +37,8 @@ export const RangeOfDatesFormStep = ({
   service,
   onDateRangeChange,
 }: DateRangeFormStepProps) => {
+  const { isSuperAdmin } = useAuth();
+
   const [dateRange, setDateRange] = useState<
     ReactDayPickerDateRange | undefined
   >();
@@ -52,8 +57,7 @@ export const RangeOfDatesFormStep = ({
     onDateRangeChange(undefined);
   };
 
-  const currentMonth = moment();
-  const nextMonth = currentMonth.clone().add(1, "month");
+  const { startMonth, endMonth } = useGetMonthRange();
 
   return (
     <div className="flex flex-col mt-2">
@@ -76,20 +80,21 @@ export const RangeOfDatesFormStep = ({
           </PopoverTrigger>
           <PopoverContent align="center" className="w-auto p-0">
             <Calendar
-              initialFocus
+              autoFocus
               disabled={(date) =>
                 shouldDisableDate({
                   date,
                   unavailabilities:
                     service.coworkingSpace?.unavailabilities ?? [],
                   availabilities: service.availabilities,
+                  canBookInPast: isSuperAdmin,
                 })
               }
-              fromMonth={currentMonth.toDate()}
+              startMonth={startMonth.toDate()}
               locale={fr}
               mode="range"
               selected={dateRange}
-              toMonth={nextMonth.toDate()}
+              endMonth={endMonth.toDate()}
               onSelect={onValueChange}
             />
           </PopoverContent>
