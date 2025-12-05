@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { WeekSelector } from "@/components/ui/week-selector";
 import { Button } from "@/components/ui/button";
@@ -25,13 +26,30 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
     slotDuration,
     serviceColorMap,
     isUnavailable,
-    findAvailability,
+    findAvailability, // still used for "Fermé" vs open
     getBookings,
   } = useCalendar({
     coworkingSpaceId,
     startDate,
     endDate,
   });
+
+  // services that the user chose to hide (by documentId)
+  const [hiddenServices, setHiddenServices] = useState<Set<string>>(
+    () => new Set(),
+  );
+
+  const toggleServiceVisibility = (serviceDocumentId: string) => {
+    setHiddenServices((prev) => {
+      const next = new Set(prev);
+      if (next.has(serviceDocumentId)) {
+        next.delete(serviceDocumentId);
+      } else {
+        next.add(serviceDocumentId);
+      }
+      return next;
+    });
+  };
 
   const colorClasses: Record<string, string> = {
     blue: "bg-blue-100 dark:bg-blue-800/40",
@@ -62,7 +80,10 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
     );
 
   // No availabilities for the entire range
-  if (coworkingSpace.getAvailabilitiesForDateRange(startDate, endDate).length === 0)
+  if (
+    coworkingSpace.getAvailabilitiesForDateRange(startDate, endDate).length ===
+    0
+  )
     return (
       <div className="space-y-10">
         {headerNav}
@@ -79,23 +100,41 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
     );
 
   const serviceLegend = (
-    <div className="flex items-center flex-wrap gap-3 mt-4">
-      {Object.entries(serviceColorMap).map(([serviceDocumentId, color]) => {
-        const className = colorClasses[color] || colorClasses.blue;
+    <div className="mt-4">
+      <div className="flex items-center flex-wrap gap-3">
+        {Object.entries(serviceColorMap).map(([serviceDocumentId, color]) => {
+          const className = colorClasses[color] || colorClasses.blue;
 
-        const service = coworkingSpace.services.find(
-          (s) => s.documentId === serviceDocumentId
-        );
+          const service = coworkingSpace.services.find(
+            (s) => s.documentId === serviceDocumentId,
+          );
 
-        if (!service) return null;
+          if (!service) return null;
 
-        return (
-          <div key={serviceDocumentId} className="flex items-center gap-2">
-            <div className={`w-4 h-4 rounded ${className}`} />
-            <span className="text-sm">{service.name}</span>
-          </div>
-        );
-      })}
+          const isHidden = hiddenServices.has(serviceDocumentId);
+
+          return (
+            <button
+              key={serviceDocumentId}
+              type="button"
+              onClick={() => toggleServiceVisibility(serviceDocumentId)}
+              className={`flex items-center gap-2 rounded px-2 py-1 text-sm transition hover:bg-muted/60 dark:hover:bg-neutral-800 cursor-pointer ${
+                isHidden ? "opacity-50" : ""
+              }`}
+            >
+              <div className={`w-4 h-4 rounded ${className}`} />
+              <span>{service.name}</span>
+              <span className="text-[11px] text-muted-foreground">
+                ({isHidden ? "masqué" : "affiché"})
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Cliquez sur un service pour afficher ou masquer ses réservations dans le
+        calendrier.
+      </p>
     </div>
   );
 
@@ -117,7 +156,8 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
         {weekdays.map((day) => (
           <div
             key={day.format("YYYY-MM-DD")}
-            className="border-b border-r p-2 text-center text-sm font-medium bg-gray-100 dark:bg-neutral-800 dark:text-white sticky top-0 z-20"          >
+            className="border-b border-r p-2 text-center text-sm font-medium bg-gray-100 dark:bg-neutral-800 dark:text-white sticky top-0 z-20"
+          >
             {day.format("ddd DD/MM")}
           </div>
         ))}
@@ -139,25 +179,29 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
               {weekdays.map((day) => {
                 const cellKey = `${day.format("YYYY-MM-DD")}-${label}`;
 
-                // Unavailable slot
+                // Unavailable slot (global)
                 if (isUnavailable(day, time)) {
                   return (
                     <div
                       key={cellKey}
-                      className="border-b border-r p-2 text-xs text-center italic bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-300 dark:border-neutral-700"
+                      className="border-b border-r p-2 text-xs italic bg-red-50 text-red-600 
+                                dark:bg-red-900/20 dark:text-red-300 dark:border-neutral-700
+                                flex items-center justify-center"
                     >
                       Indisponible
                     </div>
                   );
                 }
 
-                // No availability → closed
-                const av = findAvailability(day, time);
-                if (!av) {
+                // No availability → closed (no service open at this time)
+                const anyAvailability = findAvailability(day, time);
+                if (!anyAvailability) {
                   return (
                     <div
                       key={cellKey}
-                      className="border-b border-r p-2 text-xs text-center italic bg-gray-50 text-muted-foreground dark:bg-neutral-900 dark:text-neutral-400 dark:border-neutral-700"
+                      className="border-b border-r p-2 text-xs italic bg-gray-50 text-muted-foreground 
+                                dark:bg-neutral-900 dark:text-neutral-400 dark:border-neutral-700
+                                flex items-center justify-center"
                     >
                       Fermé
                     </div>
@@ -165,43 +209,116 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
                 }
 
                 // Slot open
-                const slotStart = day.clone().hour(time.hour).minute(time.minute);
+                const slotStart = day
+                  .clone()
+                  .hour(time.hour)
+                  .minute(time.minute);
                 const slotEnd = slotStart.clone().add(slotDuration, "minutes");
 
+                const slotMoment = slotStart.clone().add(1, "minute");
                 const slotBookings = getBookings(slotStart, slotEnd);
 
-                const capacity = av.numberOfSeats;
-                const isFull = slotBookings.length >= capacity;
+                // Build per-service info for this slot
+                const servicesForSlot = coworkingSpace.services
+                  .map((service) => {
+                    // find this service's availability for this exact slot
+                    const avs = service.findAvailabilitiesForDateRange(
+                      startDate,
+                      endDate,
+                    );
+                    const serviceAvailability =
+                      avs.find((av: any) => av.contains(slotMoment)) || null;
 
-                return (
-                  <div
-                    key={cellKey}
-                    className={`border-b border-r p-2 text-xs space-y-1 dark:border-neutral-700 ${
-                      isFull ? "bg-red-100 dark:bg-red-900/40" : "bg-white dark:bg-neutral-950"
-                    }`}
-                  >
-                    <div className="font-semibold text-gray-700 dark:text-gray-200">
-                      {slotBookings.length} / {capacity}
+                    if (!serviceAvailability) return null;
+
+                    const bookingsForService = slotBookings.filter(
+                      (b) => b.service?.documentId === service.documentId,
+                    );
+
+                    const isServiceHidden = hiddenServices.has(
+                      service.documentId,
+                    );
+
+                    const visibleBookingsForService = isServiceHidden
+                      ? []
+                      : bookingsForService;
+
+                    return {
+                      service,
+                      availability: serviceAvailability,
+                      capacity: serviceAvailability.numberOfSeats,
+                      bookingsForService,
+                      visibleBookingsForService,
+                      isServiceHidden,
+                    };
+                  })
+                  .filter(Boolean) as Array<{
+                  service: (typeof coworkingSpace.services)[number];
+                  availability: any;
+                  capacity: number;
+                  bookingsForService: any[];
+                  visibleBookingsForService: any[];
+                  isServiceHidden: boolean;
+                }>;
+
+                // global "full" state: all services that are available are full
+                const isFull =
+                  servicesForSlot.length > 0 &&
+                  servicesForSlot.every(
+                    (s) =>
+                      s.visibleBookingsForService.length >= s.capacity &&
+                      s.capacity > 0,
+                  );
+
+
+                  return (
+                    <div
+                      key={cellKey}
+                      className={`border-b border-r p-2 text-xs space-y-2 dark:border-neutral-700 ${
+                        isFull
+                          ? "bg-red-100 dark:bg-red-900/40"
+                          : "bg-white dark:bg-neutral-950"
+                      }`}
+                    >
+                      {/* Per-service counts + user list */}
+                      <div className="space-y-1">
+                        {servicesForSlot.map(
+                          ({
+                            service,
+                            capacity,
+                            visibleBookingsForService,
+                            isServiceHidden,
+                          }) => {
+                            const color = serviceColorMap[service.documentId] || "blue";
+                            const className = colorClasses[color] || colorClasses.blue;
+
+                            return (!isServiceHidden &&
+                              <div key={service.documentId} className={`flex flex-col items-start text-[11px] rounded p-1 ${className}`}>
+                                <div className="self-end">{`${visibleBookingsForService.length} / ${capacity}`}</div>
+                                {visibleBookingsForService.length > 0 && (
+                                    <div className="mt-1 w-full">
+                                      {visibleBookingsForService.map((b) => (
+                                        <div
+                                          key={b.id}
+                                          className="rounded px-1 py-0.5 text-[11px] bg-white/40 dark:bg-black/20"
+                                        >
+                                          {hasRole(RoleType.SUPER_ADMIN) ? (
+                                            <UserPreview user={b.user!} />
+                                          ) : (
+                                            b.user?.firstNameWithInitial ||
+                                            "Utilisateur inconnu"
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                              </div>
+                            );
+                          },
+                        )}
+                      </div>
                     </div>
-
-                    {slotBookings.map((b) => {
-                      const serviceDocumentId = b.service?.documentId || 0;
-                      const color = serviceColorMap[serviceDocumentId];
-                      const className = colorClasses[color] || colorClasses.blue;
-
-                      return (
-                        <div
-                          key={b.id}
-                          className={`${className} rounded px-1 py-0.5 text-[11px]`}
-                        >
-                          {hasRole(RoleType.SUPER_ADMIN)
-                            ? <UserPreview user={b.user!} />
-                            : b.user?.firstNameWithInitial || "Utilisateur inconnu"}
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
+                  );
               })}
             </div>
           );

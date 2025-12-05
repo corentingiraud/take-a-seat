@@ -8,6 +8,7 @@ import { API_URL } from "@/config/site";
 import { useAuth } from "@/contexts/auth-context";
 import { Time } from "@/models/time";
 import { Booking } from "@/models/booking";
+import { Availability } from "@/models/availability";
 
 type UseCalendarParams = {
   coworkingSpaceId?: string;
@@ -129,7 +130,7 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
   }
 
   // Find availability object for a specific slot
-  function findAvailability(day: Moment, time: Time) {
+  function findAvailability(day: Moment, time: Time): Availability | null {
     if (!coworkingSpace) return null;
 
     const slotMoment = day.clone().hour(time.hour).minute(time.minute).add(1, "minute");
