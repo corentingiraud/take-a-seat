@@ -61,7 +61,6 @@ export function isHalfDayAvailable(
   // Rule 2: Must not overlap with unavailabilities
   for (const u of unavailabilities) {
     if (start.isBefore(u.endDate) && end.isAfter(u.startDate)) {
-      console.log({start, end, u})
       return false;
     }
   }

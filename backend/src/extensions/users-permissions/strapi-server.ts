@@ -32,7 +32,6 @@ async function verifyHCaptcha(token: string | null, ip?: string) {
   });
 
   const data = await res.json() as any;
-  console.log(data);
   const expected = process.env.HCAPTCHA_VERIFY_HOSTNAME;
   const hostnameOk = expected ? data?.hostname === expected : true;
 
