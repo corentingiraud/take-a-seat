@@ -19,24 +19,39 @@ export function shouldDisableDate({
 }: DisableDateOptions): boolean {
   const mDate = moment(date).startOf("day");
 
-  // 1. Past
+  // 1. Disable past dates
   if (mDate.isBefore(moment().startOf("day"))) return true;
 
-  // 2. No matching availability at all
-  const isCoveredByAvailability = availabilities.some((availability) =>
-    availability.getStartTimeFor(mDate),
-  );
+  // 2. Get all availability start times for that day
+  const startTimes = availabilities
+    .map(a => a.getStartTimeFor(mDate))
+    .filter(Boolean);
 
-  if (!isCoveredByAvailability) return true;
+  if (startTimes.length === 0) return true;
 
-  // 3. Overlaps with any unavailability
-  for (const { startDate, endDate } of unavailabilities) {
-    const endOfSlot = mDate.clone().add(duration);
+  // 2.5 Full-day case: any unavailability blocks the whole day
+  if (!duration) {
+    const dayStart = mDate.clone();
+    const dayEnd = mDate.clone().endOf("day");
 
-    if (mDate.isSameOrBefore(endDate) && endOfSlot.isSameOrAfter(startDate)) {
-      return true;
-    }
+    const hasUnavailability = unavailabilities.some(u =>
+      dayStart.isBefore(u.endDate) && dayEnd.isAfter(u.startDate)
+    );
+
+    return hasUnavailability;
   }
 
-  return false;
+  // 3. Duration defined → check time slots
+  for (const startTime of startTimes) {
+    const slotStart = moment(startTime);
+    const slotEnd = slotStart.clone().add(duration);
+
+    const overlaps = unavailabilities.some(({ startDate, endDate }) =>
+      slotStart.isBefore(endDate) && slotEnd.isAfter(startDate)
+    );
+
+    if (!overlaps) return false;
+  }
+
+  return true;
 }

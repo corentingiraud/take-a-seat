@@ -27,6 +27,12 @@ export const TimeFormStep = ({
 }: TimeFormStepProps) => {
   const [selectedTimes, setSelectedTimes] = useState<Time[]>([]);
 
+  const isTimeAvailable = (time: Time) => {
+    const start = date.clone().hour(time.hour).minute(time.minute);
+
+    return !service.coworkingSpace?.unavailabilities.some((u) => u.contains(start));
+  };
+
   const handleTimeSelect = (value: string) => {
     const newTime = Time.fromString(value);
     const isAlreadySelected = selectedTimes.some(
@@ -57,7 +63,9 @@ export const TimeFormStep = ({
 
   const availableTimeSlots = service.getTimeSlot(date);
 
-  const selectableTimeSlots = availableTimeSlots.filter(
+  const filteredSlots = availableTimeSlots.filter(isTimeAvailable);
+
+  const selectableTimeSlots = filteredSlots.filter(
     (timeSlot) =>
       !selectedTimes.some(
         (selected) => selected.toString() === timeSlot.toString(),
