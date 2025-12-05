@@ -30,8 +30,11 @@ import { User } from "@/models/user";
 import { useBookings } from "@/hooks/bookings/use-bookings"; // pagination intégrée
 import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 import { useWeekSelector } from "@/hooks/use-week-selector";
+import { useAuth } from "@/contexts/auth-context";
 
 export function BookingsList({ user }: { user?: User }) {
+  const { user: authUser } = useAuth();
+
   const { startDate, endDate, setWeekRange, goToNextWeek } = useWeekSelector(); 
 
   const {
@@ -150,7 +153,7 @@ export function BookingsList({ user }: { user?: User }) {
             selectedBookings.length === 0 ||
             isLoading ||
             isFetching ||
-            !selectedBookings.every((b) => b.isCancelable)
+            !selectedBookings.every((b) => b.isCancelable(authUser?.role))
           }
           variant="destructive"
           onClick={handleBulkCancel}

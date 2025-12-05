@@ -16,6 +16,7 @@ import { UserPrepaidCardDialog } from "@/components/prepaid-cards/user-prepaid-c
 import { PrepaidCard } from "@/models/prepaid-card";
 import { User } from "@/models/user";
 import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
+import { useAuth } from "@/contexts/auth-context";
 
 interface BookingActionMenuProps {
   user?: User;
@@ -23,13 +24,15 @@ interface BookingActionMenuProps {
 }
 
 export function BookingActionMenu({ booking, user }: BookingActionMenuProps) {
+  const { user: authUser } = useAuth();
+
   const { cancel, payManyWithCard, isCancelling } = useBookingActions();
   const confirm = useConfirm();
 
   const [isPrepaidDialogOpen, setIsPrepaidDialogOpen] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
 
-  const canCancel = booking.isCancelable;
+  const canCancel = booking.isCancelable(authUser?.role);
   const canPay = booking.paymentStatus === "PENDING";
   const hasAnyAction = canCancel || canPay;
 

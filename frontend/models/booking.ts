@@ -10,6 +10,7 @@ import { PrepaidCard } from "./prepaid-card";
 import moment from "@/lib/moment";
 import { GeneralParams } from "@/types/strapi-api-params";
 import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
+import { Role, RoleType } from "./role";
 
 interface BookingInterface {
   id?: number;
@@ -81,7 +82,11 @@ export class Booking implements StrapiData {
     };
   }
 
-  get isCancelable(): boolean {
+  isCancelable(role?: Role): boolean {
+    if (role?.type === RoleType.SUPER_ADMIN) 
+      return (this.bookingStatus === BookingStatus.PENDING ||
+        this.bookingStatus === BookingStatus.CONFIRMED);
+
     return (
       (this.bookingStatus === BookingStatus.PENDING ||
         this.bookingStatus === BookingStatus.CONFIRMED) &&
