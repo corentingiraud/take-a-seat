@@ -132,7 +132,7 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
   function findAvailability(day: Moment, time: Time) {
     if (!coworkingSpace) return null;
 
-    const slotMoment = day.clone().hour(time.hour).minute(time.minute);
+    const slotMoment = day.clone().hour(time.hour).minute(time.minute).add(1, "minute");
 
     for (const s of coworkingSpace.services) {
       const avs = s.findAvailabilitiesForDateRange(startDate, endDate);

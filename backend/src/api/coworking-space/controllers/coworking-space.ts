@@ -16,7 +16,7 @@ export default factories.createCoreController(
       // 1) Check coworking space
       const space = await strapi
         .documents('api::coworking-space.coworking-space')
-        .findOne({ documentId: id });
+        .findOne({ documentId: id, populate: ["unavailabilities"] });
 
       if (!space) {
         return ctx.notFound(`Coworking space with documentId '${id}' not found`);
