@@ -116,7 +116,7 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
   const minTotalMinutes = minHour.hour * 60 + minHour.minute;
   const maxTotalMinutes = maxHour.hour * 60 + maxHour.minute;
 
-  for (let m = minTotalMinutes; m <= maxTotalMinutes; m += slotDuration) {
+  for (let m = minTotalMinutes; m < maxTotalMinutes; m += slotDuration) {
     const h = Math.floor(m / 60);
     const mm = m % 60;
     hours.push(new Time(h, mm));

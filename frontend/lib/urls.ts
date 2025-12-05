@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site";
 import { Moment } from "moment";
 
 export function getServiceCalendarHref(args: {
@@ -16,5 +17,5 @@ export function getServiceCalendarHref(args: {
 
   const query = params.toString();
 
-  return query ? `/service-calendar?${query}` : `/service-calendar`;
+  return query ? `${siteConfig.path.calendar.href}?${query}` : `${siteConfig.path.calendar.href}`;
 }

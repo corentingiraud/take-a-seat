@@ -1,11 +1,8 @@
 "use client";
 
-import type { Moment } from "moment";
-
 import { useEffect, useMemo, useState } from "react";
 import { CalendarIcon, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useQueryState, parseAsString } from "nuqs";
 
 import { BookingStatusBadge } from "../badge";
 
