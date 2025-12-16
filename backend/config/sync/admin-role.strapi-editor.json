@@ -219,7 +219,7 @@
       "locale": null
     },
     {
-      "documentId": "oocr7cbgys1agfpgdukzfvrg",
+      "documentId": "rle4bcwpcdalvompahhreh1w",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -231,7 +231,8 @@
           "user",
           "bookings",
           "validFrom",
-          "name"
+          "name",
+          "initialBalance"
         ]
       },
       "conditions": [],
@@ -256,7 +257,7 @@
       "locale": null
     },
     {
-      "documentId": "it13fpl8nc7hkfew4op7dmje",
+      "documentId": "l5o353ex8v8vtm8z2jbq6mqw",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -268,14 +269,15 @@
           "user",
           "bookings",
           "validFrom",
-          "name"
+          "name",
+          "initialBalance"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "xyu7ed32i4r4glhfdph0hwm5",
+      "documentId": "amguvmbyofvaizarwpbt1ftg",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "api::prepaid-card.prepaid-card",
@@ -287,7 +289,8 @@
           "user",
           "bookings",
           "validFrom",
-          "name"
+          "name",
+          "initialBalance"
         ]
       },
       "conditions": [],
@@ -428,6 +431,15 @@
           "coworking_spaces"
         ]
       },
+      "conditions": [],
+      "locale": null
+    },
+    {
+      "documentId": "c3x98csbkt4xvqdebs85h8zn",
+      "action": "admin::users.read",
+      "actionParameters": {},
+      "subject": null,
+      "properties": {},
       "conditions": [],
       "locale": null
     },

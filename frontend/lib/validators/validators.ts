@@ -22,10 +22,19 @@ export const isEmail =
   (v) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? "" : msg;
 
-export const isFRMobile =
-  <TValues>(msg = "Numéro de mobile français invalide."): Validator<TValues> =>
-  (v) =>
-    /^(\+33\s?|0)(6|7)(?:[\s.-]?\d{2}){4}$/.test(v.trim()) ? "" : msg;
+export const isMobile =
+  <TValues>(msg = "Numéro de téléphone invalide."): Validator<TValues> =>
+  (v) => {
+    const cleaned = v.replace(/[\s.-]/g, "");
+
+    // FR sans indicatif → 06 / 07
+    if (/^0[67]\d{8}$/.test(cleaned)) return "";
+
+    // International (E.164)
+    if (/^\+[1-9]\d{1,14}$/.test(cleaned)) return "";
+
+    return msg;
+  };
 
 export const minLength =
   <TValues>(n: number, msg = `Au moins ${n} caractères.`): Validator<TValues> =>

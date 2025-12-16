@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useRef } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn, normalizePhone } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import {
   compose,
   required,
-  isFRMobile,
+  isMobile,
   isEmail,
   minLength,
   passwordStrength,
@@ -93,7 +93,7 @@ export function SignupForm({
       lastName: compose(required("Le nom est requis.")),
       phone: compose(
         required("Le numéro de téléphone est requis."),
-        isFRMobile(),
+        isMobile(),
       ),
       email: compose(required("L'email est requis."), isEmail()),
       password: compose(
@@ -183,7 +183,7 @@ export function SignupForm({
       updatedAt: new Date().toISOString(),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      phone: phone.trim(),
+      phone: normalizePhone(phone),
     });
 
     await signup(newUser, password, hCaptchaToken);

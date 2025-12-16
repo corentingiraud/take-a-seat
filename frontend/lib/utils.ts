@@ -14,3 +14,15 @@ export function capitalizeFirstLetter(val?: string): string {
 export function generateDynamicPageTitle(title: string) {
   return `${title} - ${siteConfig.name}`;
 }
+
+export const normalizePhone = (phone: string): string => {
+  const cleaned = phone.replace(/[\s.-]/g, "");
+
+  // FR sans indicatif → +33
+  if (/^0[67]\d{8}$/.test(cleaned)) {
+    return "+33" + cleaned.slice(1);
+  }
+
+  // Déjà international
+  return cleaned;
+};
