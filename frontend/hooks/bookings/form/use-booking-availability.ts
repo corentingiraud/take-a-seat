@@ -34,6 +34,23 @@ export function useBookingAvailability({
       // Skip if before start of day
       if (!isSuperAdmin && desired.endDate.isBefore(moment().startOf("day"))) continue;
 
+      const coworkingSpace = service.coworkingSpace;
+
+      // ⛔ coworking space unavailable (priorité absolue)
+      if (coworkingSpace) {
+        const isSpaceUnavailable = coworkingSpace.unavailabilities.some(
+          (u) => u.overlaps(desired.startDate, desired.endDate),
+        );
+
+        if (isSpaceUnavailable) {
+          unavailableBookings.push({
+            booking: desired,
+            cause: "Espace de coworking fermé sur ce créneau",
+          });
+          continue;
+        }
+      }
+
       const overlapping = existingBookings.filter(
         (existing) =>
           desired.startDate.isSameOrAfter(existing.startDate) &&

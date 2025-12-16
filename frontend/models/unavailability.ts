@@ -79,4 +79,8 @@ export class Unavailability implements StrapiData {
       momentToCheck.isSameOrBefore(this.endDate)
     );
   }
+
+  overlaps(start: Moment, end: Moment): boolean {
+    return start.isBefore(this.endDate) && end.isAfter(this.startDate);
+  }
 }

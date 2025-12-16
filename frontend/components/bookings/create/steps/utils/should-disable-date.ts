@@ -31,18 +31,6 @@ export function shouldDisableDate({
 
   if (startTimes.length === 0) return true;
 
-  // 2.5 Full-day case: any unavailability blocks the whole day
-  if (!duration) {
-    const dayStart = mDate.clone();
-    const dayEnd = mDate.clone().endOf("day");
-
-    const hasUnavailability = unavailabilities.some(u =>
-      dayStart.isBefore(u.endDate) && dayEnd.isAfter(u.startDate)
-    );
-
-    return hasUnavailability;
-  }
-
   // 3. Duration defined → check time slots
   for (const startTime of startTimes) {
     const slotStart = moment(startTime);
