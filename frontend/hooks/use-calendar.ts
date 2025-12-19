@@ -85,8 +85,8 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
 
       // If any availability contains a weekend day, we allow weekend display
       for (const day of availability.getAvailableDaysOfWeek(startDate)) {
-        const wd = day.weekday(); // 0 = Sunday, 6 = Saturday
-        if (wd === 0 || wd === 6) {
+        const wd = day.weekday();
+        if (wd === 5 || wd === 6) {
           displayWeekend = true;
         }
       }
@@ -100,7 +100,7 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
     const wd = d.weekday();
 
     // If it's Saturday or Sunday, only include if displayWeekend is true
-    if (wd === 0 || wd === 6) {
+    if (wd === 5 || wd === 6) {
       if (displayWeekend) {
         weekdays.push(d.clone());
       }

@@ -63,7 +63,6 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         .findMany({
           where: {
             service: service.id,
-            endDate: { $gte: new Date().toISOString() },
           },
         });
 

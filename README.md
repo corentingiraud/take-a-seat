@@ -24,6 +24,23 @@ docker compose -f docker-compose.prod.yml up -d
 docker image prune -f
 ```
 
+Mode maintenance :
+
+```bash
+cd /etc/caddy
+sudo cp Caddyfile.maintenance Caddyfile
+sudo systemctl restart caddy
+```
+
+Retour au mode normal :
+
+```bash
+cd /etc/caddy
+sudo cp Caddyfile.prod Caddyfile
+sudo systemctl restart caddy
+```
+
+
 ## Default credentials in dev env
 
 **Standart users (http://localhost:3000/)**
