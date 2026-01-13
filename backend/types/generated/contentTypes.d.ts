@@ -492,7 +492,7 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     paymentStatus: Schema.Attribute.Enumeration<
-      ['PENDING', 'PAID', 'REFUNDED']
+      ['PENDING', 'PAID', 'REFUNDED', 'CANCELLED']
     > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'PENDING'>;

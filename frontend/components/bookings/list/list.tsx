@@ -27,7 +27,7 @@ import { getServiceCalendarHref } from "@/lib/urls";
 import { Booking } from "@/models/booking";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { User } from "@/models/user";
-import { useBookings } from "@/hooks/bookings/use-bookings"; // pagination intégrée
+import { useBookings } from "@/hooks/bookings/use-bookings";
 import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 import { useWeekSelector } from "@/hooks/use-week-selector";
 import { useAuth } from "@/contexts/auth-context";
@@ -45,6 +45,7 @@ export function BookingsList({ user }: { user?: User }) {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    getMarkedDays,
   } = useBookings({
     userDocumentId: user?.documentId,
     startDate,
@@ -105,6 +106,7 @@ export function BookingsList({ user }: { user?: User }) {
     <div className="mt-7">
       <WeekSelector
         endDate={endDate}
+        getMarkedDays={getMarkedDays}
         startDate={startDate}
         onChange={setWeekRange}
       />
@@ -286,6 +288,7 @@ export function BookingsList({ user }: { user?: User }) {
       <div className="mt-7" />
       <WeekSelector
         endDate={endDate}
+        getMarkedDays={getMarkedDays}
         startDate={startDate}
         onChange={setWeekRange}
       />

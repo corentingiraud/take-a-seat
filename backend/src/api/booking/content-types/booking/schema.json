@@ -13,9 +13,8 @@
   "pluginOptions": {},
   "attributes": {
     "startDate": {
-      "pluginOptions": {},
-      "required": true,
-      "type": "datetime"
+      "type": "datetime",
+      "required": true
     },
     "endDate": {
       "type": "datetime",
@@ -23,22 +22,23 @@
     },
     "bookingStatus": {
       "type": "enumeration",
+      "default": "PENDING",
       "enum": [
         "PENDING",
         "CONFIRMED",
         "CANCELLED"
-      ],
-      "default": "PENDING"
+      ]
     },
     "paymentStatus": {
       "type": "enumeration",
+      "required": true,
+      "default": "PENDING",
       "enum": [
         "PENDING",
         "PAID",
-        "REFUNDED"
-      ],
-      "default": "PENDING",
-      "required": true
+        "REFUNDED",
+        "CANCELLED"
+      ]
     },
     "user": {
       "type": "relation",

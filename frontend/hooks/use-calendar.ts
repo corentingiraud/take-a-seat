@@ -147,6 +147,34 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
     return null;
   }
 
+  // Check if there's availability before AND after a given time slot (same day)
+  // This is used to display "Pause" instead of "Fermé"
+  function hasAvailabilityBeforeAndAfter(day: Moment, time: Time): boolean {
+    if (!coworkingSpace) return false;
+
+    const currentSlotMinutes = time.hour * 60 + time.minute;
+    let hasBefore = false;
+    let hasAfter = false;
+
+    for (const slotTime of hours) {
+      const slotMinutes = slotTime.hour * 60 + slotTime.minute;
+      if (slotMinutes === currentSlotMinutes) continue;
+
+      const availability = findAvailability(day, slotTime);
+      if (availability) {
+        if (slotMinutes < currentSlotMinutes) {
+          hasBefore = true;
+        } else {
+          hasAfter = true;
+        }
+      }
+
+      if (hasBefore && hasAfter) return true;
+    }
+
+    return hasBefore && hasAfter;
+  }
+
   function getBookings(start: Moment, end: Moment) {
     if (!coworkingSpace) return [];
 
@@ -193,6 +221,7 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
     serviceColorMap,
     isUnavailable,
     findAvailability,
+    hasAvailabilityBeforeAndAfter,
     getBookings,
     reload: query.refetch,
   };

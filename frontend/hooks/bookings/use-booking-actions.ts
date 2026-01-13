@@ -17,6 +17,7 @@ export function useBookingActions() {
     await Promise.all([
       qc.invalidateQueries({ queryKey: ["prepaid-cards"], exact: false }),
       qc.invalidateQueries({ queryKey: ["bookings"], exact: false }),
+      qc.invalidateQueries({ queryKey: ["unpaid-bookings"], exact: false }),
     ]);
   };
 

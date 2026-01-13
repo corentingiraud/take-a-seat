@@ -1,6 +1,7 @@
 "use client";
 
-import type { Moment } from "moment";
+import moment, { type Moment } from "moment";
+import { useCallback } from "react";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 
@@ -23,7 +24,7 @@ export function useBookings({
   pageSize = 25,
 }: UseBookingsParams) {
   const { user } = useAuth();
-  const { fetchAllPaginated } = useStrapiAPI();
+  const { fetchAllPaginated, fetchAll } = useStrapiAPI();
 
   const effectiveUserId = userDocumentId ?? user?.documentId;
 
@@ -76,6 +77,33 @@ export function useBookings({
     pagination: { page: 1, pageSize, pageCount: 0, total: 0 },
   };
 
+  const getMarkedDays = useCallback(
+    async (monthStart: Moment, monthEnd: Moment): Promise<Moment[]> => {
+      if (!effectiveUserId) return [];
+
+      const bookings = await fetchAll<Booking>({
+        ...Booking.strapiAPIParams,
+        queryParams: {
+          fields: ["startDate"],
+          filters: {
+            user: { documentId: { $eq: effectiveUserId } },
+            startDate: {
+              $gte: monthStart.toDate(),
+              $lte: monthEnd.toDate(),
+            },
+          },
+        },
+      });
+
+      const uniqueDates = new Set(
+        bookings.map((b) => b.startDate.format("YYYY-MM-DD"))
+      );
+
+      return Array.from(uniqueDates).map((d) => moment(d));
+    },
+    [effectiveUserId, fetchAll]
+  );
+
   return {
     bookings,
     isLoading: query.isLoading,
@@ -86,5 +114,6 @@ export function useBookings({
     fetchNextPage: query.fetchNextPage,
     total: meta.pagination.total,
     pageCount: meta.pagination.pageCount,
+    getMarkedDays,
   };
 }

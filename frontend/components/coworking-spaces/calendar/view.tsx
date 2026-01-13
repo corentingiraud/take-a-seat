@@ -26,7 +26,8 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
     slotDuration,
     serviceColorMap,
     isUnavailable,
-    findAvailability, // still used for "Fermé" vs open
+    findAvailability,
+    hasAvailabilityBeforeAndAfter,
     getBookings,
   } = useCalendar({
     coworkingSpaceId,
@@ -193,17 +194,18 @@ export const CalendarView = ({ coworkingSpaceId }: CalendarViewProps) => {
                   );
                 }
 
-                // No availability → closed (no service open at this time)
+                // No availability → closed or pause (no service open at this time)
                 const anyAvailability = findAvailability(day, time);
                 if (!anyAvailability) {
+                  const isPause = hasAvailabilityBeforeAndAfter(day, time);
                   return (
                     <div
                       key={cellKey}
-                      className="border-b border-r p-2 text-xs italic bg-gray-50 text-muted-foreground 
+                      className="border-b border-r p-2 text-xs italic bg-gray-50 text-muted-foreground
                                 dark:bg-neutral-900 dark:text-neutral-400 dark:border-neutral-700
                                 flex items-center justify-center"
                     >
-                      Fermé
+                      {isPause ? "Pause" : "Fermé"}
                     </div>
                   );
                 }
