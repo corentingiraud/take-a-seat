@@ -35,7 +35,6 @@ export function useUnpaidBookings(options?: UseUnpaidBookingsOptions) {
             bookingStatus: {
               $in: [BookingStatus.CONFIRMED, BookingStatus.PENDING],
             },
-            endDate: { $lt: new Date() },
           },
         },
       });
