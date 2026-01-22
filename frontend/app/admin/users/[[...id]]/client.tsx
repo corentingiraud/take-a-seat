@@ -8,6 +8,7 @@ import { Section } from "@/components/ui/section";
 import { UserDetails } from "@/components/users/details";
 import { PrepaidCardsList } from "@/components/prepaid-cards/list/list";
 import { BookingsList } from "@/components/bookings/list/list";
+import { UnpaidBookingsAlert } from "@/components/bookings/unpaid-alert";
 import { UserSelect } from "@/components/users/select";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 
@@ -118,6 +119,7 @@ export default function UserProfile({ initialUserId = null }: Props) {
           </Section>
 
           <Section title="Réservations">
+            <UnpaidBookingsAlert user={selectedUser} />
             <BookingsList user={selectedUser} />
           </Section>
         </>

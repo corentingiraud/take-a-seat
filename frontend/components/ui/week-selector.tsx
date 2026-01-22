@@ -2,7 +2,7 @@
 
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import moment, { Moment } from "moment";
-import { useCallback, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { fr } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMarkedDays } from "@/hooks/bookings/use-bookings";
 
 type WeekSelectorProps = {
   label?: string;
@@ -24,7 +25,7 @@ type WeekSelectorProps = {
   onChange?: (start: Moment, end: Moment) => void;
   compact?: boolean;
   displayCalendar?: boolean;
-  getMarkedDays?: (monthStart: Moment, monthEnd: Moment) => Promise<Moment[]>;
+  userDocumentId?: string;
 };
 
 export const WeekSelector = ({
@@ -34,30 +35,21 @@ export const WeekSelector = ({
   onChange,
   compact = false,
   displayCalendar = true,
-  getMarkedDays,
+  userDocumentId,
 }: WeekSelectorProps) => {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date>(startDate.toDate());
-  const [markedDays, setMarkedDays] = useState<Moment[]>([]);
-  const [isLoadingMarkers, setIsLoadingMarkers] = useState(false);
 
-  const fetchMarkedDays = useCallback(async (month: Date) => {
-    if (!getMarkedDays) return;
+  const monthBounds = useMemo(() => ({
+    monthStart: moment(currentMonth).startOf("month"),
+    monthEnd: moment(currentMonth).endOf("month"),
+  }), [currentMonth]);
 
-    setIsLoadingMarkers(true);
-    try {
-      const monthStart = moment(month).startOf("month");
-      const monthEnd = moment(month).endOf("month");
-      const days = await getMarkedDays(monthStart, monthEnd);
-      setMarkedDays(days);
-    } finally {
-      setIsLoadingMarkers(false);
-    }
-  }, [getMarkedDays]);
-
-  useEffect(() => {
-    fetchMarkedDays(currentMonth);
-  }, [currentMonth, fetchMarkedDays]);
+  const { data: markedDays, isLoading: isLoadingMarkers } = useMarkedDays({
+    userDocumentId,
+    monthStart: monthBounds.monthStart,
+    monthEnd: monthBounds.monthEnd,
+  });
 
   const goToPreviousWeek = () => {
     const newStart = startDate.clone().subtract(1, "week").startOf("isoWeek");
@@ -87,9 +79,7 @@ export const WeekSelector = ({
     }
   };
 
-  const markedDatesSet = new Set(
-    markedDays.map((d) => d.format("YYYY-MM-DD"))
-  );
+  const markedDatesSet = new Set(markedDays ?? []);
 
   const isDateMarked = (date: Date) => {
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;

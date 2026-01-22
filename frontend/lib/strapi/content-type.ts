@@ -27,19 +27,49 @@ async function fetchAll<T extends StrapiData>(
   factory: FactoryStrapiData<T>,
   params: Record<string, unknown> = {},
   headers: HeadersInit = {},
+  autoPaginate: boolean = false,
 ): Promise<T[]> {
   try {
-    const queryParams = { ...params };
-    const url = `${API_URL}/${contentType}?${qs.stringify(queryParams)}`;
-    const jsonData = await fetchFromStrapi<{ data: any[] }>(url, headers);
+    if (!autoPaginate) {
+      const queryParams = { ...params };
+      const url = `${API_URL}/${contentType}?${qs.stringify(queryParams)}`;
+      const jsonData = await fetchFromStrapi<{ data: any[] }>(url, headers);
 
-    if (jsonData.data) return jsonData.data.map(factory);
+      if (jsonData.data) return jsonData.data.map(factory);
 
-    if (Array.isArray(jsonData)) return jsonData.map(factory);
+      if (Array.isArray(jsonData)) return jsonData.map(factory);
 
-    if (typeof jsonData === "object") return [factory(jsonData)];
+      if (typeof jsonData === "object") return [factory(jsonData)];
 
-    return [];
+      return [];
+    }
+
+    // Auto-paginate: fetch all pages
+    const allItems: T[] = [];
+    let currentPage = 1;
+    let pageCount = 1;
+
+    do {
+      const queryParams = {
+        ...params,
+        "pagination[page]": currentPage,
+        "pagination[pageSize]": 100,
+      };
+      const url = `${API_URL}/${contentType}?${qs.stringify(queryParams)}`;
+      const jsonData = await fetchFromStrapi<{
+        data: any[];
+        meta?: { pagination?: { pageCount?: number } };
+      }>(url, headers);
+
+      if (jsonData.data) {
+        allItems.push(...jsonData.data.map(factory));
+      }
+
+      pageCount = jsonData.meta?.pagination?.pageCount ?? 1;
+      currentPage++;
+    } while (currentPage <= pageCount);
+
+    return allItems;
   } catch (error) {
     throw error;
   }

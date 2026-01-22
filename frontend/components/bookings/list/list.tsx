@@ -37,6 +37,8 @@ export function BookingsList({ user }: { user?: User }) {
 
   const { startDate, endDate, setWeekRange, goToNextWeek } = useWeekSelector(); 
 
+  const effectiveUserId = user?.documentId ?? authUser?.documentId;
+
   const {
     bookings,
     isLoading,
@@ -45,7 +47,6 @@ export function BookingsList({ user }: { user?: User }) {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    getMarkedDays,
   } = useBookings({
     userDocumentId: user?.documentId,
     startDate,
@@ -57,11 +58,15 @@ export function BookingsList({ user }: { user?: User }) {
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isPrepaidDialogOpen, setIsPrepaidDialogOpen] = useState(false);
+  const [singlePayBooking, setSinglePayBooking] = useState<Booking | null>(null);
 
   const selectedBookings: Booking[] = useMemo(
     () => bookings.filter((b) => selectedIds.has(b.documentId)),
     [bookings, selectedIds],
   );
+
+  // Bookings to pay: either bulk selection or single booking from action menu
+  const bookingsToPay = singlePayBooking ? [singlePayBooking] : selectedBookings;
 
   useEffect(() => {
     setSelectedIds(new Set());
@@ -106,7 +111,7 @@ export function BookingsList({ user }: { user?: User }) {
     <div className="mt-7">
       <WeekSelector
         endDate={endDate}
-        getMarkedDays={getMarkedDays}
+        userDocumentId={effectiveUserId}
         startDate={startDate}
         onChange={setWeekRange}
       />
@@ -118,24 +123,28 @@ export function BookingsList({ user }: { user?: User }) {
 
         <UserPrepaidCardDialog
           disabled={
-            selectedBookings.length === 0 ||
+            bookingsToPay.length === 0 ||
             isLoading ||
             isFetching ||
-            !selectedBookings.every((b) => b.paymentStatus === "PENDING")
+            !bookingsToPay.every((b) => b.paymentStatus === "PENDING")
           }
-          minCredits={selectedBookings.length}
+          minCredits={bookingsToPay.length}
           open={isPrepaidDialogOpen}
           selectionLabel={
-            selectedBookings.length > 0
-              ? `Choisissez une carte pour payer ${selectedBookings.length} réservation(s).`
+            bookingsToPay.length > 0
+              ? `Choisissez une carte pour payer ${bookingsToPay.length} réservation(s).`
               : undefined
           }
           userDocumentId={user?.documentId}
           onConfirm={async (card: PrepaidCard) => {
-            await payManyWithCard(selectedBookings, card);
+            await payManyWithCard(bookingsToPay, card);
+            setSinglePayBooking(null);
             await reload();
           }}
-          onOpenChange={setIsPrepaidDialogOpen}
+          onOpenChange={(open) => {
+            setIsPrepaidDialogOpen(open);
+            if (!open) setSinglePayBooking(null);
+          }}
         />
 
         <Button
@@ -145,7 +154,10 @@ export function BookingsList({ user }: { user?: User }) {
             isFetching ||
             !selectedBookings.every((b) => b.paymentStatus === "PENDING")
           }
-          onClick={() => setIsPrepaidDialogOpen(true)}
+          onClick={() => {
+            setSinglePayBooking(null);
+            setIsPrepaidDialogOpen(true);
+          }}
         >
           Payer avec une carte
         </Button>
@@ -252,7 +264,13 @@ export function BookingsList({ user }: { user?: User }) {
                     </TableCell>
 
                     <TableCell>
-                      <BookingActionMenu booking={booking} user={user} />
+                      <BookingActionMenu
+                        booking={booking}
+                        onPayWithCard={(b) => {
+                          setSinglePayBooking(b);
+                          setIsPrepaidDialogOpen(true);
+                        }}
+                      />
                     </TableCell>
                   </TableRow>
                 );
@@ -288,7 +306,7 @@ export function BookingsList({ user }: { user?: User }) {
       <div className="mt-7" />
       <WeekSelector
         endDate={endDate}
-        getMarkedDays={getMarkedDays}
+        userDocumentId={effectiveUserId}
         startDate={startDate}
         onChange={setWeekRange}
       />

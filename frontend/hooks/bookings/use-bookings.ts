@@ -1,9 +1,8 @@
 "use client";
 
-import moment, { type Moment } from "moment";
-import { useCallback } from "react";
+import { type Moment } from "moment";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/contexts/auth-context";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
@@ -24,7 +23,7 @@ export function useBookings({
   pageSize = 25,
 }: UseBookingsParams) {
   const { user } = useAuth();
-  const { fetchAllPaginated, fetchAll } = useStrapiAPI();
+  const { fetchAllPaginated } = useStrapiAPI();
 
   const effectiveUserId = userDocumentId ?? user?.documentId;
 
@@ -77,10 +76,44 @@ export function useBookings({
     pagination: { page: 1, pageSize, pageCount: 0, total: 0 },
   };
 
-  const getMarkedDays = useCallback(
-    async (monthStart: Moment, monthEnd: Moment): Promise<Moment[]> => {
-      if (!effectiveUserId) return [];
+  return {
+    bookings,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    reload: query.refetch,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    fetchNextPage: query.fetchNextPage,
+    total: meta.pagination.total,
+    pageCount: meta.pagination.pageCount,
+  };
+}
 
+type UseMarkedDaysParams = {
+  userDocumentId?: string;
+  monthStart: Moment;
+  monthEnd: Moment;
+};
+
+export function useMarkedDays({
+  userDocumentId,
+  monthStart,
+  monthEnd,
+}: UseMarkedDaysParams) {
+  const { user } = useAuth();
+  const { fetchAll } = useStrapiAPI();
+
+  const effectiveUserId = userDocumentId ?? user?.documentId;
+
+  return useQuery({
+    queryKey: [
+      "bookings-marked-days",
+      effectiveUserId,
+      monthStart.format("YYYY-MM"),
+    ],
+    enabled: !!effectiveUserId,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
       const bookings = await fetchAll<Booking>({
         ...Booking.strapiAPIParams,
         queryParams: {
@@ -93,27 +126,14 @@ export function useBookings({
             },
           },
         },
+        autoPaginate: true,
       });
 
       const uniqueDates = new Set(
         bookings.map((b) => b.startDate.format("YYYY-MM-DD"))
       );
 
-      return Array.from(uniqueDates).map((d) => moment(d));
+      return Array.from(uniqueDates);
     },
-    [effectiveUserId, fetchAll]
-  );
-
-  return {
-    bookings,
-    isLoading: query.isLoading,
-    isFetching: query.isFetching,
-    reload: query.refetch,
-    hasNextPage: query.hasNextPage,
-    isFetchingNextPage: query.isFetchingNextPage,
-    fetchNextPage: query.fetchNextPage,
-    total: meta.pagination.total,
-    pageCount: meta.pagination.pageCount,
-    getMarkedDays,
-  };
+  });
 }

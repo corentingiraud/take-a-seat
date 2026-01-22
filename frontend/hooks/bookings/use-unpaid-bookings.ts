@@ -7,10 +7,17 @@ import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Booking } from "@/models/booking";
 import { PaymentStatus } from "@/models/payment-status";
 import { BookingStatus } from "@/models/booking-status";
+import { User } from "@/models/user";
 
-export function useUnpaidBookings() {
-  const { user } = useAuth();
+type UseUnpaidBookingsOptions = {
+  user?: User | null;
+};
+
+export function useUnpaidBookings(options?: UseUnpaidBookingsOptions) {
+  const { user: authUser } = useAuth();
   const { fetchAll } = useStrapiAPI();
+
+  const user = options?.user ?? authUser;
 
   const query = useQuery({
     queryKey: ["unpaid-bookings", user?.documentId],

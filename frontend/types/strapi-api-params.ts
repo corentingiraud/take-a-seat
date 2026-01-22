@@ -7,6 +7,7 @@ export type GeneralParams<T extends StrapiData> = {
 
 export type FetchAllParams<T extends StrapiData> = GeneralParams<T> & {
   queryParams?: Record<string, unknown>;
+  autoPaginate?: boolean;
 };
 
 export type FetchOneParams<T extends StrapiData> = GeneralParams<T> & {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { PrepaidCardStatusBadge } from "../badge";
 
@@ -18,15 +18,11 @@ import { User } from "@/models/user";
 import { PrepaidCardBalanceProgressBar } from "../balance-progress-bar";
 
 export function PrepaidCardsList({ user }: { user: User }) {
-  const { allPrepaidCards: prepaidCards, reload } = usePrepaidCard({
+  const { allPrepaidCards: prepaidCards } = usePrepaidCard({
     userDocumentId: user.documentId,
   });
 
   const [showExpired, setShowExpired] = useState(false);
-
-  useEffect(() => {
-    reload();
-  }, []);
 
   const filteredCards = showExpired
     ? prepaidCards
