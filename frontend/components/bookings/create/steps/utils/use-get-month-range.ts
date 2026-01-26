@@ -5,7 +5,7 @@ export function useGetMonthRange() {
   const { isSuperAdmin } = useAuth();
   
   let startMonth = moment();
-  let endMonth = startMonth.clone().add(1, "month");
+  let endMonth = startMonth.clone().add(2, "month");
 
   if (isSuperAdmin) {
     startMonth = moment().subtract("1", "year");
