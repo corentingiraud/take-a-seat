@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { format, startOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 
 import { MultiUserSelect } from "@/components/users/multi-select";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { User } from "@/models/user";
 import {
   CardCategory,
@@ -22,8 +28,9 @@ import {
   SUBSCRIPTION_CONFIG,
   PREPAID_CONFIG,
 } from "@/config/constants";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import { useCreatePrepaidCards } from "@/hooks/admin/create-prepaid-cards";
+import moment from "@/lib/moment";
 
 export const AdminPrepaidCardsCreate = () => {
   const {
@@ -42,6 +49,8 @@ export const AdminPrepaidCardsCreate = () => {
   const [selectedMonth, setSelectedMonth] = useState<Date>(
     startOfMonth(new Date()),
   );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const getConfig = () => {
     if (cardCategory === "subscription" && subscriptionLevel) {
@@ -65,11 +74,16 @@ export const AdminPrepaidCardsCreate = () => {
     setSubscriptionLevel(null);
     setSelectedUsers([]);
     setSelectedMonth(startOfMonth(new Date()));
+    setSelectedDate(undefined);
+    setCalendarOpen(false);
   };
 
   const canSubmit = () => {
     if (!config) return false;
-    return isFormValid(selectedMonth, selectedUsers, config.hours);
+    const dateToValidate =
+      cardCategory === "prepaid" ? selectedDate : selectedMonth;
+    if (!dateToValidate) return false;
+    return isFormValid(dateToValidate, selectedUsers, config.hours);
   };
 
   const getValidityLabel = () => {
@@ -77,11 +91,11 @@ export const AdminPrepaidCardsCreate = () => {
     if (cardCategory === "subscription") {
       return `Mois de ${format(selectedMonth, "MMMM yyyy", { locale: fr })}`;
     }
-    const startDate = new Date(selectedMonth);
-    const endDate = new Date(selectedMonth);
-    endDate.setMonth(endDate.getMonth() + config.validityMonths);
-    endDate.setDate(0); // Dernier jour du mois précédent
-    return `Du 1er ${format(startDate, "MMMM yyyy", { locale: fr })} au ${format(endDate, "d MMMM yyyy", { locale: fr })}`;
+    if (!selectedDate) return "";
+    const endDate = moment(selectedDate)
+      .add(config.validityMonths, "months")
+      .subtract(1, "day");
+    return `Du ${format(selectedDate, "d MMMM yyyy", { locale: fr })} au ${endDate.format("D MMMM YYYY")}`;
   };
 
   if (isLoadingUsers) {
@@ -134,13 +148,9 @@ export const AdminPrepaidCardsCreate = () => {
         </div>
       )}
 
-      {cardCategory && (
+      {cardCategory === "subscription" && (
         <div>
-          <Label>
-            {cardCategory === "subscription"
-              ? "Mois concerné"
-              : "Date de début"}
-          </Label>
+          <Label>Mois concerné</Label>
           <Select
             value={selectedMonth.toISOString()}
             onValueChange={(val) => setSelectedMonth(new Date(val))}
@@ -160,6 +170,39 @@ export const AdminPrepaidCardsCreate = () => {
               ))}
             </SelectContent>
           </Select>
+        </div>
+      )}
+
+      {cardCategory === "prepaid" && (
+        <div>
+          <Label>Date de début</Label>
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                className={cn("w-full", !selectedDate && "text-muted-foreground")}
+                variant="outline"
+              >
+                <CalendarIcon />
+                {selectedDate ? (
+                  moment(selectedDate).format("D MMMM YYYY")
+                ) : (
+                  <span>Choisir une date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="center" className="w-auto p-0">
+              <Calendar
+                autoFocus
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                locale={fr}
+                startMonth={moment().subtract(1, "year").toDate()}
+                endMonth={moment().add(1, "year").toDate()}
+                onDayClick={() => setCalendarOpen(false)}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       )}
 
@@ -194,8 +237,11 @@ export const AdminPrepaidCardsCreate = () => {
           disabled={!canSubmit() || isSubmitting}
           onClick={async () => {
             if (!config || !cardCategory) return;
+            const startDate =
+              cardCategory === "prepaid" ? selectedDate : selectedMonth;
+            if (!startDate) return;
             await handleSubmit({
-              startDate: selectedMonth,
+              startDate,
               selectedUsers,
               hours: config.hours,
               validityMonths: config.validityMonths,

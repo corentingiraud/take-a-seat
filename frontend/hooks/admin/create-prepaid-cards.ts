@@ -67,11 +67,14 @@ export function useCreatePrepaidCards() {
       validityMonths: number;
       category: CardCategory;
     }) => {
-      const validFrom = moment(startDate).startOf("month");
+      const validFrom =
+        category === "subscription"
+          ? moment(startDate).startOf("month")
+          : moment(startDate);
       const expirationDate =
         category === "subscription"
           ? moment(startDate).endOf("month")
-          : moment(startDate).add(validityMonths, "months").subtract(1, "day").endOf("month");
+          : moment(startDate).add(validityMonths, "months").subtract(1, "day");
 
       await Promise.all(
         selectedUsers.map((user) =>
