@@ -6,7 +6,7 @@ import { User } from "./user";
 import { PaymentStatus } from "./payment-status";
 
 import moment from "@/lib/moment";
-import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID } from "@/config/constants";
+import { UNDEFINED_DOCUMENT_ID, UNDEFINED_ID, CardCategory } from "@/config/constants";
 import { GeneralParams } from "@/types/strapi-api-params";
 
 interface PrepaidCardInterface {
@@ -82,10 +82,22 @@ export class PrepaidCard implements StrapiData {
     });
   }
 
-  static buildCardName(user: User, month: Moment, hours: number) {
-    const monthLabel = month.format("MMMM YYYY");
+  static buildCardName(
+    user: User,
+    startDate: Moment,
+    hours: number,
+    category: CardCategory = "subscription",
+    validityMonths: number = 1,
+  ) {
     const fullName = `${user.lastName} ${user.firstName}`.trim();
 
+    if (category === "prepaid") {
+      const startYear = startDate.format("YYYY");
+      const endYear = startDate.clone().add(validityMonths, "months").format("YYYY");
+      return `${fullName} — Carte ${hours}h — ${startYear}/${endYear}`;
+    }
+
+    const monthLabel = startDate.format("MMMM YYYY");
     return `${fullName} — ${monthLabel} — ${hours}h`;
   }
 

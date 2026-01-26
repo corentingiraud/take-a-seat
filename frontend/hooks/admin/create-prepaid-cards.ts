@@ -8,6 +8,7 @@ import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { User } from "@/models/user";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { PaymentStatus } from "@/models/payment-status";
+import { CardCategory } from "@/config/constants";
 
 export function useCreatePrepaidCards() {
   const { fetchAll, create } = useStrapiAPI();
@@ -40,15 +41,13 @@ export function useCreatePrepaidCards() {
   });
 
   const isFormValid = (
-    selectedMonth: Date,
+    startDate: Date,
     selectedUsers: User[],
-    customHours: string,
+    hours: number,
   ): boolean => {
-    const hours = parseInt(customHours, 10);
-
     if (isNaN(hours) || hours <= 0) return false;
     if (selectedUsers.length === 0) return false;
-    if (!(selectedMonth instanceof Date) || isNaN(selectedMonth.getTime()))
+    if (!(startDate instanceof Date) || isNaN(startDate.getTime()))
       return false;
 
     return true;
@@ -56,17 +55,23 @@ export function useCreatePrepaidCards() {
 
   const createPrepaidCards = useMutation({
     mutationFn: async ({
-      selectedMonth,
+      startDate,
       selectedUsers,
-      customHours,
+      hours,
+      validityMonths,
+      category,
     }: {
-      selectedMonth: Date;
+      startDate: Date;
       selectedUsers: User[];
-      customHours: string;
+      hours: number;
+      validityMonths: number;
+      category: CardCategory;
     }) => {
-      const hours = parseInt(customHours, 10);
-      const validFrom = moment(selectedMonth).startOf("month");
-      const expirationDate = moment(selectedMonth).endOf("month");
+      const validFrom = moment(startDate).startOf("month");
+      const expirationDate =
+        category === "subscription"
+          ? moment(startDate).endOf("month")
+          : moment(startDate).add(validityMonths, "months").subtract(1, "day").endOf("month");
 
       await Promise.all(
         selectedUsers.map((user) =>
@@ -74,7 +79,7 @@ export function useCreatePrepaidCards() {
             contentType: PrepaidCard.contentType,
             factory: PrepaidCard.fromJson,
             object: new PrepaidCard({
-              name: PrepaidCard.buildCardName(user, validFrom, hours),
+              name: PrepaidCard.buildCardName(user, validFrom, hours, category, validityMonths),
               validFrom: validFrom,
               expirationDate: expirationDate,
               remainingBalance: hours,

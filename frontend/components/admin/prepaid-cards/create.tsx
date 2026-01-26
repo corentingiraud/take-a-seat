@@ -14,10 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { User } from "@/models/user";
-import { SubscriptionType, HOURS_PER_TYPE } from "@/config/constants";
+import {
+  CardCategory,
+  SubscriptionLevel,
+  SUBSCRIPTION_CONFIG,
+  PREPAID_CONFIG,
+} from "@/config/constants";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { useCreatePrepaidCards } from "@/hooks/admin/create-prepaid-cards";
 
@@ -31,21 +35,55 @@ export const AdminPrepaidCardsCreate = () => {
     isSubmitting,
   } = useCreatePrepaidCards();
 
-  const [subscription, setSubscription] = useState<SubscriptionType | null>(
-    null,
-  );
+  const [cardCategory, setCardCategory] = useState<CardCategory | null>(null);
+  const [subscriptionLevel, setSubscriptionLevel] =
+    useState<SubscriptionLevel | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<Date>(
     startOfMonth(new Date()),
   );
-  const [customHours, setCustomHours] = useState<string>("");
 
-  const handleSubscriptionChange = (val: SubscriptionType) => {
-    setSubscription(val);
-    setCustomHours(String(HOURS_PER_TYPE[val]));
+  const getConfig = () => {
+    if (cardCategory === "subscription" && subscriptionLevel) {
+      return SUBSCRIPTION_CONFIG[subscriptionLevel];
+    }
+    if (cardCategory === "prepaid") {
+      return PREPAID_CONFIG.fortyHours;
+    }
+    return null;
   };
 
-  // --- Loading state for users
+  const config = getConfig();
+
+  const handleCategoryChange = (val: CardCategory) => {
+    setCardCategory(val);
+    setSubscriptionLevel(null);
+  };
+
+  const resetForm = () => {
+    setCardCategory(null);
+    setSubscriptionLevel(null);
+    setSelectedUsers([]);
+    setSelectedMonth(startOfMonth(new Date()));
+  };
+
+  const canSubmit = () => {
+    if (!config) return false;
+    return isFormValid(selectedMonth, selectedUsers, config.hours);
+  };
+
+  const getValidityLabel = () => {
+    if (!config) return "";
+    if (cardCategory === "subscription") {
+      return `Mois de ${format(selectedMonth, "MMMM yyyy", { locale: fr })}`;
+    }
+    const startDate = new Date(selectedMonth);
+    const endDate = new Date(selectedMonth);
+    endDate.setMonth(endDate.getMonth() + config.validityMonths);
+    endDate.setDate(0); // Dernier jour du mois précédent
+    return `Du 1er ${format(startDate, "MMMM yyyy", { locale: fr })} au ${format(endDate, "d MMMM yyyy", { locale: fr })}`;
+  };
+
   if (isLoadingUsers) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -58,45 +96,72 @@ export const AdminPrepaidCardsCreate = () => {
   return (
     <div className="space-y-6">
       <div>
-        <Label>Type d’abonnement</Label>
+        <Label>Type de carte</Label>
         <Select
-          value={subscription || undefined}
-          onValueChange={handleSubscriptionChange}
+          value={cardCategory || undefined}
+          onValueChange={handleCategoryChange}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Choisir un abonnement" />
+            <SelectValue placeholder="Choisir un type de carte" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="quarter">1/4 temps - 36h</SelectItem>
-            <SelectItem value="half">1/2 temps - 72h</SelectItem>
-            <SelectItem value="threeQuarter">3/4 temps - 108h</SelectItem>
-            <SelectItem value="full">Temps plein - illimité</SelectItem>
+            <SelectItem value="subscription">Abonnement mensuel</SelectItem>
+            <SelectItem value="prepaid">Carte prépayée 40h</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div>
-        <Label>Mois concerné</Label>
-        <Select
-          value={selectedMonth.toISOString()}
-          onValueChange={(val) => setSelectedMonth(new Date(val))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Choisir un mois">
-              {capitalizeFirstLetter(
-                format(selectedMonth, "LLLL yyyy", { locale: fr }),
-              )}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {upcomingMonths.map(({ label, value }) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {cardCategory === "subscription" && (
+        <div>
+          <Label>Niveau d'abonnement</Label>
+          <Select
+            value={subscriptionLevel || undefined}
+            onValueChange={(val) =>
+              setSubscriptionLevel(val as SubscriptionLevel)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir un niveau" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(SUBSCRIPTION_CONFIG).map(([key, cfg]) => (
+                <SelectItem key={key} value={key}>
+                  {cfg.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {cardCategory && (
+        <div>
+          <Label>
+            {cardCategory === "subscription"
+              ? "Mois concerné"
+              : "Date de début"}
+          </Label>
+          <Select
+            value={selectedMonth.toISOString()}
+            onValueChange={(val) => setSelectedMonth(new Date(val))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir une date">
+                {capitalizeFirstLetter(
+                  format(selectedMonth, "LLLL yyyy", { locale: fr }),
+                )}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {upcomingMonths.map(({ label, value }) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div>
         <Label>Coworkers</Label>
@@ -107,51 +172,36 @@ export const AdminPrepaidCardsCreate = () => {
         />
       </div>
 
-      <div>
-        <Label>Nombre d’heures à créditer</Label>
-        <Input
-          min="1"
-          placeholder="Saisir un nombre d’heures"
-          type="number"
-          value={customHours}
-          onChange={(e) => setCustomHours(e.target.value)}
-        />
-      </div>
-
-      {selectedUsers.length > 0 && customHours && (
+      {selectedUsers.length > 0 && config && (
         <div className="mt-6 border rounded-md p-4 space-y-2">
           <p className="font-semibold">Récapitulatif :</p>
           <ul className="list-disc pl-5">
             {selectedUsers.map((user) => (
               <li key={user.id}>
                 {user.firstName} {user.lastName} →{" "}
-                <strong>{customHours}</strong> heures à créditer
+                <strong>
+                  {config.hours === 9999 ? "illimité" : `${config.hours}h`}
+                </strong>
               </li>
             ))}
           </ul>
-          <p className="text-muted-foreground text-sm">
-            Pour le mois de :{" "}
-            {format(selectedMonth, "MMMM yyyy", { locale: fr })}
-          </p>
+          <p className="text-muted-foreground text-sm">{getValidityLabel()}</p>
         </div>
       )}
 
       <div>
         <Button
-          disabled={
-            !isFormValid(selectedMonth, selectedUsers, customHours) ||
-            isSubmitting
-          }
+          disabled={!canSubmit() || isSubmitting}
           onClick={async () => {
+            if (!config || !cardCategory) return;
             await handleSubmit({
-              selectedMonth,
+              startDate: selectedMonth,
               selectedUsers,
-              customHours,
+              hours: config.hours,
+              validityMonths: config.validityMonths,
+              category: cardCategory,
             });
-            setSubscription(null);
-            setSelectedUsers([]);
-            setSelectedMonth(startOfMonth(new Date()));
-            setCustomHours("");
+            resetForm();
           }}
         >
           {isSubmitting ? (
