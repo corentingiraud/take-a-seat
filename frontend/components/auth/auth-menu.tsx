@@ -97,6 +97,13 @@ export const AuthMenu = () => {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
+                router.push(siteConfig.path.adminStats.href)
+              }
+            >
+              Statistiques
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
                 window.open(siteConfig.path.strapiAdmin.href, "_blank")
               }
             >

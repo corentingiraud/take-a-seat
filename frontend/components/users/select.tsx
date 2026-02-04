@@ -30,10 +30,13 @@ export const UserSelect = ({ users, onChange, value, modal }: UserSelectProps) =
 
   const sortedUsers = User.sortAlphabetically(users);
 
-  const filteredUsers = sortedUsers.filter((user) => {
-    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+  const normalize = (str: string) =>
+    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-    return fullName.includes(search.toLowerCase());
+  const filteredUsers = sortedUsers.filter((user) => {
+    const fullName = normalize(`${user.firstName} ${user.lastName}`);
+
+    return fullName.includes(normalize(search));
   });
 
   const handleSelect = (user: User) => {
