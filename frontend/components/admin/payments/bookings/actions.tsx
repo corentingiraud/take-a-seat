@@ -109,6 +109,7 @@ export function AdminBookingPendingPaymentsActionMenu({
         bookingDates={user.bookings?.map((b) => b.startDate)}
         minCredits={0}
         open={isPrepaidDialogOpen}
+        selectionLabel={`Choisissez une carte pour payer ${user.bookings!.length} réservation(s).`}
         userDocumentId={user.documentId}
         onConfirm={handleConfirmPrepaid}
         onOpenChange={(open) => {

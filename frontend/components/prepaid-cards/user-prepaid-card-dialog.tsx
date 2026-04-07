@@ -114,8 +114,9 @@ export function UserPrepaidCardDialog({
           />
           {!isLoading && eligibleCards.length === 0 && (
             <p className="mt-2 text-sm text-muted-foreground">
-              Aucune carte ne possède assez de crédits
-              {minCredits > 0 ? ` (min. ${minCredits})` : ""}.
+              {usablePrepaidCards.length === 0
+                ? "Aucune carte prépayée valide pour les dates des réservations sélectionnées."
+                : `Aucune carte ne possède assez de crédits (min. ${minCredits}).`}
             </p>
           )}
         </div>
