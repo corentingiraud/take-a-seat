@@ -144,6 +144,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
               service: service.id,
               startDate: { $lt: end },
               endDate: { $gt: start },
+              bookingStatus: { $ne: "CANCELLED" },
             },
           });
 
