@@ -6,9 +6,18 @@
 </head>
 <body style="margin:0; padding:0; background:#fff; color:#000; font-family: Arial, sans-serif;">
   <div style="max-width:500px; margin:0 auto; padding:20px; border:1px solid #ddd;">
-    <h2 style="text-align:center; font-weight:normal; border-bottom:1px solid #eee; padding-bottom:10px; margin:0 0 16px;">
+    <h2 style="text-align:center; font-weight:normal; margin:0 0 16px;">
       Merci pour votre réservation, <%= user.firstName %> 👋
     </h2>
+
+    <div style="background:#e8f5e9; border:1px solid #4caf50; color:#2e7d32; text-align:center; padding:18px 12px; margin:0 0 20px; border-radius:6px;">
+      <div style="font-size:20px; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin:0 0 6px;">
+        ✅ Votre réservation est confirmée
+      </div>
+      <div style="font-size:14px; color:#558b2f;">
+        Aucune autre action n'est nécessaire
+      </div>
+    </div>
 
     <p>Voici le récapitulatif de vos réservations chez <strong>Le Pêle Coworking</strong> :</p>
 
@@ -36,12 +45,8 @@
     <% if (prepaidCardUsed) { %>
       <p>✅ Carte prépayée utilisée — nouveau solde&nbsp;: <strong><%= remainingBalance %></strong> heure(s).</p>
     <% } else { %>
-      <p>💳 Aucune carte prépayée utilisée. Le paiement se fera <strong>sur place</strong> ou via une future carte prépayée depuis votre tableau de bord.</p>
+      <p>💳 Règlement <strong>sur place</strong> ou via votre carte prépayée si vous êtes abonné·e.</p>
     <% } %>
-
-    <p style="margin:24px 0 0;">
-      ✅ Votre réservation est <strong>confirmée automatiquement</strong>. Aucune action n’est nécessaire.
-    </p>
 
     <p style="margin:12px 0 0;">
       📍 Vous pouvez gérer vos réservations depuis votre compte à tout moment.
@@ -59,11 +64,11 @@
     </p>
 
     <p style="margin-top:32px; font-size:12px; color:#555; border-top:1px solid #eee; padding-top:10px;">
-      Cet e-mail a été envoyé automatiquement par l’application de gestion des réservations du
+      Cet e-mail a été envoyé automatiquement par l'application de gestion des réservations du
       <strong>Pêle Coworking</strong>.
     </p>
 
-    <p style="font-weight:bold; margin:0;">L’équipe Le Pêle Coworking</p>
+    <p style="font-weight:bold; margin:0;">L'équipe Le Pêle Coworking</p>
   </div>
 </body>
 </html>
