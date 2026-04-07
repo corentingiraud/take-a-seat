@@ -55,7 +55,7 @@ export function usePrepaidCard({
 
         return (
           from.isSameOrBefore(today) &&
-          exp.isAfter(today) &&
+          exp.isSameOrAfter(today) &&
           card.paymentStatus === PaymentStatus.PAID
         );
       });
