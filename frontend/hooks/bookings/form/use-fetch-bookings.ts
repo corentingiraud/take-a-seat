@@ -38,6 +38,9 @@ export function useFetchBookings(
               endDate: {
                 $lte: endDate.toDate(),
               },
+              bookingStatus: {
+                $ne: "CANCELLED",
+              },
             },
           },
         });
