@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Moment } from "moment";
 
 import { useStrapiAPI } from "./use-strapi-api";
 
@@ -9,8 +10,10 @@ import { PaymentStatus } from "@/models/payment-status";
 
 export function usePrepaidCard({
   userDocumentId,
+  bookingDates,
 }: {
   userDocumentId?: string;
+  bookingDates?: Moment[];
 }) {
   const { user } = useAuth();
   const { fetchAll } = useStrapiAPI();
@@ -36,6 +39,19 @@ export function usePrepaidCard({
       const usableCards = allCards.filter((card) => {
         const from = moment(card.validFrom).startOf("day");
         const exp = moment(card.expirationDate).startOf("day");
+
+        // If booking dates are provided, check if the card was valid
+        // during the booking period (allows using expired cards for
+        // bookings that occurred within the card's validity window)
+        if (bookingDates?.length) {
+          const allBookingsCovered = bookingDates.every(
+            (date) =>
+              from.isSameOrBefore(date, "day") &&
+              exp.isSameOrAfter(date, "day"),
+          );
+
+          return allBookingsCovered && card.paymentStatus === PaymentStatus.PAID;
+        }
 
         return (
           from.isSameOrBefore(today) &&

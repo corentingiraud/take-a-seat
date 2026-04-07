@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { Moment } from "moment";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +24,7 @@ type Props = {
   selectionLabel?: string;
   disabled?: boolean;
   autoSelectBest?: boolean;
+  bookingDates?: Moment[];
 
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -37,6 +40,7 @@ export function UserPrepaidCardDialog({
   selectionLabel,
   disabled,
   autoSelectBest = true,
+  bookingDates,
   open,
   onOpenChange,
   onConfirm,
@@ -46,6 +50,7 @@ export function UserPrepaidCardDialog({
 
   const { usablePrepaidCards, isLoading } = usePrepaidCard({
     userDocumentId,
+    bookingDates,
   });
 
   const eligibleCards = useMemo(

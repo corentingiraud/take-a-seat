@@ -122,6 +122,7 @@ export function BookingsList({ user }: { user?: User }) {
         </span>
 
         <UserPrepaidCardDialog
+          bookingDates={bookingsToPay.map((b) => b.startDate)}
           disabled={
             bookingsToPay.length === 0 ||
             isLoading ||

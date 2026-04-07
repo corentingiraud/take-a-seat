@@ -106,6 +106,7 @@ export function AdminBookingPendingPaymentsActionMenu({
 
       <UserPrepaidCardDialog
         autoSelectBest
+        bookingDates={user.bookings?.map((b) => b.startDate)}
         minCredits={0}
         open={isPrepaidDialogOpen}
         userDocumentId={user.documentId}
