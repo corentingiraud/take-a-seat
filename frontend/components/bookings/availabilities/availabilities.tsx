@@ -3,11 +3,11 @@
 import {
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from "@radix-ui/react-dialog";
 import { Moment } from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import confetti from "canvas-confetti";
 
 import { DialogHeader, DialogFooter, DialogContent } from "../../ui/dialog";
 import { Button } from "../../ui/button";
@@ -99,6 +99,22 @@ export const BookingAvailabilities = ({
   const [useCard, setUseCard] = useState(false);
   const [selectedPrepaidCard, setSelectedPrepaidCard] =
     useState<PrepaidCard | null>(null);
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  const [confirmedCount, setConfirmedCount] = useState(0);
+  const [confirmedWithCard, setConfirmedWithCard] = useState(false);
+  const [confirmedCardBalance, setConfirmedCardBalance] = useState(0);
+  const confettiFired = useRef(false);
+
+  useEffect(() => {
+    if (bookingConfirmed && !confettiFired.current) {
+      confettiFired.current = true;
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+      });
+    }
+  }, [bookingConfirmed]);
 
   const eligibleCards = prepaidCard.filter(
     (c) => c.remainingBalance >= availableBookings.length,
@@ -128,8 +144,62 @@ export const BookingAvailabilities = ({
   async function createAvailableBookings() {
     if (!effectiveUser) return;
 
-    await bulkCreateAvailableBookings(selectedPrepaidCard);
-    router.push(siteConfig.path.dashboard.href);
+    const usedCard = useCard ? selectedPrepaidCard : null;
+
+    await bulkCreateAvailableBookings(usedCard);
+
+    setConfirmedCount(availableBookings.length);
+    setConfirmedWithCard(!!usedCard);
+    setConfirmedCardBalance(
+      usedCard ? usedCard.remainingBalance - availableBookings.length : 0,
+    );
+    setBookingConfirmed(true);
+  }
+
+  if (bookingConfirmed) {
+    return (
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight text-center">
+            {coworkingSpace.name} - {service.name}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="mt-4 rounded-md border border-green-300 bg-green-50 p-6 text-center dark:border-green-900/50 dark:bg-green-950">
+          <div className="text-2xl font-bold text-green-700 dark:text-green-300">
+            ✅ Réservation confirmée
+          </div>
+          <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+            {confirmedCount > 1
+              ? `Vos ${confirmedCount} créneaux ont bien été réservés.`
+              : "Votre créneau a bien été réservé."}
+          </p>
+          <p className="mt-1 text-xs text-green-600/80 dark:text-green-400/80">
+            Aucune autre action n'est nécessaire.
+          </p>
+        </div>
+
+        <div className="mt-4 rounded-md border p-4 text-sm dark:border-neutral-700">
+          {confirmedWithCard ? (
+            <p className="text-center">
+              ✅ Paiement validé via carte prépayée — solde restant&nbsp;:{" "}
+              <span className="font-semibold">{confirmedCardBalance} heure(s)</span>.
+            </p>
+          ) : (
+            <p className="text-center">
+              💳 Le règlement se fait <span className="font-semibold">sur place</span> ou
+              via votre carte prépayée si vous êtes abonné·e.
+            </p>
+          )}
+        </div>
+
+        <DialogFooter className="mt-6">
+          <Button onClick={() => router.push(siteConfig.path.dashboard.href)}>
+            Voir mes réservations
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    );
   }
 
   return (
@@ -248,17 +318,15 @@ export const BookingAvailabilities = ({
 
       {/* CTA */}
       <DialogFooter className="mt-6">
-        <DialogClose asChild>
-          <Button
-            disabled={
-              availableBookings.length === 0 ||
-              (isSuperAdmin && !effectiveUser)
-            }
-            onClick={async () => await createAvailableBookings()}
-          >
-            Réserver les {availableBookings.length} créneaux disponibles
-          </Button>
-        </DialogClose>
+        <Button
+          disabled={
+            availableBookings.length === 0 ||
+            (isSuperAdmin && !effectiveUser)
+          }
+          onClick={async () => await createAvailableBookings()}
+        >
+          Réserver les {availableBookings.length} créneaux disponibles
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
