@@ -17,7 +17,7 @@ import { Separator } from "../../ui/separator";
 import { CoworkingSpace } from "@/models/coworking-space";
 import { Service } from "@/models/service";
 import { Time } from "@/models/time";
-import { HalfDay } from "@/models/half-day";
+import { HalfDaySelection } from "@/models/half-day";
 import { useBookingAvailabilities } from "@/hooks/bookings/form/use-booking-availabilities";
 import { usePrepaidCard } from "@/hooks/use-prepaid-cards";
 import { PrepaidCard } from "@/models/prepaid-card";
@@ -40,7 +40,7 @@ interface BookingAvailabilitiesProps {
   endDay?: Moment;
   multipleDays?: Moment[];
   times?: Time[];
-  halfDay?: HalfDay;
+  halfDaySelections?: HalfDaySelection[];
 }
 
 export const BookingAvailabilities = ({
@@ -49,7 +49,7 @@ export const BookingAvailabilities = ({
   startDay,
   endDay,
   multipleDays,
-  halfDay,
+  halfDaySelections,
   times,
   duration,
 }: BookingAvailabilitiesProps) => {
@@ -85,7 +85,7 @@ export const BookingAvailabilities = ({
     startDay,
     endDay,
     multipleDays,
-    halfDay,
+    halfDaySelections,
     times,
     duration,
     targetUser: effectiveUser ?? undefined,

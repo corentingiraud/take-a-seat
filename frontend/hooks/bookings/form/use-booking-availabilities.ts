@@ -8,7 +8,7 @@ import { useBulkCreateBookings } from "./use-bulk-create-bookings";
 
 import moment from "@/lib/moment";
 import { Service } from "@/models/service";
-import { HalfDay } from "@/models/half-day";
+import { HalfDaySelection } from "@/models/half-day";
 import { Time } from "@/models/time";
 import { useAuth } from "@/contexts/auth-context";
 import { DurationWrapper } from "@/models/duration";
@@ -21,7 +21,7 @@ interface UseBookingAvailabilitiesParams {
   multipleDays?: Moment[];
   duration: DurationWrapper;
   times?: Time[];
-  halfDay?: HalfDay;
+  halfDaySelections?: HalfDaySelection[];
   targetUser?: User | null;
 }
 
@@ -32,7 +32,7 @@ export function useBookingAvailabilities({
   multipleDays,
   duration,
   times,
-  halfDay,
+  halfDaySelections,
   targetUser,
 }: UseBookingAvailabilitiesParams) {
   const { user: authUser } = useAuth();
@@ -47,7 +47,7 @@ export function useBookingAvailabilities({
     multipleDays,
     duration,
     times,
-    halfDay,
+    halfDaySelections,
   });
 
   // Step 2: Generate desired booking slots

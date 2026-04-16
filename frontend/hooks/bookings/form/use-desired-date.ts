@@ -2,7 +2,7 @@ import { Moment } from "moment";
 
 import moment from "@/lib/moment";
 import { Service } from "@/models/service";
-import { HalfDay } from "@/models/half-day";
+import { HalfDay, HalfDaySelection } from "@/models/half-day";
 import { AVAILABLE_DURATION, DurationWrapper } from "@/models/duration";
 import { Time } from "@/models/time";
 import { BookingSlot } from "@/types";
@@ -13,7 +13,7 @@ interface UseDesiredDates {
   multipleDays?: Moment[];
   duration: DurationWrapper;
   times?: Time[];
-  halfDay?: HalfDay;
+  halfDaySelections?: HalfDaySelection[];
   service: Service;
 }
 
@@ -23,17 +23,44 @@ export function useDesiredDates({
   multipleDays,
   duration,
   times,
-  halfDay,
+  halfDaySelections,
   service,
 }: UseDesiredDates): BookingSlot[] {
-  // Single day
-  if (duration.isSingleDay) {
+  const halfDayDuration = AVAILABLE_DURATION.HALF_DAY;
+
+  // Half day with multiple dates
+  if (duration.equals(halfDayDuration) && halfDaySelections && halfDaySelections.length > 0) {
+    const slots: BookingSlot[] = [];
+
+    for (const { date, halfDay } of halfDaySelections) {
+      const availability = service.findAvailabilityForDate(date);
+
+      if (!availability) continue;
+
+      let start: Moment;
+      let end: Moment;
+
+      if (halfDay === HalfDay.Morning) {
+        start = availability.getStartTimeFor(date)!;
+        end = start.clone().add(halfDayDuration.getDuration());
+      } else {
+        end = availability.getEndTimeFor(date)!;
+        start = end.clone().subtract(halfDayDuration.getDuration());
+      }
+
+      slots.push({ start, end });
+    }
+
+    return slots;
+  }
+
+  // Single day (time-based)
+  if (duration.isSingleDay && startDay) {
     let start = startDay!.clone();
     let end = moment();
 
     const halfHour = AVAILABLE_DURATION.HALF_HOUR;
     const oneHour = AVAILABLE_DURATION.ONE_HOUR;
-    const halfDayDuration = AVAILABLE_DURATION.HALF_DAY;
 
     if (times && times?.length > 0) {
       start.hour(times[0].hour).minute(times[0].minute).second(0);
@@ -47,24 +74,9 @@ export function useDesiredDates({
         end.add(halfHour.getDuration());
       }
 
-      // Half day
+      // One hour
       if (duration.equals(oneHour)) {
         end.add(oneHour.getDuration());
-      }
-    }
-
-    // Half day
-    if (duration.equals(halfDayDuration)) {
-      // Morning
-      if (halfDay === HalfDay.Morning) {
-        start = service.findAvailabilityForDate(start)!.getStartTimeFor(start)!;
-        end = start.clone().add(halfDayDuration.getDuration());
-      }
-
-      // Afternoon
-      if (halfDay === HalfDay.Afternoon) {
-        end = service.findAvailabilityForDate(start)!.getEndTimeFor(start)!;
-        start = end.clone().subtract(halfDayDuration.getDuration());
       }
     }
 

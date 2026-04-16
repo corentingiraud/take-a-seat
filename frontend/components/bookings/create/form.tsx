@@ -8,14 +8,14 @@ import { ServiceFormStep } from "./steps/service";
 import { SingleDateFormStep } from "./steps/dates/single";
 import { TimeFormStep } from "./steps/time";
 import { DurationFormStep } from "./steps/duration";
-import { HalfDayFormStep } from "./steps/half-day";
+import { HalfDayMultipleFormStep } from "./steps/half-day-multiple";
 import { RangeOfDatesFormStep } from "./steps/dates/range";
 import { MultipleDatesFormStep } from "./steps/dates/multiple";
 
 import { CoworkingSpace } from "@/models/coworking-space";
 import { Service } from "@/models/service";
 import { Time } from "@/models/time";
-import { HalfDay } from "@/models/half-day";
+import { HalfDaySelection } from "@/models/half-day";
 import { AVAILABLE_DURATION, DurationWrapper } from "@/models/duration";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { BookingAvailabilities } from "@/components/bookings/availabilities/availabilities";
@@ -34,7 +34,7 @@ export const CreateBookingForm = () => {
   const [startDay, setStartDay] = useState<Moment | undefined>(undefined);
   const [endDay, setEndDay] = useState<Moment | undefined>(undefined);
   const [times, setTimes] = useState<Time[] | []>([]);
-  const [halfDay, setHalfDay] = useState<HalfDay | undefined>(undefined);
+  const [halfDaySelections, setHalfDaySelections] = useState<HalfDaySelection[]>([]);
 
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
@@ -65,7 +65,7 @@ export const CreateBookingForm = () => {
 
     if (
       duration.equals(AVAILABLE_DURATION.HALF_DAY) &&
-      (!startDay || !halfDay)
+      halfDaySelections.length === 0
     ) {
       setFormIsValid(false);
 
@@ -97,7 +97,7 @@ export const CreateBookingForm = () => {
     endDay,
     multipleDays,
     times,
-    halfDay,
+    halfDaySelections,
   ]);
 
   return (
@@ -134,7 +134,7 @@ export const CreateBookingForm = () => {
             onDurationChange={(value) => {
               setStartDay(undefined);
               setEndDay(undefined);
-              setHalfDay(undefined);
+              setHalfDaySelections([]);
               setTimes([]);
               setFormIsValid(false);
               setDuration(value);
@@ -142,13 +142,12 @@ export const CreateBookingForm = () => {
           />
         </>
       )}
-      {service && duration?.isSingleDay && (
+      {service && duration?.isSingleDay && !duration.equals(AVAILABLE_DURATION.HALF_DAY) && (
         <SingleDateFormStep
           key={`duration-${duration}-date`}
           duration={duration}
           service={service}
           onDateChange={(value) => {
-            setHalfDay(undefined);
             setTimes([]);
             setFormIsValid(false);
             setStartDay(value);
@@ -166,12 +165,11 @@ export const CreateBookingForm = () => {
             onTimeChange={(value) => setTimes(value)}
           />
         )}
-      {service && startDay && duration?.equals(AVAILABLE_DURATION.HALF_DAY) && (
-        <HalfDayFormStep
-          key={`service-${service.id}-half-day-${startDay?.format("YYYY-MM-DD")}`}
-          date={startDay}
+      {service && duration?.equals(AVAILABLE_DURATION.HALF_DAY) && (
+        <HalfDayMultipleFormStep
+          key={`service-${service.id}-half-day-multiple`}
           service={service}
-          onHalfDayChange={(value) => setHalfDay(value)}
+          onSelectionsChange={(value) => setHalfDaySelections(value)}
         />
       )}
       {service && duration?.equals(AVAILABLE_DURATION.MULTIPLE_DATES) && (
@@ -212,7 +210,7 @@ export const CreateBookingForm = () => {
               coworkingSpace={coworkingSpace!}
               duration={duration!}
               endDay={endDay}
-              halfDay={halfDay!}
+              halfDaySelections={halfDaySelections}
               multipleDays={multipleDays}
               service={service!}
               startDay={startDay!}
