@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
+import { formatHours } from "@/lib/format";
 
 interface OccupancyRow {
   name: string;
@@ -57,10 +58,10 @@ export function OccupancyTable({ rows, isLoading }: OccupancyTableProps) {
             <TableRow key={row.name}>
               <TableCell className="font-medium">{row.name}</TableCell>
               <TableCell className="text-right">
-                {row.totalBookedHours}h
+                {formatHours(row.totalBookedHours)}
               </TableCell>
               <TableCell className="text-right">
-                {row.totalAvailableSeatHours}h
+                {formatHours(row.totalAvailableSeatHours)}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

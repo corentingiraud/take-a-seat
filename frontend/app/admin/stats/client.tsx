@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth, format } from "date-fns";
 
 import { useAdminStats } from "@/hooks/admin/stats/use-admin-stats";
 import { MonthPicker } from "@/components/admin/stats/date-range-picker";
 import { StatCard } from "@/components/admin/stats/stat-card";
 import { OccupancyTable } from "@/components/admin/stats/occupancy-table";
+import { BookingHeatmap } from "@/components/admin/stats/booking-heatmap";
+import { TopClientsTable } from "@/components/admin/stats/top-clients-table";
 import { Section } from "@/components/ui/section";
+import { formatHours } from "@/lib/format";
 
 export default function StatsPageClient() {
   const [month, setMonth] = useState(new Date());
 
-  // Send full ISO instants so the range covers the whole month (including the
-  // last day) in the admin's local timezone, instead of date-only strings that
-  // the backend would interpret as UTC midnight and truncate the last day.
-  const startDate = startOfMonth(month).toISOString();
-  const endDate = endOfMonth(month).toISOString();
+  // Date-only bounds (YYYY-MM-DD) expected by Strapi `date` fields. The backend
+  // makes the last day inclusive via an exclusive next-day upper bound.
+  const startDate = format(startOfMonth(month), "yyyy-MM-dd");
+  const endDate = format(endOfMonth(month), "yyyy-MM-dd");
 
   const { data, isLoading } = useAdminStats(startDate, endDate);
 
@@ -34,6 +36,12 @@ export default function StatsPageClient() {
           title="Coworkers uniques"
           value={data?.uniqueCoworkers ?? 0}
           description="Ayant fait au moins une réservation"
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Coworkers récurrents"
+          value={data?.returningCoworkers ?? 0}
+          description={`${data?.newCoworkers ?? 0} nouveaux actifs (1ʳᵉ réservation)`}
           isLoading={isLoading}
         />
         <StatCard
@@ -61,15 +69,57 @@ export default function StatsPageClient() {
         <StatCard
           title="Taux d'annulation"
           value={`${data?.cancellationRate.rate ?? 0}%`}
-          description={`${data?.cancellationRate.cancelled ?? 0} sur ${data?.cancellationRate.total ?? 0}`}
+          description={`${data?.cancellationRate.cancelled ?? 0} sur ${data?.cancellationRate.total ?? 0} · dont ${data?.cancellationRate.sameDayRate ?? 0}% le jour même`}
           isLoading={isLoading}
         />
         <StatCard
-          title="Durée moyenne de réservation"
-          value={`${data?.averageBookingDurationHours ?? 0}h`}
+          title="Délai de réservation moyen"
+          value={`${data?.averageBookingLeadTimeDays ?? 0} j`}
+          description="Anticipation avant la réservation"
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Réservations / membre actif"
+          value={data?.averageBookingsPerMember ?? 0}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Consommation des cartes"
+          value={`${data?.cardBreakdown.consumptionRate ?? 0}%`}
+          description={`Heures utilisées sur ${data?.cardBreakdown.expiredCount ?? 0} carte(s) expirée(s)`}
+          isLoading={isLoading}
+        />
+        <StatCard
+          title="Heures perdues à l'expiration"
+          value={formatHours(data?.cardBreakdown.breakageBalance ?? 0)}
+          description={`${data?.cardBreakdown.breakageCount ?? 0} carte(s) avec un solde non utilisé`}
           isLoading={isLoading}
         />
       </div>
+
+      <Section title="Fréquentation par créneau (jour × heure)">
+        <div className="space-y-6">
+          {isLoading && <BookingHeatmap cells={[]} isLoading />}
+          {!isLoading &&
+            (data?.bookingHeatmap ?? []).map((space) => (
+              <div key={space.coworkingSpaceId} className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  {space.coworkingSpaceName}
+                </p>
+                <BookingHeatmap cells={space.cells} />
+              </div>
+            ))}
+          {!isLoading && (data?.bookingHeatmap?.length ?? 0) === 0 && (
+            <p className="text-center text-sm text-muted-foreground">
+              Aucune donnée pour cette période
+            </p>
+          )}
+        </div>
+      </Section>
+
+      <Section title="Top coworkers">
+        <TopClientsTable rows={data?.topClients ?? []} isLoading={isLoading} />
+      </Section>
 
       <Section title="Taux d'occupation par service">
         <OccupancyTable

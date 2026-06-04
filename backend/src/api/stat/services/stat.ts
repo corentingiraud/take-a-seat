@@ -2,6 +2,12 @@ import { ADMIN_ROLE_TYPE } from '../../constants';
 
 const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
+const HOUR_MS = 1000 * 60 * 60;
+const DAY_MS = HOUR_MS * 24;
+
+// Full-time prepaid cards are credited with this sentinel "unlimited" balance.
+const UNLIMITED_CARD_BALANCE = 9999;
+
 type TimeSlot = { start: string; end: string };
 type WeeklySchedule = Partial<Record<string, TimeSlot[]>>;
 
@@ -45,20 +51,66 @@ function computeTotalAvailableSeatHours(
   return totalHours;
 }
 
+// Bookings are stored in UTC; the business runs in Europe/Paris. Extract the
+// weekday/hour in that timezone so the heatmap is stable across DST changes.
+const PARIS_TZ = 'Europe/Paris';
+const WEEKDAY_INDEX: Record<string, number> = {
+  Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+};
+const parisPartsFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: PARIS_TZ,
+  weekday: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+
+function getParisParts(date: Date): { dayOfWeek: number; hour: number; minute: number } {
+  const parts = parisPartsFormatter.formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+  return {
+    dayOfWeek: WEEKDAY_INDEX[get('weekday')] ?? 0,
+    hour: parseInt(get('hour'), 10),
+    minute: parseInt(get('minute'), 10),
+  };
+}
+
+function isSameCalendarDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
 export default {
   async computeStats(startDate: string, endDate: string) {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // 4 queries in parallel
-    const [allBookings, prepaidCards, availabilities, newUsers] = await Promise.all([
-      // #1 All bookings in range (including cancelled, for cancellation rate)
+    // Exclusive next-day upper bound so the whole last day is included for
+    // datetime fields (bookings are single-day), while keeping date-only
+    // (YYYY-MM-DD) values that Strapi `date` fields expect.
+    const endExclusiveDate = new Date(`${endDate}T00:00:00Z`);
+    endExclusiveDate.setUTCDate(endExclusiveDate.getUTCDate() + 1);
+    const endExclusive = endExclusiveDate.toISOString().slice(0, 10);
+
+    const [allBookings, prepaidCards, availabilities, expiredCards, newRegistrations] = await Promise.all([
+      // #1 All bookings in range (including cancelled, for cancellation rate).
+      // Bookings are single-day, so filtering on startDate is enough.
+      // Only the fields actually used downstream are populated.
       strapi.db.query('api::booking.booking').findMany({
         where: {
-          startDate: { $gte: startDate },
-          endDate: { $lte: endDate },
+          startDate: { $gte: startDate, $lt: endExclusive },
         },
-        populate: ['service', 'service.coworkingSpace', 'prepaidCard', 'user'],
+        populate: {
+          service: {
+            select: ['name'],
+            populate: { coworkingSpace: { select: ['id', 'name'] } },
+          },
+          user: { select: ['id', 'firstName', 'lastName'] },
+          prepaidCard: { select: ['id'] },
+        },
       }),
 
       // #2 Prepaid cards purchased in range
@@ -67,7 +119,7 @@ export default {
           validFrom: { $gte: startDate, $lte: endDate },
           paymentStatus: 'PAID',
         },
-        populate: ['user'],
+        populate: { user: { select: ['id'] } },
       }),
 
       // #3 Availabilities overlapping with range
@@ -79,26 +131,34 @@ export default {
         populate: ['service', 'service.coworkingSpace'],
       }),
 
-      // #4 New registrations in range
-      // Only count real members: confirmed (email validated), not blocked,
-      // and excluding admin/staff accounts.
-      strapi.db.query('plugin::users-permissions.user').findMany({
+      // #4 Prepaid cards expiring within range (for breakage & consumption)
+      strapi.db.query('api::prepaid-card.prepaid-card').findMany({
+        where: {
+          expirationDate: { $gte: startDate, $lte: endDate },
+          paymentStatus: 'PAID',
+        },
+        select: ['initialBalance', 'remainingBalance'],
+      }),
+
+      // #5 New registrations in range — counted via the Strapi helper.
+      // Only real members: confirmed (email validated), not blocked, non-admin.
+      strapi.db.query('plugin::users-permissions.user').count({
         where: {
           createdAt: { $gte: startDate, $lte: endDate },
           confirmed: true,
           blocked: { $ne: true },
           role: { type: { $ne: ADMIN_ROLE_TYPE } },
         },
-        select: ['id'],
       }),
     ]);
 
     // Separate cancelled vs active bookings
     const activeBookings = allBookings.filter((b: any) => b.bookingStatus !== 'CANCELLED');
-    const cancelledCount = allBookings.length - activeBookings.length;
+    const cancelledBookings = allBookings.filter((b: any) => b.bookingStatus === 'CANCELLED');
+    const cancelledCount = cancelledBookings.length;
 
     // --- Stat 1: Prepaid card buyers ---
-    const prepaidCardBuyers = new Set(prepaidCards.map((c: any) => c.user?.id)).size;
+    const prepaidCardBuyers = new Set(prepaidCards.map((c: any) => c.user?.id).filter(Boolean)).size;
 
     // --- Stat 2: Payment breakdown ---
     const prepaidCount = activeBookings.filter((b: any) => b.prepaidCard != null).length;
@@ -124,7 +184,7 @@ export default {
       const serviceId = b.service?.id;
       if (!serviceId) continue;
 
-      const hours = (new Date(b.endDate).getTime() - new Date(b.startDate).getTime()) / (1000 * 60 * 60);
+      const hours = (new Date(b.endDate).getTime() - new Date(b.startDate).getTime()) / HOUR_MS;
       const existing = bookedHoursByService.get(serviceId);
       if (existing) {
         existing.hours += hours;
@@ -214,28 +274,144 @@ export default {
     }));
 
     // --- Stat 5: Unique coworkers ---
-    const uniqueCoworkers = new Set(activeBookings.map((b: any) => b.user?.id).filter(Boolean)).size;
+    const uniqueCoworkerIds = Array.from(
+      new Set(activeBookings.map((b: any) => b.user?.id).filter(Boolean)),
+    ) as number[];
+    const uniqueCoworkers = uniqueCoworkerIds.length;
 
-    // --- Stat 6: New registrations ---
-    const newRegistrations = newUsers.length;
+    // --- Stat 6: New vs returning active coworkers ---
+    // A coworker is "returning" if they already had an active booking before the
+    // period start; otherwise their first booking happened during the period.
+    let returningCoworkers = 0;
+    if (uniqueCoworkerIds.length > 0) {
+      const priorBookings = await strapi.db.query('api::booking.booking').findMany({
+        where: {
+          startDate: { $lt: startDate },
+          bookingStatus: { $ne: 'CANCELLED' },
+          user: { id: { $in: uniqueCoworkerIds } },
+        },
+        populate: { user: { select: ['id'] } },
+      });
+      const returningSet = new Set(priorBookings.map((b: any) => b.user?.id).filter(Boolean));
+      returningCoworkers = uniqueCoworkerIds.filter((id) => returningSet.has(id)).length;
+    }
+    const newCoworkers = uniqueCoworkers - returningCoworkers;
 
-    // --- Stat 7: Cancellation rate ---
+    // --- Stat 7: Cancellation rate (incl. same-day cancellations) ---
+    // updatedAt is used as a proxy for when the booking was cancelled.
+    let sameDayCancellations = 0;
+    for (const b of cancelledBookings as any[]) {
+      if (b.updatedAt && isSameCalendarDay(new Date(b.updatedAt), new Date(b.startDate))) {
+        sameDayCancellations += 1;
+      }
+    }
     const cancellationRate = {
       cancelled: cancelledCount,
       total: allBookings.length,
       rate: allBookings.length > 0
         ? Math.round((cancelledCount / allBookings.length) * 10000) / 100
         : 0,
+      sameDayCancellations,
+      sameDayRate: cancelledCount > 0
+        ? Math.round((sameDayCancellations / cancelledCount) * 10000) / 100
+        : 0,
     };
 
-    // --- Stat 8: Average booking duration ---
-    let averageBookingDurationHours = 0;
+    // --- Stat 8: Average booking lead time (booking anticipation) ---
+    let averageBookingLeadTimeDays = 0;
     if (activeBookings.length > 0) {
-      const totalHours = activeBookings.reduce((sum: number, b: any) => {
-        return sum + (new Date(b.endDate).getTime() - new Date(b.startDate).getTime()) / (1000 * 60 * 60);
-      }, 0);
-      averageBookingDurationHours = Math.round((totalHours / activeBookings.length) * 100) / 100;
+      let leadSum = 0;
+      let leadCount = 0;
+      for (const b of activeBookings as any[]) {
+        if (b.createdAt) {
+          const lead = (new Date(b.startDate).getTime() - new Date(b.createdAt).getTime()) / DAY_MS;
+          if (lead >= 0) {
+            leadSum += lead;
+            leadCount += 1;
+          }
+        }
+      }
+      averageBookingLeadTimeDays = leadCount > 0 ? Math.round((leadSum / leadCount) * 10) / 10 : 0;
     }
+
+    // --- Stat 9: Average bookings per active member ---
+    const averageBookingsPerMember = uniqueCoworkers > 0
+      ? Math.round((activeBookings.length / uniqueCoworkers) * 10) / 10
+      : 0;
+
+    // --- Stat 10: Top clients ---
+    const clientMap = new Map<number, { name: string; bookingCount: number; totalHours: number }>();
+    for (const b of activeBookings as any[]) {
+      const userId = b.user?.id;
+      if (!userId) continue;
+      const hours = (new Date(b.endDate).getTime() - new Date(b.startDate).getTime()) / HOUR_MS;
+      const existing = clientMap.get(userId);
+      if (existing) {
+        existing.bookingCount += 1;
+        existing.totalHours += hours;
+      } else {
+        const name = `${b.user.firstName ?? ''} ${b.user.lastName ?? ''}`.trim() || 'Inconnu';
+        clientMap.set(userId, { name, bookingCount: 1, totalHours: hours });
+      }
+    }
+    const topClients = Array.from(clientMap.values())
+      .sort((a, b) => b.bookingCount - a.bookingCount || b.totalHours - a.totalHours)
+      .slice(0, 10)
+      .map((c) => ({ ...c, totalHours: Math.round(c.totalHours * 100) / 100 }));
+
+    // --- Stat 11: Booking heatmap (day of week x hour) per coworking space ---
+    const heatmapBySpace = new Map<number, { name: string; counts: Map<string, number> }>();
+    for (const b of activeBookings as any[]) {
+      const csId = b.service?.coworkingSpace?.id;
+      if (!csId) continue;
+      let entry = heatmapBySpace.get(csId);
+      if (!entry) {
+        entry = { name: b.service.coworkingSpace.name, counts: new Map() };
+        heatmapBySpace.set(csId, entry);
+      }
+      const startParts = getParisParts(new Date(b.startDate));
+      const endParts = getParisParts(new Date(b.endDate));
+      const day = startParts.dayOfWeek;
+      const startHour = startParts.hour;
+      const endHour = endParts.hour + (endParts.minute > 0 ? 1 : 0);
+      for (let h = startHour; h < endHour; h++) {
+        const key = `${day}-${h}`;
+        entry.counts.set(key, (entry.counts.get(key) ?? 0) + 1);
+      }
+    }
+    const bookingHeatmap = Array.from(heatmapBySpace.entries()).map(([csId, entry]) => ({
+      coworkingSpaceId: csId,
+      coworkingSpaceName: entry.name,
+      cells: Array.from(entry.counts.entries()).map(([key, count]) => {
+        const [dayOfWeek, hour] = key.split('-').map(Number);
+        return { dayOfWeek, hour, count };
+      }),
+    }));
+
+    // --- Stat 12: Prepaid card breakage & consumption (cards expired in range) ---
+    // Unlimited (full-time) cards are credited with a 9999 sentinel balance and
+    // would distort breakage/consumption, so they are excluded.
+    let initialSum = 0;
+    let remainingSum = 0;
+    let breakageCount = 0;
+    let limitedExpiredCount = 0;
+    for (const c of expiredCards as any[]) {
+      const initial = Number(c.initialBalance ?? 0);
+      if (initial >= UNLIMITED_CARD_BALANCE) continue;
+      const remaining = Number(c.remainingBalance ?? 0);
+      initialSum += initial;
+      remainingSum += remaining;
+      limitedExpiredCount += 1;
+      if (remaining > 0) breakageCount += 1;
+    }
+    const cardBreakdown = {
+      expiredCount: limitedExpiredCount,
+      breakageCount,
+      breakageBalance: Math.round(remainingSum * 100) / 100,
+      consumptionRate: initialSum > 0
+        ? Math.round(((initialSum - remainingSum) / initialSum) * 10000) / 100
+        : 0,
+    };
 
     return {
       prepaidCardBuyers,
@@ -243,9 +419,15 @@ export default {
       occupancyPerService,
       occupancyPerCoworkingSpace,
       uniqueCoworkers,
+      returningCoworkers,
+      newCoworkers,
       newRegistrations,
       cancellationRate,
-      averageBookingDurationHours,
+      averageBookingLeadTimeDays,
+      averageBookingsPerMember,
+      topClients,
+      bookingHeatmap,
+      cardBreakdown,
     };
   },
 };

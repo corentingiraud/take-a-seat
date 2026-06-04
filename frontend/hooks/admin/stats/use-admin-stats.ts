@@ -32,9 +32,38 @@ export interface StatsResponse {
     occupancyRate: number;
   }>;
   uniqueCoworkers: number;
+  returningCoworkers: number;
+  newCoworkers: number;
   newRegistrations: number;
-  cancellationRate: { cancelled: number; total: number; rate: number };
-  averageBookingDurationHours: number;
+  cancellationRate: {
+    cancelled: number;
+    total: number;
+    rate: number;
+    sameDayCancellations: number;
+    sameDayRate: number;
+  };
+  averageBookingLeadTimeDays: number;
+  averageBookingsPerMember: number;
+  topClients: Array<{
+    name: string;
+    bookingCount: number;
+    totalHours: number;
+  }>;
+  bookingHeatmap: Array<{
+    coworkingSpaceId: number;
+    coworkingSpaceName: string;
+    cells: Array<{
+      dayOfWeek: number;
+      hour: number;
+      count: number;
+    }>;
+  }>;
+  cardBreakdown: {
+    expiredCount: number;
+    breakageCount: number;
+    breakageBalance: number;
+    consumptionRate: number;
+  };
 }
 
 export function useAdminStats(startDate: string, endDate: string) {
