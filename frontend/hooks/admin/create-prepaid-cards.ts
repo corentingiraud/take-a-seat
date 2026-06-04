@@ -30,15 +30,24 @@ export function useCreatePrepaidCards() {
     await qc.invalidateQueries({ queryKey: ["admin", "users"] });
   };
 
-  const upcomingMonths = Array.from({ length: 7 }, (_, i) => {
-    const date = moment().startOf("month").add(i, "months");
+  // Allow selecting a few past months (e.g. to record subscriptions paid
+  // after the fact) in addition to the current and upcoming months.
+  const PAST_MONTHS = 3;
+  const UPCOMING_MONTHS = 7;
+  const availableMonths = Array.from(
+    { length: PAST_MONTHS + UPCOMING_MONTHS },
+    (_, i) => {
+      const date = moment()
+        .startOf("month")
+        .add(i - PAST_MONTHS, "months");
 
-    return {
-      label: date.format("MMMM YYYY"),
-      value: date.toISOString(),
-      date: date.toDate(),
-    };
-  });
+      return {
+        label: date.format("MMMM YYYY"),
+        value: date.toISOString(),
+        date: date.toDate(),
+      };
+    },
+  );
 
   const isFormValid = (
     startDate: Date,
@@ -114,7 +123,7 @@ export function useCreatePrepaidCards() {
     users: usersQuery.data ?? [],
     isLoadingUsers: usersQuery.isLoading,
     reload,
-    upcomingMonths,
+    availableMonths,
     isFormValid,
     handleSubmit: createPrepaidCards.mutateAsync,
     isSubmitting: createPrepaidCards.isPending,

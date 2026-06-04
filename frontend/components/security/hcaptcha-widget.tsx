@@ -5,7 +5,7 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useTheme } from "next-themes";
 
 import { cn } from "@/lib/utils";
-import { HCAPTCHA_SITE_KEY } from "@/config/site";
+import { HCAPTCHA_SITE_KEY, HCAPTCHA_DISABLED } from "@/config/site";
 
 type Props = {
   className?: string;
@@ -37,6 +37,12 @@ export function HCaptchaWidget({
   const { resolvedTheme } = useTheme();
 
   useEffect(() => setMounted(true), []);
+
+  // When the captcha is disabled (dev/local), emit a placeholder token so
+  // forms relying on it can proceed without solving a challenge.
+  useEffect(() => {
+    if (HCAPTCHA_DISABLED) onChange?.("disabled");
+  }, [onChange]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !autoCompact) return;
@@ -92,6 +98,9 @@ export function HCaptchaWidget({
     },
     [onChange],
   );
+
+  // Captcha disabled (dev/local): render nothing, token already emitted above
+  if (HCAPTCHA_DISABLED) return null;
 
   // Avoid rendering before next-themes resolves to prevent mismatch flash
   if (!mounted) {

@@ -37,7 +37,7 @@ export const AdminPrepaidCardsCreate = () => {
     users,
     isLoadingUsers,
     handleSubmit,
-    upcomingMonths,
+    availableMonths,
     isFormValid,
     isSubmitting,
   } = useCreatePrepaidCards();
@@ -163,7 +163,7 @@ export const AdminPrepaidCardsCreate = () => {
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {upcomingMonths.map(({ label, value }) => (
+              {availableMonths.map(({ label, value }) => (
                 <SelectItem key={value} value={value}>
                   {label}
                 </SelectItem>

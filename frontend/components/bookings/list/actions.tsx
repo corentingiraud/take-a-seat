@@ -13,6 +13,7 @@ import { Booking } from "@/models/booking";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 import { useAuth } from "@/contexts/auth-context";
+import { useAdminBookingPaymentActions } from "@/hooks/admin/payments/bookings/use-admin-booking-payment-actions";
 
 interface BookingActionMenuProps {
   booking: Booking;
@@ -20,14 +21,18 @@ interface BookingActionMenuProps {
 }
 
 export function BookingActionMenu({ booking, onPayWithCard }: BookingActionMenuProps) {
-  const { user: authUser } = useAuth();
+  const { user: authUser, isSuperAdmin } = useAuth();
 
   const { cancel, isCancelling } = useBookingActions();
+  const { markBookingsAsPaid, isMarkingBookingsAsPaid } =
+    useAdminBookingPaymentActions();
   const confirm = useConfirm();
 
   const canCancel = booking.isCancelable(authUser?.role);
   const canPay = booking.paymentStatus === "PENDING";
-  const hasAnyAction = canCancel || canPay;
+  const canMarkExternalPaid = isSuperAdmin && canPay;
+  const isBusy = isCancelling || isMarkingBookingsAsPaid;
+  const hasAnyAction = canCancel || canPay || canMarkExternalPaid;
 
   const handleCancel = async () => {
     const confirmed = await confirm({
@@ -40,12 +45,24 @@ export function BookingActionMenu({ booking, onPayWithCard }: BookingActionMenuP
     await cancel(booking);
   };
 
+  const handleMarkExternalPaid = async () => {
+    const confirmed = await confirm({
+      title: "Marquer comme payée (CB / espèce) ?",
+      description:
+        "Cette réservation sera enregistrée comme payée (CB / espèce).",
+    });
+
+    if (!confirmed) return;
+
+    await markBookingsAsPaid([booking]);
+  };
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-disabled={!hasAnyAction || isCancelling}
-          disabled={!hasAnyAction || isCancelling}
+          aria-disabled={!hasAnyAction || isBusy}
+          disabled={!hasAnyAction || isBusy}
           size="icon"
           title={!hasAnyAction ? "Aucune action disponible" : undefined}
           variant="outline"
@@ -60,7 +77,7 @@ export function BookingActionMenu({ booking, onPayWithCard }: BookingActionMenuP
             {canCancel && (
               <DropdownMenuItem
                 className="text-red-600"
-                disabled={isCancelling}
+                disabled={isBusy}
                 onClick={handleCancel}
               >
                 Annuler
@@ -70,10 +87,20 @@ export function BookingActionMenu({ booking, onPayWithCard }: BookingActionMenuP
             {canPay && (
               <DropdownMenuItem
                 className="text-green-600"
-                disabled={isCancelling}
+                disabled={isBusy}
                 onClick={() => onPayWithCard?.(booking)}
               >
                 Payer avec une carte prépayée
+              </DropdownMenuItem>
+            )}
+
+            {canMarkExternalPaid && (
+              <DropdownMenuItem
+                className="text-green-600"
+                disabled={isBusy}
+                onClick={handleMarkExternalPaid}
+              >
+                Marquer comme payée (CB / espèce)
               </DropdownMenuItem>
             )}
           </>

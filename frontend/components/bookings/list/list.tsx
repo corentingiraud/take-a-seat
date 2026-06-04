@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarIcon, ChevronRight } from "lucide-react";
+import { CalendarIcon, ChevronRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 
 import { BookingStatusBadge } from "../badge";
@@ -19,9 +19,17 @@ import {
 import { PaymentStatusBadge } from "@/components/payment-badge";
 import { WeekSelector } from "@/components/ui/week-selector";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserPrepaidCardDialog } from "@/components/prepaid-cards/user-prepaid-card-dialog";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
+import { useAdminBookingPaymentActions } from "@/hooks/admin/payments/bookings/use-admin-booking-payment-actions";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { getServiceCalendarHref } from "@/lib/urls";
 import { Booking } from "@/models/booking";
@@ -33,7 +41,7 @@ import { useWeekSelector } from "@/hooks/use-week-selector";
 import { useAuth } from "@/contexts/auth-context";
 
 export function BookingsList({ user }: { user?: User }) {
-  const { user: authUser } = useAuth();
+  const { user: authUser, isSuperAdmin } = useAuth();
 
   const { startDate, endDate, setWeekRange, goToNextWeek } = useWeekSelector(); 
 
@@ -54,6 +62,8 @@ export function BookingsList({ user }: { user?: User }) {
   });
 
   const { cancelMany, payManyWithCard } = useBookingActions();
+  const { markBookingsAsPaid, isMarkingBookingsAsPaid } =
+    useAdminBookingPaymentActions();
   const confirm = useConfirm();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -105,7 +115,35 @@ export function BookingsList({ user }: { user?: User }) {
     if (!ok) return;
 
     await cancelMany(selectedBookings);
+    setSelectedIds(new Set());
   };
+
+  const handleBulkExternalPaid = async () => {
+    if (selectedBookings.length === 0) return;
+
+    const ok = await confirm({
+      title:
+        selectedBookings.length === 1
+          ? "Marquer cette réservation comme payée (CB / espèce) ?"
+          : `Marquer ${selectedBookings.length} réservations comme payées (CB / espèce) ?`,
+      description:
+        "Les réservations seront enregistrées comme payées (CB / espèce).",
+    });
+
+    if (!ok) return;
+
+    await markBookingsAsPaid(selectedBookings);
+    setSelectedIds(new Set());
+  };
+
+  const busy = isLoading || isFetching || isMarkingBookingsAsPaid;
+  const hasSelection = selectedBookings.length > 0;
+  const allSelectedPending =
+    hasSelection &&
+    selectedBookings.every((b) => b.paymentStatus === "PENDING");
+  const allSelectedCancelable =
+    hasSelection &&
+    selectedBookings.every((b) => b.isCancelable(authUser?.role));
 
   return (
     <div className="mt-7">
@@ -148,33 +186,45 @@ export function BookingsList({ user }: { user?: User }) {
           }}
         />
 
-        <Button
-          disabled={
-            selectedBookings.length === 0 ||
-            isLoading ||
-            isFetching ||
-            !selectedBookings.every((b) => b.paymentStatus === "PENDING")
-          }
-          onClick={() => {
-            setSinglePayBooking(null);
-            setIsPrepaidDialogOpen(true);
-          }}
-        >
-          Payer avec une carte
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button disabled={!hasSelection || busy} variant="outline">
+              Actions groupées
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
 
-        <Button
-          disabled={
-            selectedBookings.length === 0 ||
-            isLoading ||
-            isFetching ||
-            !selectedBookings.every((b) => b.isCancelable(authUser?.role))
-          }
-          variant="destructive"
-          onClick={handleBulkCancel}
-        >
-          Annuler
-        </Button>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem
+              disabled={!allSelectedPending || busy}
+              onClick={() => {
+                setSinglePayBooking(null);
+                setIsPrepaidDialogOpen(true);
+              }}
+            >
+              Tout payer avec une carte prépayée
+            </DropdownMenuItem>
+
+            {isSuperAdmin && (
+              <DropdownMenuItem
+                disabled={!allSelectedPending || busy}
+                onClick={handleBulkExternalPaid}
+              >
+                Tout payer (CB / espèce)
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              disabled={!allSelectedCancelable || busy}
+              onClick={handleBulkCancel}
+            >
+              Annuler les réservations
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Table

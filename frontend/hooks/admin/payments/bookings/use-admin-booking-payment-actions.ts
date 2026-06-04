@@ -17,6 +17,7 @@ export function useAdminBookingPaymentActions() {
       qc.invalidateQueries({ queryKey: ["admin", "booking-payments"] }),
       qc.invalidateQueries({ queryKey: ["bookings"] }),
       qc.invalidateQueries({ queryKey: ["prepaid-cards"] }),
+      qc.invalidateQueries({ queryKey: ["unpaid-bookings"] }),
     ]);
   };
 

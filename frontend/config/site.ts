@@ -9,6 +9,11 @@ export const HCAPTCHA_SITE_KEY =
   env("NEXT_PUBLIC_HCAPTCHA_SITE_KEY") ||
   "92caca56-0a84-409e-acf0-449c998efc7e";
 
+// Allows bypassing the captcha in local/dev environments.
+// Must be paired with HCAPTCHA_DISABLED=true on the backend.
+export const HCAPTCHA_DISABLED =
+  env("NEXT_PUBLIC_HCAPTCHA_DISABLED") === "true";
+
 export const siteConfig = {
   name: "Le Pêle Coworking",
   description: "Réservez votre espace de travail en toute simplicité.",

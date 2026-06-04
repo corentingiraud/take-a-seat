@@ -15,12 +15,12 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.41.1",
-    "@strapi/plugin-users-permissions": "5.41.1",
-    "@strapi/provider-email-mailgun": "5.41.1",
-    "@strapi/strapi": "5.41.1",
+    "@strapi/plugin-cloud": "5.47.1",
+    "@strapi/plugin-users-permissions": "5.47.1",
+    "@strapi/provider-email-mailgun": "5.47.1",
+    "@strapi/strapi": "5.47.1",
     "ejs": "^3.1.10",
-    "pg": "^8.16.3",
+    "pg": "^8.21.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
@@ -28,11 +28,11 @@
     "styled-components": "^6.0.0"
   },
   "devDependencies": {
-    "@strapi/provider-email-nodemailer": "5.41.1",
+    "@strapi/provider-email-nodemailer": "5.47.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=18.0.0 <=22.x.x",

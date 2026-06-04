@@ -87,6 +87,13 @@ function updateMeEndpoint(plugin) {
 }
 
 function injectHCaptchaOnAuth(plugin) {
+  if (process.env.HCAPTCHA_DISABLED === "true") {
+    strapi.log.warn(
+      "[hCaptcha] disabled via HCAPTCHA_DISABLED — auth routes are NOT captcha-protected",
+    );
+    return;
+  }
+
   const routes = plugin.routes?.["content-api"]?.routes || [];
 
   const addCaptchaMw = (routePath: string, routeHTTPMethod: "PUT" | "POST") => {
