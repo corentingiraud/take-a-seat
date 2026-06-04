@@ -43,14 +43,12 @@ export function useAdminStats(startDate: string, endDate: string) {
   return useQuery<StatsResponse>({
     queryKey: ["admin", "stats", startDate, endDate],
     queryFn: async () => {
-      const res = await fetch(
-        `${API_URL}/stats?startDate=${startDate}&endDate=${endDate}`,
-        {
-          headers: {
-            Authorization: `Bearer ${getJWT()}`,
-          },
+      const params = new URLSearchParams({ startDate, endDate });
+      const res = await fetch(`${API_URL}/stats?${params}`, {
+        headers: {
+          Authorization: `Bearer ${getJWT()}`,
         },
-      );
+      });
       if (!res.ok) throw new Error("Failed to fetch stats");
       return res.json();
     },

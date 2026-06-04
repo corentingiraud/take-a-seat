@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { startOfMonth, endOfMonth, format } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 import { useAdminStats } from "@/hooks/admin/stats/use-admin-stats";
 import { MonthPicker } from "@/components/admin/stats/date-range-picker";
@@ -9,15 +9,14 @@ import { StatCard } from "@/components/admin/stats/stat-card";
 import { OccupancyTable } from "@/components/admin/stats/occupancy-table";
 import { Section } from "@/components/ui/section";
 
-function toISODate(date: Date): string {
-  return format(date, "yyyy-MM-dd");
-}
-
 export default function StatsPageClient() {
   const [month, setMonth] = useState(new Date());
 
-  const startDate = toISODate(startOfMonth(month));
-  const endDate = toISODate(endOfMonth(month));
+  // Send full ISO instants so the range covers the whole month (including the
+  // last day) in the admin's local timezone, instead of date-only strings that
+  // the backend would interpret as UTC midnight and truncate the last day.
+  const startDate = startOfMonth(month).toISOString();
+  const endDate = endOfMonth(month).toISOString();
 
   const { data, isLoading } = useAdminStats(startDate, endDate);
 

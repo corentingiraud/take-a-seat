@@ -1,3 +1,5 @@
+import { ADMIN_ROLE_TYPE } from '../../constants';
+
 const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
 type TimeSlot = { start: string; end: string };
@@ -78,9 +80,14 @@ export default {
       }),
 
       // #4 New registrations in range
+      // Only count real members: confirmed (email validated), not blocked,
+      // and excluding admin/staff accounts.
       strapi.db.query('plugin::users-permissions.user').findMany({
         where: {
           createdAt: { $gte: startDate, $lte: endDate },
+          confirmed: true,
+          blocked: { $ne: true },
+          role: { type: { $ne: ADMIN_ROLE_TYPE } },
         },
         select: ['id'],
       }),
