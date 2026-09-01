@@ -79,6 +79,7 @@ export const BookingAvailabilities = ({
   const {
     availableBookings,
     unavailableBookings,
+    prepaidCardRequired,
     bulkCreateAvailableBookings,
   } = useBookingAvailabilities({
     service,
@@ -116,9 +117,14 @@ export const BookingAvailabilities = ({
     }
   }, [bookingConfirmed]);
 
+  // The whole batch is paid with a single card, hence the total and not the restricted part.
+  const requiredHours = service.hoursFor(availableBookings.length);
+
   const eligibleCards = prepaidCard.filter(
-    (c) => c.remainingBalance >= availableBookings.length,
+    (c) => c.remainingBalance >= requiredHours,
   );
+
+  const payWithCard = useCard || prepaidCardRequired;
 
   useEffect(() => {
     if (prepaidCard.length === 0) {
@@ -144,14 +150,14 @@ export const BookingAvailabilities = ({
   async function createAvailableBookings() {
     if (!effectiveUser) return;
 
-    const usedCard = useCard ? selectedPrepaidCard : null;
+    const usedCard = payWithCard ? selectedPrepaidCard : null;
 
     await bulkCreateAvailableBookings(usedCard);
 
     setConfirmedCount(availableBookings.length);
     setConfirmedWithCard(!!usedCard);
     setConfirmedCardBalance(
-      usedCard ? usedCard.remainingBalance - availableBookings.length : 0,
+      usedCard ? usedCard.remainingBalance - requiredHours : 0,
     );
     setBookingConfirmed(true);
   }
@@ -290,10 +296,26 @@ export const BookingAvailabilities = ({
 
       {/* Carte prépayée */}
       <div className="mt-6 space-y-3">
+        {prepaidCardRequired && (
+          <p className="text-sm text-muted-foreground">
+            Ces créneaux sont réservés aux détenteurs d&apos;une carte
+            pré-payée&nbsp;: le paiement par carte est obligatoire.
+          </p>
+        )}
+
+        {prepaidCardRequired && eligibleCards.length === 0 && (
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Aucune de vos cartes ne dispose d&apos;un solde suffisant pour payer
+            ces {availableBookings.length} créneaux ({requiredHours} heure(s)).
+            Réduisez votre sélection.
+          </p>
+        )}
+
         {eligibleCards.length > 0 && (
           <div className="flex items-center space-x-2">
             <Checkbox
-              checked={useCard}
+              checked={payWithCard}
+              disabled={prepaidCardRequired}
               id="use-card"
               onCheckedChange={(v) => {
                 const next = v === true;
@@ -305,7 +327,7 @@ export const BookingAvailabilities = ({
           </div>
         )}
 
-        {useCard && (
+        {payWithCard && eligibleCards.length > 0 && (
           <PrepaidCardSelect
             autoSelectBest
             cards={eligibleCards}
@@ -321,7 +343,8 @@ export const BookingAvailabilities = ({
         <Button
           disabled={
             availableBookings.length === 0 ||
-            (isSuperAdmin && !effectiveUser)
+            (isSuperAdmin && !effectiveUser) ||
+            (prepaidCardRequired && !selectedPrepaidCard)
           }
           onClick={async () => await createAvailableBookings()}
         >

@@ -167,7 +167,7 @@ export function BookingsList({ user }: { user?: User }) {
             isFetching ||
             !bookingsToPay.every((b) => b.paymentStatus === "PENDING")
           }
-          minCredits={bookingsToPay.length}
+          minCredits={bookingsToPay.reduce((sum, b) => sum + b.durationInHours, 0)}
           open={isPrepaidDialogOpen}
           selectionLabel={
             bookingsToPay.length > 0

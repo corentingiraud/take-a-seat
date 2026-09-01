@@ -5,6 +5,7 @@ import { renderEJSTemplate } from '../../../utils/render-template';
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
   async bulkCreate(ctx) {
     const actorUser = ctx.state.user; // user authentifié (admin ou non)
+    const isSuperAdmin = actorUser?.role?.type === ADMIN_ROLE_TYPE;
     const {
       prepaidCardDocumentId,
       serviceDocumentId,
@@ -20,10 +21,6 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
     let targetUser = actorUser;
 
     if (userDocumentId && userDocumentId !== actorUser.documentId) {
-
-      const isSuperAdmin = actorUser?.role?.type === ADMIN_ROLE_TYPE;
-
-
       if (!isSuperAdmin) {
         return ctx.forbidden(
           "You are not allowed to create bookings for another user",
@@ -57,6 +54,8 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         );
       }
 
+      const requiredHours = (bookings.length * service.bookingDuration) / 60;
+
       const futureAvailabilities = await strapi
         .db
         .query("api::availability.availability")
@@ -85,7 +84,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           );
         }
 
-        if (prepaidCard.remainingBalance < bookings.length) {
+        if (prepaidCard.remainingBalance < requiredHours) {
           return ctx.badRequest("Not enough balance on the prepaid card");
         }
       }
@@ -136,6 +135,14 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
           );
         }
 
+        // ponytail: matchedAvailability is resolved on the date range only, so a
+        // prepaidCardOnly availability must not overlap an open one on the same service.
+        if (matchedAvailability.prepaidCardOnly && !prepaidCard && !isSuperAdmin) {
+          return ctx.badRequest(
+            "Slot is restricted to prepaid card holders",
+          );
+        }
+
         const overlappingBookings = await strapi
           .db
           .query("api::booking.booking")
@@ -181,8 +188,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
               documentId: prepaidCard.documentId,
               data: {
                 remainingBalance:
-                  prepaidCard.remainingBalance -
-                  (bookings.length * service.bookingDuration) / 60,
+                  prepaidCard.remainingBalance - requiredHours,
               },
             });
         }
@@ -213,7 +219,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         paymentStatus: prepaidCard ? "PAYÉ" : "EN ATTENTE",
         prepaidCardUsed: !!prepaidCard,
         remainingBalance: prepaidCard
-          ? prepaidCard.remainingBalance - bookings.length
+          ? prepaidCard.remainingBalance - requiredHours
           : null,
         adminUrl: process.env.FRONTEND_URL,
         accountUrl: process.env.FRONTEND_URL,
