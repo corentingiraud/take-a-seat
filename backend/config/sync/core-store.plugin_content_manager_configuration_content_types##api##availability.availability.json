@@ -104,6 +104,20 @@
           "sortable": true
         }
       },
+      "prepaidCardOnly": {
+        "edit": {
+          "label": "Carte pré-payée uniquement",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Carte pré-payée uniquement",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -172,12 +186,6 @@
       }
     },
     "layouts": {
-      "list": [
-        "name",
-        "startDate",
-        "endDate",
-        "service"
-      ],
       "edit": [
         [
           {
@@ -212,7 +220,20 @@
             "name": "weeklyAvailabilities",
             "size": 12
           }
+        ],
+        [
+          {
+            "name": "prepaidCardOnly",
+            "size": 4
+          }
         ]
+      ],
+      "list": [
+        "name",
+        "startDate",
+        "endDate",
+        "service",
+        "prepaidCardOnly"
       ]
     },
     "uid": "api::availability.availability"
