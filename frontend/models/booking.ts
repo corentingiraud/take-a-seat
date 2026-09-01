@@ -121,6 +121,10 @@ export class Booking implements StrapiData {
     return `Le ${this.startDate.format("ddd D MMM [de] H[h]mm [à]")} ${this.endDate.format("H[h]mm")}`;
   }
 
+  get durationInHours(): number {
+    return this.endDate.diff(this.startDate, "hours", true);
+  }
+
   get isPast(): boolean {
     const now = moment();
 

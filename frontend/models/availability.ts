@@ -16,6 +16,7 @@ interface AvailabilityInterface {
   service?: Service;
   weeklyAvailabilities?: WeeklySchedule;
   numberOfSeats: number;
+  prepaidCardOnly?: boolean;
   createdAt?: string | null;
   updatedAt?: string | null;
   publishedAt?: string | null;
@@ -29,6 +30,7 @@ export class Availability {
   service: Service | null;
   weeklyAvailabilities: WeeklySchedule;
   numberOfSeats: number;
+  prepaidCardOnly: boolean;
   createdAt: string | null;
   updatedAt: string | null;
   publishedAt: string | null;
@@ -43,6 +45,7 @@ export class Availability {
     service,
     weeklyAvailabilities = {},
     numberOfSeats,
+    prepaidCardOnly = false,
     createdAt = null,
     updatedAt = null,
     publishedAt = null,
@@ -54,6 +57,7 @@ export class Availability {
     this.service = service ?? null;
     this.weeklyAvailabilities = weeklyAvailabilities;
     this.numberOfSeats = numberOfSeats;
+    this.prepaidCardOnly = prepaidCardOnly;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.publishedAt = publishedAt;
@@ -68,6 +72,7 @@ export class Availability {
       service: json.service ? Service.fromJson(json.service) : undefined,
       weeklyAvailabilities: json.weeklyAvailabilities,
       numberOfSeats: json.numberOfSeats,
+      prepaidCardOnly: json.prepaidCardOnly ?? false,
       createdAt: json.createdAt,
       updatedAt: json.updatedAt,
       publishedAt: json.publishedAt,
@@ -87,6 +92,7 @@ export class Availability {
       endDate: this.endDate.format(),
       numberOfSeats: this.numberOfSeats,
       weeklyAvailabilities: this.weeklyAvailabilities,
+      prepaidCardOnly: this.prepaidCardOnly,
     };
 
     if (this.service?.id) {

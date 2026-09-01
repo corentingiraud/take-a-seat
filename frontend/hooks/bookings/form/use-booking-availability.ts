@@ -5,6 +5,7 @@ import { Booking } from "@/models/booking";
 import { Service } from "@/models/service";
 import { User } from "@/models/user";
 import { useAuth } from "@/contexts/auth-context";
+import { usePrepaidCard } from "@/hooks/use-prepaid-cards";
 
 type UnavailableBooking = {
   booking: Booking;
@@ -26,9 +27,29 @@ export function useBookingAvailability({
 }: UseBookingAvailabilityParams) {
   const { isSuperAdmin } = useAuth();
 
+  // Same react-query key as the booking dialog, so this is a deduplicated read.
+  const { usablePrepaidCards } = usePrepaidCard({
+    userDocumentId: user?.documentId,
+  });
+
+  const hasUsableCard = usablePrepaidCards.length > 0;
+  const maxUsableBalance = usablePrepaidCards.reduce(
+    (max, card) => Math.max(max, card.remainingBalance),
+    0,
+  );
+
   const { availableBookings, unavailableBookings } = useMemo(() => {
     const availableBookings: Booking[] = [];
     const unavailableBookings: UnavailableBooking[] = [];
+
+    // Hours needed to cover every restricted slot of the selection. Computed on the
+    // desired slots so the requirement does not depend on the filtering below.
+    const restrictedHours = service.hoursFor(
+      desiredBookings.filter(
+        (booking) =>
+          service.findAvailabilityForDate(booking.startDate)?.prepaidCardOnly,
+      ).length,
+    );
 
     for (const desired of desiredBookings) {
       // Skip if before start of day
@@ -51,15 +72,15 @@ export function useBookingAvailability({
         }
       }
 
+      const availability = service.findAvailabilityForDate(desired.startDate)!;
+
       const overlapping = existingBookings.filter(
         (existing) =>
           desired.startDate.isSameOrAfter(existing.startDate) &&
           desired.endDate.isSameOrBefore(existing.endDate),
       );
 
-      const maxReached =
-        overlapping.length >=
-        service.findAvailabilityForDate(desired.startDate)!.numberOfSeats;
+      const maxReached = overlapping.length >= availability.numberOfSeats;
 
       const userAlreadyBooked = overlapping.some(
         (booking) => booking.user?.id === user.id,
@@ -81,11 +102,45 @@ export function useBookingAvailability({
         continue;
       }
 
+      if (availability.prepaidCardOnly && !isSuperAdmin) {
+        if (!hasUsableCard) {
+          unavailableBookings.push({
+            booking: desired,
+            cause: "Créneau réservé aux détenteurs d'une carte pré-payée",
+          });
+          continue;
+        }
+
+        if (maxUsableBalance < restrictedHours) {
+          unavailableBookings.push({
+            booking: desired,
+            cause: "Solde de carte pré-payée insuffisant pour ce créneau",
+          });
+          continue;
+        }
+      }
+
       availableBookings.push(desired);
     }
 
     return { availableBookings, unavailableBookings };
-  }, [desiredBookings, existingBookings, service, user, isSuperAdmin]);
+  }, [
+    desiredBookings,
+    existingBookings,
+    service,
+    user,
+    isSuperAdmin,
+    hasUsableCard,
+    maxUsableBalance,
+  ]);
 
-  return { availableBookings, unavailableBookings };
+  // A restricted slot can only be booked with the card that grants access to it.
+  const prepaidCardRequired =
+    !isSuperAdmin &&
+    availableBookings.some(
+      (booking) =>
+        service.findAvailabilityForDate(booking.startDate)?.prepaidCardOnly,
+    );
+
+  return { availableBookings, unavailableBookings, prepaidCardRequired };
 }

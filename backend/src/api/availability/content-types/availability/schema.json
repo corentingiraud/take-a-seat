@@ -32,6 +32,10 @@
     },
     "name": {
       "type": "string"
+    },
+    "prepaidCardOnly": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

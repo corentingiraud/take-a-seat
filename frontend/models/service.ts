@@ -138,6 +138,11 @@ export class Service {
     return slots;
   }
 
+  // Prepaid card balances are stored in hours, bookings are counted in slots.
+  hoursFor(slotCount: number): number {
+    return (slotCount * this.bookingDuration) / 60;
+  }
+
   findAvailabilityForDate(date: Moment): Availability | null {
     return (
       this.availabilities.find(

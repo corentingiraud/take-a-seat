@@ -73,12 +73,13 @@ export function useBookingAvailabilities({
   } = useFetchBookings(service.documentId, startDate, endDate);
 
   // Step 4: Determine which desired slots are available
-  const { availableBookings, unavailableBookings } = useBookingAvailability({
-    desiredBookings,
-    existingBookings,
-    service,
-    user: effectiveUser,
-  });
+  const { availableBookings, unavailableBookings, prepaidCardRequired } =
+    useBookingAvailability({
+      desiredBookings,
+      existingBookings,
+      service,
+      user: effectiveUser,
+    });
 
   // Step 5: Hook to trigger bulk creation of bookings
   const bulkCreateAvailableBookings = useBulkCreateBookings({
@@ -89,6 +90,7 @@ export function useBookingAvailabilities({
   return {
     availableBookings,
     unavailableBookings,
+    prepaidCardRequired,
     bulkCreateAvailableBookings,
     loading,
     error,
