@@ -95,6 +95,9 @@ export const BookingAvailabilities = ({
   // Cartes prépayées du user ciblé
   const { usablePrepaidCards: prepaidCard } = usePrepaidCard({
     userDocumentId: effectiveUser?.documentId,
+    // Exactly the batch posted to bulk-create, so the card offered here is valid
+    // on every slot it will pay for — not merely valid today.
+    bookingDates: availableBookings.map((booking) => booking.startDate),
   });
 
   const [useCard, setUseCard] = useState(false);

@@ -77,7 +77,9 @@ export function useBookingActions() {
   const payManyWithCard = async (items: Booking[], card: PrepaidCard) => {
     if (!items?.length || !card) return;
 
-    if (card.remainingBalance < items.length) {
+    const requiredHours = items.reduce((sum, b) => sum + b.durationInHours, 0);
+
+    if (card.remainingBalance < requiredHours) {
       toast.error("Solde insuffisant sur la carte");
 
       return;

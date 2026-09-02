@@ -19,6 +19,9 @@ FROM node:22-alpine
 RUN apk add --no-cache vips-dev
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+# Bookings are stored as UTC wall-clock; pg reads timestamps back in the process
+# timezone, so anything other than UTC shifts every stored datetime.
+ENV TZ=UTC
 WORKDIR /opt/
 COPY --from=build /opt/node_modules ./node_modules
 WORKDIR /opt/app

@@ -1,6 +1,7 @@
 import { factories } from '@strapi/strapi';
 import { ADMIN_ROLE_TYPE } from '../../constants';
 import { renderEJSTemplate } from '../../../utils/render-template';
+import { prepaidCardRejection } from '../../../utils/prepaid-card';
 
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
   async bulkCreate(ctx) {
@@ -86,6 +87,15 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
 
         if (prepaidCard.remainingBalance < requiredHours) {
           return ctx.badRequest("Not enough balance on the prepaid card");
+        }
+
+        const rejection = prepaidCardRejection(
+          prepaidCard,
+          bookings.map((booking) => booking.startDate),
+        );
+
+        if (rejection) {
+          return ctx.badRequest(rejection);
         }
       }
 
@@ -182,6 +192,10 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
         }
 
         if (prepaidCard) {
+          // ponytail: balance is read before the transaction, so two concurrent
+          // bulk-creates by the same user can both pass the check. Upgrade path if it
+          // ever bites: a single conditional UPDATE ... SET remaining_balance =
+          // remaining_balance - $1 WHERE id = $2 AND remaining_balance >= $1.
           await strapi
             .documents("api::prepaid-card.prepaid-card")
             .update({
