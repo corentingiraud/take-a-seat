@@ -1,3 +1,7 @@
+import { errors } from '@strapi/utils';
+
+import { prepaidCardRejection } from '../../../../utils/prepaid-card';
+
 async function getHours(booking: any) {
   if (!booking?.startDate || !booking?.endDate) return 0;
   return Math.max(
@@ -73,7 +77,7 @@ export default {
 
     const existingBooking = await bookingService.findFirst({
       filters: { id: event.params.where.id },
-      populate: ['prepaidCard'],
+      populate: ['prepaidCard', 'user'],
     });
 
     const newStatus = event.params.data.bookingStatus;
@@ -99,7 +103,26 @@ export default {
     if (nowHasCard && existingBooking.paymentStatus === 'PENDING') {
       const addedCard = await prepaidCardService.findFirst({
         filters: { id: addedCardId },
+        populate: ['user'],
       });
+
+      // This runs on a plain PUT /api/bookings/:id, which any coworker may issue.
+      // Everything below is a trust boundary: without it the card id in the payload
+      // is enough to drain someone else's card. Ownership is checked card-owner vs
+      // booking-owner, not vs the actor, so an admin paying a member's bookings with
+      // that member's card still works (the actor is authorised in the controller).
+      const hours = await getHours(existingBooking);
+      const rejection = !addedCard
+        ? 'Prepaid card not found'
+        : addedCard.user?.id !== existingBooking.user?.id
+          ? 'Prepaid card is not owned by the booking user'
+          : (addedCard.remainingBalance ?? 0) < hours
+            ? 'Not enough balance on the prepaid card'
+            : prepaidCardRejection(addedCard, [existingBooking.startDate]);
+
+      if (rejection) {
+        throw new errors.ApplicationError(rejection);
+      }
 
       const bookingWithCard = {
         ...existingBooking,

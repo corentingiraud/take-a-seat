@@ -111,8 +111,8 @@ export class PrepaidCard implements StrapiData {
   toJson(): object {
     const json: any = {
       name: this.name,
-      validFrom: this.validFrom?.format(),
-      expirationDate: this.expirationDate?.format(),
+      validFrom: this.validFrom?.format("YYYY-MM-DD"),
+      expirationDate: this.expirationDate?.format("YYYY-MM-DD"),
       remainingBalance: this.remainingBalance,
       initialBalance: this.initialBalance,
       paymentStatus: this.paymentStatus,
@@ -144,7 +144,10 @@ export class PrepaidCard implements StrapiData {
       return "usable";
     }
 
-    if (this.validFrom?.isAfter(today) && this.expirationDate?.isAfter(today)) {
+    if (
+      this.validFrom?.isAfter(today, "d") &&
+      this.expirationDate?.isAfter(today, "d")
+    ) {
       return "upcoming";
     }
 

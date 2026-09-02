@@ -30,6 +30,9 @@ export function useBookingAvailability({
   // Same react-query key as the booking dialog, so this is a deduplicated read.
   const { usablePrepaidCards } = usePrepaidCard({
     userDocumentId: user?.documentId,
+    // The whole batch is paid with one card, so it must cover every desired date —
+    // same reason restrictedHours below is computed on desiredBookings.
+    bookingDates: desiredBookings.map((booking) => booking.startDate),
   });
 
   const hasUsableCard = usablePrepaidCards.length > 0;
