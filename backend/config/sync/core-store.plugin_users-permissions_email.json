@@ -7,7 +7,7 @@
       "options": {
         "from": {
           "name": "Le Pêle Coworking",
-          "email": "no-reply@take-a-seat.local"
+          "email": "no-reply@reservation.lepelecoworking.fr"
         },
         "response_email": "",
         "object": "Réinitialisation de votre mot de passe",
@@ -20,7 +20,7 @@
       "options": {
         "from": {
           "name": "Le Pêle Coworking",
-          "email": "no-reply@take-a-seat.fr"
+          "email": "no-reply@reservation.lepelecoworking.fr"
         },
         "response_email": "",
         "object": "Confirmation de votre adresse email",
