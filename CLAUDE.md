@@ -142,3 +142,9 @@ and flip back.
 
 User-facing copy (UI strings, emails, toasts) is French. Code, identifiers, comments and commit messages
 are English.
+
+## This repository is public
+
+Never commit, push or paste production data anywhere in it — that includes issue and PR bodies, commit
+messages, test fixtures and `db-dumps/`. Real user names, emails, phone numbers and booking history stay
+out. Reproduce bugs with made-up data or anonymised IDs.
