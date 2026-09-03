@@ -47,6 +47,13 @@ cd backend && npx config-sync diff
 
 Adding a custom route without exporting means it returns 403 everywhere but your machine.
 
+An import overwrites the target environment with whatever the files hold, so anything environment-specific
+must stay out of them. `plugin_users-permissions_advanced` (the confirm-email and reset-password redirect
+URLs) is listed in `excludedConfig` in [plugins.ts](backend/config/plugins.ts) for that reason — set those
+two URLs in each environment's admin panel, they are not versioned. Field-level admin permissions *are*
+versioned: a new content-type field stays invisible to the `strapi-editor` role until it is added to that
+role's `fields` list, which is a separate export from the content-manager layout.
+
 ## Domain model
 
 `CoworkingSpace` → `Service` → `Availability`, with `Booking` and `PrepaidCard` hanging off users.

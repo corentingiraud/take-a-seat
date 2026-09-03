@@ -17,7 +17,8 @@
           "weeklyAvailabilities",
           "numberOfSeats",
           "service",
-          "name"
+          "name",
+          "prepaidCardOnly"
         ]
       },
       "conditions": [],
@@ -53,7 +54,8 @@
           "weeklyAvailabilities",
           "numberOfSeats",
           "service",
-          "name"
+          "name",
+          "prepaidCardOnly"
         ]
       },
       "conditions": [],
@@ -71,7 +73,8 @@
           "weeklyAvailabilities",
           "numberOfSeats",
           "service",
-          "name"
+          "name",
+          "prepaidCardOnly"
         ]
       },
       "conditions": [],
