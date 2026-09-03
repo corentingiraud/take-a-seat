@@ -7,12 +7,6 @@ on:
       - "backend/**"
       - "frontend/**"
       - ".github/workflows/docker-build-push.yml"
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - "backend/**"
-      - "frontend/**"
-      - ".github/workflows/docker-build-push.yml"
   workflow_dispatch:
 
 permissions:
@@ -113,11 +107,11 @@ jobs:
           context: ${{ matrix.service.context }}
           file: ${{ matrix.service.file }}
           platforms: ${{ env.PLATFORMS }}
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.service.id }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service.id }}
           provenance: false
           sbom: false
 
