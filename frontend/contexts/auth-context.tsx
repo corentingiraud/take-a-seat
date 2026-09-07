@@ -33,6 +33,7 @@ interface AuthContextType {
   logout: () => void;
   hasRole: (role: string) => boolean;
   forgotPassword: (email: string, hCaptchaToken: string) => Promise<void>;
+  resendConfirmation: (email: string, hCaptchaToken: string) => Promise<void>;
   resetPassword: (
     code: string,
     password: string,
@@ -123,8 +124,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (
           errorData?.error?.message === "Your account email is not confirmed"
         ) {
+          // hCaptcha tokens are single-use, so the resend needs its own page
+          // with a fresh challenge rather than a button on this one.
           toast.error(
             "Vous devez confirmer votre adresse e-mail avant de vous connecter.",
+            {
+              duration: 10000,
+              action: {
+                label: "Renvoyer l'e-mail",
+                onClick: () =>
+                  router.push(
+                    `${siteConfig.path.resendConfirmation.href}?email=${encodeURIComponent(email)}`,
+                  ),
+              },
+            },
           );
         } else {
           toast.error("Échec de la connexion. Veuillez essayer de nouveau.");
@@ -241,6 +254,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const resendConfirmation = async (email: string, hCaptchaToken: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/auth/send-email-confirmation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-hcaptcha-token": hCaptchaToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+
+        toast.error(
+          err?.error?.message === "Already confirmed"
+            ? "Cette adresse e-mail est déjà confirmée. Vous pouvez vous connecter."
+            : "Impossible d'envoyer l'e-mail de confirmation. Veuillez réessayer.",
+        );
+
+        return;
+      }
+
+      toast.success(
+        "Si un compte non confirmé existe avec cet e-mail, un nouvel e-mail de confirmation a été envoyé.",
+      );
+    } catch {
+      toast.error("Erreur lors de l'envoi de l'e-mail de confirmation.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resetPassword = async (
     code: string,
     password: string,
@@ -323,6 +370,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         hasRole,
         signup,
         forgotPassword,
+        resendConfirmation,
         resetPassword,
       }}
     >
