@@ -32,6 +32,9 @@ export const siteConfig = {
     login: {
       href: "/login",
     },
+    resendConfirmation: {
+      href: "/resend-confirmation",
+    },
     // COWORKER PAGES
     dashboard: {
       href: "/",

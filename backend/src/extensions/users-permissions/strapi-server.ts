@@ -139,6 +139,7 @@ function injectHCaptchaOnAuth(plugin) {
   addCaptchaMw("/auth/local/register", "POST");
   addCaptchaMw("/auth/forgot-password", "POST");
   addCaptchaMw("/auth/reset-password", "POST");
+  addCaptchaMw("/auth/send-email-confirmation", "POST");
 }
 
 /* ----------------------------------------------------------
