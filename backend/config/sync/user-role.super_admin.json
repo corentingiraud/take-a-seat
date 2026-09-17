@@ -116,6 +116,11 @@
       "locale": null
     },
     {
+      "documentId": "kvtl88zd5vfo8ja1k3t2jzmi",
+      "action": "api::stat.stat.getStats",
+      "locale": null
+    },
+    {
       "documentId": "wnfuu5sh8s02as78pl6iezw5",
       "action": "api::unavailability.unavailability.find",
       "locale": null
