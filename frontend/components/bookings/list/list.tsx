@@ -31,7 +31,7 @@ import { UserPrepaidCardDialog } from "@/components/prepaid-cards/user-prepaid-c
 import { useConfirm } from "@/contexts/confirm-dialog-context";
 import { useAdminBookingPaymentActions } from "@/hooks/admin/payments/bookings/use-admin-booking-payment-actions";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { getServiceCalendarHref } from "@/lib/urls";
+import { getCalendarHref } from "@/lib/urls";
 import { Booking } from "@/models/booking";
 import { PrepaidCard } from "@/models/prepaid-card";
 import { User } from "@/models/user";
@@ -290,10 +290,9 @@ export function BookingsList({ user }: { user?: User }) {
                           <Link
                             aria-label={`Voir le calendrier du service ${booking.service.name}`}
                             className="transition-colors text-muted-foreground hover:text-primary"
-                            href={getServiceCalendarHref({
+                            href={getCalendarHref({
                               coworkingSpaceId:
                                 booking.service.coworkingSpace?.documentId,
-                              serviceId: booking.service.documentId,
                               startDate,
                               endDate,
                             })}

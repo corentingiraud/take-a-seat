@@ -8,11 +8,14 @@ import { CoworkingSpaceSelect } from "@/components/coworking-spaces/select";
 import { Label } from "@/components/ui/label";
 
 interface CalendarFilterProps {
-  coworkingSpace?: CoworkingSpace;
-  onChange: (coworkingSpace: CoworkingSpace) => void;
+  coworkingSpaceId: string;
+  onChange: (coworkingSpaceId: string) => void;
 }
 
-export const CalendarFilter = ({ coworkingSpace, onChange }: CalendarFilterProps) => {
+export const CalendarFilter = ({
+  coworkingSpaceId,
+  onChange,
+}: CalendarFilterProps) => {
   const [spaces, setSpaces] = useState<CoworkingSpace[]>([]);
   const { fetchAll } = useStrapiAPI();
 
@@ -20,9 +23,12 @@ export const CalendarFilter = ({ coworkingSpace, onChange }: CalendarFilterProps
     fetchAll(CoworkingSpace.strapiAPIParams).then((data) => {
       setSpaces(data);
 
-      // sélectionne le premier si rien n'est choisi
-      if (!coworkingSpace && data.length > 0) {
-        onChange(data[0]);
+      // fall back to the first space when the URL carries no or an unknown id
+      if (
+        data.length > 0 &&
+        !data.some((space) => space.documentId === coworkingSpaceId)
+      ) {
+        onChange(data[0].documentId);
       }
     });
   }, []);
@@ -33,10 +39,10 @@ export const CalendarFilter = ({ coworkingSpace, onChange }: CalendarFilterProps
         <Label>Espace de coworking</Label>
         <CoworkingSpaceSelect
           coworkingSpaces={spaces}
-          value={coworkingSpace}
+          value={spaces.find((space) => space.documentId === coworkingSpaceId)}
           onChange={(space) => {
             if (space) {
-              onChange(space);
+              onChange(space.documentId);
             }
           }}
         />

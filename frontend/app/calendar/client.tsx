@@ -1,13 +1,16 @@
 "use client";
 
+import { parseAsString, useQueryState } from "nuqs";
+
 import { CalendarFilter } from "@/components/coworking-spaces/calendar/filters";
 import { CalendarView } from "@/components/coworking-spaces/calendar/view";
 import { Section } from "@/components/ui/section";
-import { CoworkingSpace } from "@/models/coworking-space";
-import { useState } from "react";
 
 export default function Calendar() {
-  const [coworkingSpace, setCoworkingSpace] = useState<CoworkingSpace>();
+  const [coworkingSpaceId, setCoworkingSpaceId] = useQueryState(
+    "coworkingSpaceId",
+    parseAsString.withDefault(""),
+  );
 
   return (
     <div className="space-y-6">
@@ -15,10 +18,13 @@ export default function Calendar() {
         Calendrier
       </h2>
       <Section title="Filtres">
-        <CalendarFilter onChange={setCoworkingSpace} coworkingSpace={coworkingSpace}/>
+        <CalendarFilter
+          coworkingSpaceId={coworkingSpaceId}
+          onChange={setCoworkingSpaceId}
+        />
       </Section>
       <Section title="Calendrier">
-        {coworkingSpace && <CalendarView coworkingSpaceId={coworkingSpace.documentId}/>}
+        {coworkingSpaceId && <CalendarView coworkingSpaceId={coworkingSpaceId} />}
       </Section>
     </div>
   );
