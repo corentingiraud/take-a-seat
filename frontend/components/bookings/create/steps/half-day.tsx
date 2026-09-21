@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { HalfDay } from "@/models/half-day";
 import { Service } from "@/models/service";
+import { useAuth } from "@/contexts/auth-context";
 
 interface HalfDayFormStepProps {
   onHalfDayChange: (halfDay: HalfDay) => void;
@@ -24,12 +25,14 @@ export const HalfDayFormStep = ({
   date,
   service,
 }: HalfDayFormStepProps) => {
+  const { isSuperAdmin } = useAuth();
   const options = Object.values(HalfDay).filter((halfDay) =>
     isHalfDayAvailable(
       date,
       halfDay,
       service.coworkingSpace?.unavailabilities ?? [],
       service,
+      isSuperAdmin,
     ),
   );
 
