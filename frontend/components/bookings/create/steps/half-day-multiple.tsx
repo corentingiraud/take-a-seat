@@ -51,7 +51,7 @@ export const HalfDayMultipleFormStep = ({
 
   const getAvailableHalfDays = (date: Moment): HalfDay[] =>
     Object.values(HalfDay).filter((hd) =>
-      isHalfDayAvailable(date, hd, unavailabilities, service),
+      isHalfDayAvailable(date, hd, unavailabilities, service, isSuperAdmin),
     );
 
   const onDatesChange = (dates: Date[] | undefined) => {

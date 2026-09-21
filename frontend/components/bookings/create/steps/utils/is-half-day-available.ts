@@ -11,6 +11,7 @@ export function isHalfDayAvailable(
   halfDay: HalfDay,
   unavailabilities: Unavailability[],
   service: Service,
+  canBookInPast = false,
 ): boolean {
   const now = moment();
   const halfDayDuration = AVAILABLE_DURATION.HALF_DAY.getDuration()!;
@@ -54,7 +55,8 @@ export function isHalfDayAvailable(
   const end = start.clone().add(halfDayDuration);
 
   // Rule 1: If the half-day is today and end is past, it's not available
-  if (date.isSame(now, "day") && now.isAfter(end)) {
+  // (admins may book in the past, same as shouldDisableDate)
+  if (!canBookInPast && date.isSame(now, "day") && now.isAfter(end)) {
     return false;
   }
 
