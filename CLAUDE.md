@@ -99,6 +99,10 @@ must return sanitized data (see `service.calendar`) or mask by hand. A new sensi
 Do not revoke `user.find` from the coworker role to hide users: Strapi then strips every `populate=user` and
 rejects `filters[user]`, which breaks the booking form.
 
+The admin panel has one server-side lock too, a `strapi.documents.use` middleware in the same file: an admin
+without the `strapi-super-admin` code (i.e. `strapi-editor`) may only assign the `coworker` role (parsed by
+`utils/user-role-input.ts`) and may not update, clone or delete a `super_admin` user. Content API calls pass through.
+
 New endpoints that expose user-scoped data must repeat this check explicitly.
 
 ## Custom routes are ordered by filename
