@@ -98,7 +98,7 @@
           "placeholder": "",
           "visible": true,
           "editable": true,
-          "mainField": "id"
+          "mainField": "name"
         },
         "list": {
           "label": "availabilities",
