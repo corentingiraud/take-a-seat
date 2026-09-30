@@ -50,6 +50,8 @@ async function verifyHCaptcha(token: string | null, ip?: string) {
 /* ----------------------------------------------------------
    Your existing /users/me endpoint
 ---------------------------------------------------------- */
+const UPDATABLE_ME_FIELDS = ["firstName", "lastName", "phone"];
+
 function updateMeEndpoint(plugin) {
   plugin.controllers.user.updateMe = async (ctx: Context) => {
     try {
@@ -57,7 +59,12 @@ function updateMeEndpoint(plugin) {
       if (!user) {
         return ctx.unauthorized("You must be logged in to update your profile.");
       }
-      const data = ctx.request.body;
+      // Whitelist: the raw body would let a user set their own role or printerCode.
+      const data = Object.fromEntries(
+        Object.entries(ctx.request.body ?? {}).filter(([key]) =>
+          UPDATABLE_ME_FIELDS.includes(key),
+        ),
+      );
       const updatedUser = await strapi
         .documents("plugin::users-permissions.user")
         .update({

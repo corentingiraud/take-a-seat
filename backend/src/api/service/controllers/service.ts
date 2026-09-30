@@ -34,6 +34,10 @@ export default factories.createCoreController('api::service.service', ({ strapi 
       populate: ['user', 'service'],
     });
 
-    ctx.body = bookings;
+    ctx.body = await strapi.contentAPI.sanitize.output(
+      bookings,
+      strapi.getModel('api::booking.booking'),
+      { auth: ctx.state.auth },
+    );
   },
 }));

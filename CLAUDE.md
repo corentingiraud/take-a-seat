@@ -92,6 +92,13 @@ There is no policy layer. Controllers override the core actions and compare
 - `prepaid-card.find` — injects `filters.user = user.id` for non-admins before calling `super.find`.
 - `coworking-space.calendar` — masks other users down to first name + last initial for non-admins.
 
+One rule is global instead: a `content-api.output` sanitizer registered in [index.ts](backend/src/index.ts)
+strips `PRIVATE_USER_FIELDS` (email, username, phone, printerCode) from every user object that is not the
+viewer's own, for non-admins, at any populate depth. It only runs on `sanitize.output`, so a custom controller
+must return sanitized data (see `service.calendar`) or mask by hand. A new sensitive user field goes in that list.
+Do not revoke `user.find` from the coworker role to hide users: Strapi then strips every `populate=user` and
+rejects `filters[user]`, which breaks the booking form.
+
 New endpoints that expose user-scoped data must repeat this check explicitly.
 
 ## Custom routes are ordered by filename
@@ -115,7 +122,7 @@ Moment is imported from `@/lib/moment` on the frontend, which sets the `fr` loca
 The users-permissions extension ([strapi-server.ts](backend/src/extensions/users-permissions/strapi-server.ts))
 injects a verification middleware onto `/auth/local`, `/auth/local/register`, `/auth/forgot-password`,
 `/auth/reset-password` and `/auth/send-email-confirmation`, reading an `x-hcaptcha-token` header. The same
-file also adds `PUT /users/me`.
+file also adds `PUT /users/me`, which only accepts `UPDATABLE_ME_FIELDS` (first name, last name, phone).
 To disable it locally both sides must agree: `HCAPTCHA_DISABLED=true` (backend) and
 `NEXT_PUBLIC_HCAPTCHA_DISABLED=true` (frontend).
 
