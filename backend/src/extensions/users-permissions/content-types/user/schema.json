@@ -86,6 +86,9 @@
     },
     "lastName": {
       "type": "string"
+    },
+    "printerCode": {
+      "type": "string"
     }
   }
 }

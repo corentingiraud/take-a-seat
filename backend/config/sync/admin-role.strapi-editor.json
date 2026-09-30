@@ -466,7 +466,8 @@
           "prepaidCards",
           "phone",
           "firstName",
-          "lastName"
+          "lastName",
+          "printerCode"
         ]
       },
       "conditions": [],
@@ -510,7 +511,8 @@
           "prepaidCards",
           "phone",
           "firstName",
-          "lastName"
+          "lastName",
+          "printerCode"
         ]
       },
       "conditions": [],
@@ -536,7 +538,8 @@
           "prepaidCards",
           "phone",
           "firstName",
-          "lastName"
+          "lastName",
+          "printerCode"
         ]
       },
       "conditions": [],

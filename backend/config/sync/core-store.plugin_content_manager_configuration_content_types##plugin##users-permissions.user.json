@@ -218,6 +218,20 @@
           "sortable": true
         }
       },
+      "printerCode": {
+        "edit": {
+          "label": "Code personnel imprimante",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "Code personnel imprimante",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -320,6 +334,12 @@
         [
           {
             "name": "phone",
+            "size": 12
+          }
+        ],
+        [
+          {
+            "name": "printerCode",
             "size": 12
           }
         ],

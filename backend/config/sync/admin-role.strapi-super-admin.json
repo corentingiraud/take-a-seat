@@ -1085,7 +1085,7 @@
       "locale": null
     },
     {
-      "documentId": "vbqazo26yd7ej6p56o759bzm",
+      "documentId": "i77evps7ugaxdi4roxnanm4g",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
       "subject": "plugin::users-permissions.user",
@@ -1104,7 +1104,8 @@
           "prepaidCards",
           "phone",
           "firstName",
-          "lastName"
+          "lastName",
+          "printerCode"
         ]
       },
       "conditions": [],
@@ -1129,7 +1130,7 @@
       "locale": null
     },
     {
-      "documentId": "kzen8b1xkdfjhqlhb07xv1tu",
+      "documentId": "hxql6ctznq9jb4uwzz1q5qz6",
       "action": "plugin::content-manager.explorer.read",
       "actionParameters": {},
       "subject": "plugin::users-permissions.user",
@@ -1148,14 +1149,15 @@
           "prepaidCards",
           "phone",
           "firstName",
-          "lastName"
+          "lastName",
+          "printerCode"
         ]
       },
       "conditions": [],
       "locale": null
     },
     {
-      "documentId": "th65m268u6nd5lfe5xx9loxx",
+      "documentId": "jwltfqr4m3e85dgtnv9tlgn5",
       "action": "plugin::content-manager.explorer.update",
       "actionParameters": {},
       "subject": "plugin::users-permissions.user",
@@ -1174,7 +1176,8 @@
           "prepaidCards",
           "phone",
           "firstName",
-          "lastName"
+          "lastName",
+          "printerCode"
         ]
       },
       "conditions": [],

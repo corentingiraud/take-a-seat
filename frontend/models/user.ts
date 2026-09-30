@@ -17,6 +17,7 @@ interface UserInterface {
   firstName: string;
   lastName: string;
   phone: string;
+  printerCode?: string;
   lastNameInitial?: string; 
   role?: Role;
   bookings?: Booking[];
@@ -34,6 +35,7 @@ export class User implements StrapiData {
   firstName!: string;
   lastName!: string;
   phone!: string;
+  printerCode?: string;
   lastNameInitial?: string;
   role?: Role;
   bookings?: Booking[];
@@ -52,6 +54,7 @@ export class User implements StrapiData {
     firstName,
     lastName,
     phone,
+    printerCode,
     lastNameInitial,
     role,
     bookings,
@@ -67,6 +70,7 @@ export class User implements StrapiData {
     this.firstName = firstName;
     this.lastName = lastName;
     this.phone = phone;
+    this.printerCode = printerCode;
     this.lastNameInitial = lastNameInitial;
     this.role = role;
     this.bookings = bookings;
@@ -93,6 +97,7 @@ export class User implements StrapiData {
       firstName: json.firstName,
       lastName: json.lastName,
       phone: json.phone,
+      printerCode: json.printerCode,
       lastNameInitial: json.lastNameInitial,
       role: json.role ? Role.fromJson(json.role) : undefined,
       bookings: json.bookings ? json.bookings?.map(Booking.fromJson) : [],

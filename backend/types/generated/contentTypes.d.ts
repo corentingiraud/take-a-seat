@@ -1184,6 +1184,7 @@ export interface PluginUsersPermissionsUser
       'oneToMany',
       'api::prepaid-card.prepaid-card'
     >;
+    printerCode: Schema.Attribute.String;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
