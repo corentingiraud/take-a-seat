@@ -447,6 +447,19 @@
       "locale": null
     },
     {
+      "documentId": "ih74pn5ntg4xgw0pdzvwnqog",
+      "action": "plugin::content-manager.explorer.read",
+      "actionParameters": {},
+      "subject": "plugin::users-permissions.role",
+      "properties": {
+        "fields": [
+          "name"
+        ]
+      },
+      "conditions": [],
+      "locale": null
+    },
+    {
       "documentId": "xrtgay9rfo9r35rd3o3xcx51",
       "action": "plugin::content-manager.explorer.create",
       "actionParameters": {},
