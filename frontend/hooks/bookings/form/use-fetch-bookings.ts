@@ -4,7 +4,9 @@ import { Moment } from "moment";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Booking } from "@/models/booking";
 
-// Non-cancelled bookings inside [startDate, endDate] that match `filters`.
+// Non-cancelled bookings overlapping [startDate, endDate] that match `filters`. Overlap, not
+// containment: services have different slot lengths, so a 1h open-space seat must still be
+// found when booking a 30 min room inside it.
 export function useFetchBookings(
   filters: object,
   startDate: Moment,
@@ -31,10 +33,10 @@ export function useFetchBookings(
             filters: {
               ...filters,
               startDate: {
-                $gte: startDate.toDate(),
+                $lt: endDate.toDate(),
               },
               endDate: {
-                $lte: endDate.toDate(),
+                $gt: startDate.toDate(),
               },
               bookingStatus: {
                 $ne: "CANCELLED",
