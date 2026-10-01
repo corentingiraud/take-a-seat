@@ -31,6 +31,8 @@ import { RoleType } from "@/models/role";
 import { User } from "@/models/user";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { UserSelect } from "@/components/users/select";
+import { useConfirm } from "@/contexts/confirm-dialog-context";
+import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 
 interface BookingAvailabilitiesProps {
   coworkingSpace: CoworkingSpace;
@@ -79,6 +81,7 @@ export const BookingAvailabilities = ({
   const {
     availableBookings,
     unavailableBookings,
+    transferableBookings,
     prepaidCardRequired,
     bulkCreateAvailableBookings,
   } = useBookingAvailabilities({
@@ -104,6 +107,9 @@ export const BookingAvailabilities = ({
   const [selectedPrepaidCard, setSelectedPrepaidCard] =
     useState<PrepaidCard | null>(null);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const confirm = useConfirm();
+  const { cancelMany } = useBookingActions();
   const [confirmedCount, setConfirmedCount] = useState(0);
   const [confirmedWithCard, setConfirmedWithCard] = useState(false);
   const [confirmedCardBalance, setConfirmedCardBalance] = useState(0);
@@ -155,12 +161,44 @@ export const BookingAvailabilities = ({
 
     const usedCard = payWithCard ? selectedPrepaidCard : null;
 
-    await bulkCreateAvailableBookings(usedCard);
+    // Disabled from the first click, before the dialog opens: a double click must not
+    // send bulk-create twice.
+    setSubmitting(true);
+    let transfer = false;
+    try {
+      // Bookings already held on another service of this space on the same slots, e.g. an
+      // open-space seat when booking a meeting room: offer to cancel them, or keep both.
+      transfer =
+        transferableBookings.length > 0 &&
+        (await confirm({
+          title: "Transférer votre réservation ?",
+          description: `Vous avez déjà réservé ${[
+            ...new Set(transferableBookings.map((b) => b.service?.name)),
+          ].join(", ")} sur ${transferableBookings.length} de ces créneaux. Voulez-vous annuler ${
+            transferableBookings.length > 1 ? "ces réservations" : "cette réservation"
+          } au profit de ${service.name} ?`,
+          confirmText: "Transférer",
+          cancelText: "Garder les deux",
+        }));
+
+      // Create first: if it fails, the existing bookings are left untouched.
+      await bulkCreateAvailableBookings(usedCard);
+
+      if (transfer) await cancelMany(transferableBookings);
+    } finally {
+      setSubmitting(false);
+    }
 
     setConfirmedCount(availableBookings.length);
     setConfirmedWithCard(!!usedCard);
+    // Transferred bookings paid with this card are refunded to it on cancel.
+    const refundedHours = transfer
+      ? transferableBookings
+          .filter((b) => b.prepaidCard?.documentId === usedCard?.documentId)
+          .reduce((sum, b) => sum + b.durationInHours, 0)
+      : 0;
     setConfirmedCardBalance(
-      usedCard ? usedCard.remainingBalance - requiredHours : 0,
+      usedCard ? usedCard.remainingBalance - requiredHours + refundedHours : 0,
     );
     setBookingConfirmed(true);
   }
@@ -345,6 +383,7 @@ export const BookingAvailabilities = ({
       <DialogFooter className="mt-6">
         <Button
           disabled={
+            submitting ||
             availableBookings.length === 0 ||
             (isSuperAdmin && !effectiveUser) ||
             (prepaidCardRequired && !selectedPrepaidCard)

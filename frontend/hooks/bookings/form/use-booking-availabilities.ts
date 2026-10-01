@@ -70,7 +70,29 @@ export function useBookingAvailabilities({
     bookings: existingBookings,
     loading,
     error,
-  } = useFetchBookings(service.documentId, startDate, endDate);
+  } = useFetchBookings(
+    { service: { documentId: { $eq: service.documentId } } },
+    startDate,
+    endDate,
+  );
+
+  // The target user's bookings on the other services of this coworking space: the ones
+  // overlapping a slot being booked are offered for transfer.
+  const { bookings: otherServiceBookings } = useFetchBookings(
+    {
+      user: { documentId: { $eq: effectiveUser.documentId } },
+      service: {
+        documentId: { $ne: service.documentId },
+        coworkingSpace: {
+          documentId: { $eq: service.coworkingSpace?.documentId },
+        },
+      },
+    },
+    startDate,
+    endDate,
+    // The user's own bookings only, so populating the card exposes nobody else's.
+    ["service", "prepaidCard"],
+  );
 
   // Step 4: Determine which desired slots are available
   const { availableBookings, unavailableBookings, prepaidCardRequired } =
@@ -87,9 +109,18 @@ export function useBookingAvailabilities({
     userDocumentId: effectiveUser.documentId
   });
 
+  const transferableBookings = otherServiceBookings.filter((existing) =>
+    availableBookings.some(
+      (booking) =>
+        booking.startDate.isBefore(existing.endDate) &&
+        booking.endDate.isAfter(existing.startDate),
+    ),
+  );
+
   return {
     availableBookings,
     unavailableBookings,
+    transferableBookings,
     prepaidCardRequired,
     bulkCreateAvailableBookings,
     loading,

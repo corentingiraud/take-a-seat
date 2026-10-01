@@ -4,10 +4,12 @@ import { Moment } from "moment";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { Booking } from "@/models/booking";
 
+// Non-cancelled bookings inside [startDate, endDate] that match `filters`.
 export function useFetchBookings(
-  serviceDocumentId: string,
+  filters: object,
   startDate: Moment,
   endDate: Moment,
+  populate: string[] = ["user"],
 ) {
   const { fetchAll } = useStrapiAPI();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -25,13 +27,9 @@ export function useFetchBookings(
         const result = await fetchAll({
           ...Booking.strapiAPIParams,
           queryParams: {
-            populate: ["user"],
+            populate,
             filters: {
-              service: {
-                documentId: {
-                  $eq: serviceDocumentId,
-                },
-              },
+              ...filters,
               startDate: {
                 $gte: startDate.toDate(),
               },
@@ -64,7 +62,7 @@ export function useFetchBookings(
     return () => {
       isCancelled = true;
     };
-  }, [serviceDocumentId, startDate.valueOf(), endDate.valueOf()]);
+  }, [JSON.stringify([filters, populate]), startDate.valueOf(), endDate.valueOf()]);
 
   return {
     bookings,
