@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parisDay, prepaidCardRejection } from './prepaid-card.ts';
+import { parisDay, prepaidCardChange, prepaidCardRejection } from './prepaid-card.ts';
 
 const august = {
   validFrom: '2026-08-01',
@@ -50,4 +50,18 @@ test('fails closed', () => {
     prepaidCardRejection({ ...august, expirationDate: null }, ['2026-08-15T07:00:00.000Z']),
     /no usable validity window/,
   );
+});
+
+test('prepaidCardChange reads every relation form the document service emits', () => {
+  assert.equal(prepaidCardChange(undefined), undefined);
+  assert.equal(prepaidCardChange({ connect: [], disconnect: [] }), undefined);
+  // Shorthand documentId and { set } both arrive as { set }.
+  assert.equal(prepaidCardChange({ set: [{ id: 7 }] }), 7);
+  // The form the previous lifecycle missed.
+  assert.equal(prepaidCardChange({ connect: [{ id: 7 }] }), 7);
+  assert.equal(prepaidCardChange({ disconnect: [{ id: 3 }], connect: [{ id: 7 }] }), 7);
+  // Detaches.
+  assert.equal(prepaidCardChange(null), null);
+  assert.equal(prepaidCardChange({ set: [] }), null);
+  assert.equal(prepaidCardChange({ disconnect: [{ id: 3 }] }), null);
 });

@@ -133,6 +133,14 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
             return { rejection: "startDate must be before endDate" };
           }
 
+          // The card is debited bookingDuration per slot but refunded the real
+          // duration on cancel, so the two must match or a long slot mints hours.
+          if (end.getTime() - start.getTime() !== service.bookingDuration * 60_000) {
+            return {
+              rejection: `Each booking must last exactly ${service.bookingDuration} minutes`,
+            };
+          }
+
           const isUnavailable =
             service.coworkingSpace.unavailabilities.some(
               (unavailability) => {
@@ -323,6 +331,11 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
     // it to another slot or service would skip every check bulkCreate makes. The frontend
     // resends every field, so compare with the stored values rather than test presence.
     const data = ctx.request.body?.data ?? {};
+
+    // paymentStatus is never taken from an owner: the lifecycle sets PAID once a
+    // prepaid card is debited, so a booking cannot be marked paid without one.
+    if (!isAdmin) delete data.paymentStatus;
+
     const changed = (field: string, current: unknown) =>
       data[field] !== undefined && data[field] !== current;
 

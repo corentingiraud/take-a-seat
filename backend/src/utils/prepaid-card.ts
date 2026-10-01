@@ -66,3 +66,27 @@ export function prepaidCardRejection(
 
   return null;
 }
+
+type RelationRef = { id?: number };
+type RelationInput =
+  | null
+  | undefined
+  | { set?: RelationRef[]; connect?: RelationRef[]; disconnect?: RelationRef[] };
+
+/**
+ * The card a booking update points the `prepaidCard` relation at: its id, null
+ * for a detach, undefined when the relation is left alone.
+ *
+ * Reads the relation as lifecycles see it, after the document service has
+ * rewritten every input form (shorthand, array, set, connect) into
+ * `{ set }` or `{ set?, connect?, disconnect? }` with database ids. The admin
+ * panel sends empty connect/disconnect lists for an untouched relation.
+ */
+export function prepaidCardChange(relation: RelationInput): number | null | undefined {
+  if (relation === undefined) return undefined;
+  if (relation === null) return null;
+  if (relation.connect?.length) return relation.connect.at(-1)?.id ?? null;
+  if (Array.isArray(relation.set)) return relation.set.at(-1)?.id ?? null;
+  if (relation.disconnect?.length) return null;
+  return undefined;
+}

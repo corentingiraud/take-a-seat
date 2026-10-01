@@ -1,6 +1,6 @@
 import { errors } from '@strapi/utils';
 
-import { prepaidCardRejection } from '../../../../utils/prepaid-card';
+import { prepaidCardChange, prepaidCardRejection } from '../../../../utils/prepaid-card';
 
 async function getHours(booking: any) {
   if (!booking?.startDate || !booking?.endDate) return 0;
@@ -61,15 +61,6 @@ async function decrementPrepaidCardBalance(booking: any) {
   }
 }
 
-function getPrepaidCardIdFromUpdateData(data: any): string | undefined {
-  const prepaidCardRel = data?.prepaidCard;
-  if (!prepaidCardRel) return undefined;
-  if (prepaidCardRel.set && Array.isArray(prepaidCardRel.set)) {
-    return prepaidCardRel.set[0]?.id;
-  }
-  return undefined;
-}
-
 export default {
   async beforeUpdate(event: any) {
     const prepaidCardService = strapi.documents('api::prepaid-card.prepaid-card');
@@ -88,19 +79,22 @@ export default {
       newStatus === 'CANCELLED' &&
       previousStatus !== 'CANCELLED';
 
-    if (isCancelling) {
-      const hasCard = !!existingBooking?.prepaidCard?.documentId;
-      event.params.data.paymentStatus = hasCard ? 'REFUNDED' : 'CANCELLED';
+    const addedCardId = prepaidCardChange(event.params.data.prepaidCard);
+    const currentCardId = existingBooking?.prepaidCard?.id ?? null;
+    const cardChanges = addedCardId !== undefined && addedCardId !== currentCardId;
 
-      if (hasCard) {
-        await incrementPrepaidCardBalance(existingBooking);
-      }
+    // Hours were debited from that card, and only it gets them back on cancel.
+    if (cardChanges && currentCardId && existingBooking.paymentStatus === 'PAID') {
+      throw new errors.ApplicationError(
+        'The prepaid card of a paid booking cannot be changed, cancel the booking instead'
+      );
     }
 
-    const addedCardId = getPrepaidCardIdFromUpdateData(event.params.data);
-    const nowHasCard = !!addedCardId;
+    if (cardChanges && addedCardId !== null) {
+      if (isCancelling || existingBooking.paymentStatus !== 'PENDING') {
+        throw new errors.ApplicationError('A prepaid card can only pay a pending booking');
+      }
 
-    if (nowHasCard && existingBooking.paymentStatus === 'PENDING') {
       const addedCard = await prepaidCardService.findFirst({
         filters: { id: addedCardId },
         populate: ['user'],
@@ -130,6 +124,16 @@ export default {
       };
 
       await decrementPrepaidCardBalance(bookingWithCard);
+      event.params.data.paymentStatus = 'PAID';
+    }
+
+    if (isCancelling) {
+      const hasCard = !!existingBooking?.prepaidCard?.documentId;
+      event.params.data.paymentStatus = hasCard ? 'REFUNDED' : 'CANCELLED';
+
+      if (hasCard) {
+        await incrementPrepaidCardBalance(existingBooking);
+      }
     }
   },
 
