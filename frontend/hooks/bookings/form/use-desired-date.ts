@@ -87,27 +87,30 @@ export function useDesiredDates({
   const desiredDates = [];
 
   if (duration.equals(AVAILABLE_DURATION.RANGE_OF_DATES) && endDay) {
-    const currentDay = startDay!.clone();
+    const unavailabilities = service.coworkingSpace?.unavailabilities ?? [];
 
-    while (currentDay.isSameOrBefore(endDay)) {
+    // The range may span days with no availability (e.g. between two periods)
+    for (
+      const currentDay = startDay!.clone();
+      currentDay.isSameOrBefore(endDay);
+      currentDay.add(1, "day")
+    ) {
       const availability = service.findAvailabilityForDate(currentDay);
 
       if (!availability) continue;
 
-      // Check if unavailabilities
-      for (const { startDate, endDate } of service.coworkingSpace
-        ?.unavailabilities || []) {
-        if (
-          currentDay.isSameOrBefore(endDate) &&
-          currentDay.isSameOrAfter(startDate)
-        ) {
-          continue;
-        }
-      }
-      const timeSlots = availability.getBookingSlotsFor(currentDay);
+      // Drop slots blocked by an unavailability
+      const timeSlots = availability
+        .getBookingSlotsFor(currentDay)
+        .filter(
+          ({ start, end }) =>
+            !unavailabilities.some(
+              ({ startDate, endDate }) =>
+                start.isBefore(endDate) && end.isAfter(startDate),
+            ),
+        );
 
       desiredDates.push(...timeSlots);
-      currentDay.add(1, "day");
     }
   }
 
