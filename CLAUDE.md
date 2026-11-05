@@ -21,7 +21,7 @@ cd backend && TZ='UTC' npm run develop   # Strapi on :1337  — TZ=UTC is requir
 cd frontend && npm run dev        # Next.js on :3000
 cd frontend && npm run lint       # ESLint
 
-nvm use 22 && cd backend && node --experimental-strip-types --test 'src/**/*.test.ts'
+nvm use 24 && cd backend && node --experimental-strip-types --test 'src/**/*.test.ts'
 
 ./scripts/dev/dump-db.sh                       # dump the running container's DB into db-dumps/
 ./scripts/dev/restore-db.sh --recreate         # restore the latest dump (add -f <file> for a specific one)
