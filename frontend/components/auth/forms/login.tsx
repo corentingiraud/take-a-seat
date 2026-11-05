@@ -14,7 +14,6 @@ import { siteConfig } from "@/config/site";
 import { PasswordInput } from "@/components/ui/password-input";
 import { emailRule, passwordRule } from "@/lib/validators/auth";
 import { validateAll, validateField } from "@/lib/validators/validators";
-import HCaptchaWidget from "@/components/security/hcaptcha-widget";
 
 type Fields = "email" | "password";
 type Values = Record<Fields, string>;
@@ -35,7 +34,6 @@ export function LoginForm({
     email: "",
     password: "",
   });
-  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) router.push(siteConfig.path.dashboard.href);
@@ -82,11 +80,9 @@ export function LoginForm({
     setErrors((prev) => ({ ...prev, ...(result.errors as any) }));
     setTouched({ email: true, password: true });
 
-    if (!hCaptchaToken) return;
-
     if (!result.isValid) return;
 
-    await login(values.email.trim(), values.password, hCaptchaToken);
+    await login(values.email.trim(), values.password);
   };
 
   return (
@@ -147,11 +143,6 @@ export function LoginForm({
                   </p>
                 )}
               </div>
-
-              <HCaptchaWidget
-                className="self-center"
-                onChange={setHCaptchaToken}
-              />
 
               <Button
                 className="w-full"

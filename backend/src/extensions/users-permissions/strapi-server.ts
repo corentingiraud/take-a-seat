@@ -142,7 +142,9 @@ function injectHCaptchaOnAuth(plugin) {
     strapi.log.info(`[hCaptcha] enabled on POST ${routePath}`);
   };
 
-  addCaptchaMw("/auth/local", "POST");
+  // No captcha on login: users-permissions already rate-limits /auth/* per
+  // IP and identifier (10 req/min by default). The routes kept below send
+  // emails or create accounts, which is where abuse costs something.
   addCaptchaMw("/auth/local/register", "POST");
   addCaptchaMw("/auth/forgot-password", "POST");
   addCaptchaMw("/auth/reset-password", "POST");

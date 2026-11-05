@@ -124,8 +124,9 @@ Moment is imported from `@/lib/moment` on the frontend, which sets the `fr` loca
 ## hCaptcha
 
 The users-permissions extension ([strapi-server.ts](backend/src/extensions/users-permissions/strapi-server.ts))
-injects a verification middleware onto `/auth/local`, `/auth/local/register`, `/auth/forgot-password`,
-`/auth/reset-password` and `/auth/send-email-confirmation`, reading an `x-hcaptcha-token` header. The same
+injects a verification middleware onto `/auth/local/register`, `/auth/forgot-password`,
+`/auth/reset-password` and `/auth/send-email-confirmation`, reading an `x-hcaptcha-token` header. Login
+(`/auth/local`) is left out on purpose and relies on the plugin's built-in rate limit. The same
 file also adds `PUT /users/me`, which only accepts `UPDATABLE_ME_FIELDS` (first name, last name, phone).
 To disable it locally both sides must agree: `HCAPTCHA_DISABLED=true` (backend) and
 `NEXT_PUBLIC_HCAPTCHA_DISABLED=true` (frontend).

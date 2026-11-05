@@ -20,11 +20,7 @@ interface AuthContextType {
   isSuperAdmin: boolean;
   loading: boolean;
   getJWT: () => string | null;
-  login: (
-    username: string,
-    password: string,
-    hCaptchaToken: string,
-  ) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   signup: (
     user: User,
     password: string,
@@ -76,6 +72,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
       });
 
+      // Only an auth rejection means the token is dead. Network errors, the
+      // maintenance page served during a deploy and 5xx are transient: keep
+      // the token so a reload signs the user back in.
+      if (res.status === 401 || res.status === 403) {
+        logout();
+
+        return;
+      }
+
       if (!res.ok) throw new Error("Failed to fetch user");
 
       const data = await res.json();
@@ -87,8 +92,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch {
-      toast.error("Erreur lors du chargement de l'utilisateur");
-      logout();
+      toast.error(
+        "Impossible de charger votre compte. Rechargez la page dans un instant.",
+      );
     } finally {
       setLoading(false);
     }
@@ -98,11 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
 
-  const login = async (
-    email: string,
-    password: string,
-    hCaptchaToken: string,
-  ) => {
+  const login = async (email: string, password: string) => {
     setLoading(true);
 
     try {
@@ -110,7 +112,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-hcaptcha-token": hCaptchaToken,
         },
         body: JSON.stringify({
           identifier: email,
