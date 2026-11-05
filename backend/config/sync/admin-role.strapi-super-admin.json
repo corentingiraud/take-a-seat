@@ -700,6 +700,15 @@
       "locale": null
     },
     {
+      "documentId": "nf8r27wnirhe8abisvd1xghe",
+      "action": "admin::debug-dump.read",
+      "actionParameters": {},
+      "subject": null,
+      "properties": {},
+      "conditions": [],
+      "locale": null
+    },
+    {
       "documentId": "c7q5kqxer8zk4ktxb62eyy04",
       "action": "admin::marketplace.read",
       "actionParameters": {},
