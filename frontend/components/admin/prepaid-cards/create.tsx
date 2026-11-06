@@ -7,6 +7,7 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 
 import { MultiUserSelect } from "@/components/users/multi-select";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -51,6 +52,7 @@ export const AdminPrepaidCardsCreate = () => {
   );
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [isPaid, setIsPaid] = useState(true);
 
   const getConfig = () => {
     if (cardCategory === "subscription" && subscriptionLevel) {
@@ -76,6 +78,7 @@ export const AdminPrepaidCardsCreate = () => {
     setSelectedMonth(startOfMonth(new Date()));
     setSelectedDate(undefined);
     setCalendarOpen(false);
+    setIsPaid(true);
   };
 
   const canSubmit = () => {
@@ -215,6 +218,15 @@ export const AdminPrepaidCardsCreate = () => {
         />
       </div>
 
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="is-paid"
+          checked={isPaid}
+          onCheckedChange={(v) => setIsPaid(v === true)}
+        />
+        <Label htmlFor="is-paid">Déjà payée</Label>
+      </div>
+
       {selectedUsers.length > 0 && config && (
         <div className="mt-6 border rounded-md p-4 space-y-2">
           <p className="font-semibold">Récapitulatif :</p>
@@ -229,6 +241,7 @@ export const AdminPrepaidCardsCreate = () => {
             ))}
           </ul>
           <p className="text-muted-foreground text-sm">{getValidityLabel()}</p>
+          <p className="text-sm">Paiement : {isPaid ? "Payée" : "À payer"}</p>
         </div>
       )}
 
@@ -246,6 +259,7 @@ export const AdminPrepaidCardsCreate = () => {
               hours: config.hours,
               validityMonths: config.validityMonths,
               category: cardCategory,
+              isPaid,
             });
             resetForm();
           }}

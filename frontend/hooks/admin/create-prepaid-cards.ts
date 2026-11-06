@@ -69,12 +69,14 @@ export function useCreatePrepaidCards() {
       hours,
       validityMonths,
       category,
+      isPaid,
     }: {
       startDate: Date;
       selectedUsers: User[];
       hours: number;
       validityMonths: number;
       category: CardCategory;
+      isPaid: boolean;
     }) => {
       const validFrom =
         category === "subscription"
@@ -97,7 +99,7 @@ export function useCreatePrepaidCards() {
               remainingBalance: hours,
               initialBalance: hours,
               user: user,
-              paymentStatus: PaymentStatus.PENDING,
+              paymentStatus: isPaid ? PaymentStatus.PAID : PaymentStatus.PENDING,
             }),
           }),
         ),
