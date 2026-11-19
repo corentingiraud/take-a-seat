@@ -89,13 +89,13 @@ There is no policy layer. Controllers override the core actions and compare
 `ctx.state.user.role.type` to `ADMIN_ROLE_TYPE`:
 
 - `booking.findOne` / `update`, `prepaid-card.findOne` — owner-or-admin, else `unauthorized`.
-- `prepaid-card.find` — injects `filters.user = user.id` for non-admins before calling `super.find`.
+- `booking.find`, `prepaid-card.find` — inject `filters.user = user.id` for non-admins before calling `super.find`.
 - `coworking-space.calendar` — masks other users down to first name + last initial for non-admins.
 
 One rule is global instead: a `content-api.output` sanitizer registered in [index.ts](backend/src/index.ts)
 strips `PRIVATE_USER_FIELDS` (email, username, phone, printerCode) from every user object that is not the
 viewer's own, for non-admins, at any populate depth. It only runs on `sanitize.output`, so a custom controller
-must return sanitized data (see `service.calendar`) or mask by hand. A new sensitive user field goes in that list.
+must return `strapi.contentAPI.sanitize.output` data or mask by hand (see `coworking-space.calendar`). A new sensitive user field goes in that list.
 Do not revoke `user.find` from the coworker role to hide users: Strapi then strips every `populate=user` and
 rejects `filters[user]`, which breaks the booking form.
 
@@ -108,7 +108,7 @@ New endpoints that expose user-scoped data must repeat this check explicitly.
 ## Custom routes are ordered by filename
 
 Strapi loads route files alphabetically, so custom routes live in `01-customs.ts` and the core router in
-`02-core.ts` (`booking`, `service`, `coworking-space`). A custom path such as `/services/:id/calendar`
+`02-core.ts` (`booking`, `coworking-space`). A custom path such as `/coworking-spaces/:id/calendar`
 registered after the core router is shadowed by the core `:id` handler. Keep the numeric prefixes.
 
 ## Dates and timezone

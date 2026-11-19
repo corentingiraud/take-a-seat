@@ -15,6 +15,8 @@ type UnavailableBooking = {
 interface UseBookingAvailabilityParams {
   desiredBookings: Booking[];
   existingBookings: Booking[];
+  // Every user's bookings on the service, users masked: only counted.
+  seatBookings: Booking[];
   service: Service;
   user: User;
 }
@@ -22,6 +24,7 @@ interface UseBookingAvailabilityParams {
 export function useBookingAvailability({
   desiredBookings,
   existingBookings,
+  seatBookings,
   service,
   user,
 }: UseBookingAvailabilityParams) {
@@ -77,15 +80,14 @@ export function useBookingAvailability({
 
       const availability = service.findAvailabilityForDate(desired.startDate)!;
 
-      const overlapping = existingBookings.filter(
-        (existing) =>
-          desired.startDate.isSameOrAfter(existing.startDate) &&
-          desired.endDate.isSameOrBefore(existing.endDate),
-      );
+      const contains = (existing: Booking) =>
+        desired.startDate.isSameOrAfter(existing.startDate) &&
+        desired.endDate.isSameOrBefore(existing.endDate);
 
-      const maxReached = overlapping.length >= availability.numberOfSeats;
+      const maxReached =
+        seatBookings.filter(contains).length >= availability.numberOfSeats;
 
-      const userAlreadyBooked = overlapping.some(
+      const userAlreadyBooked = existingBookings.filter(contains).some(
         (booking) => booking.user?.id === user.id,
       );
 
@@ -130,6 +132,7 @@ export function useBookingAvailability({
   }, [
     desiredBookings,
     existingBookings,
+    seatBookings,
     service,
     user,
     isSuperAdmin,

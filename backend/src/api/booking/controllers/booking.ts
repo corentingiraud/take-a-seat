@@ -7,6 +7,33 @@ const sameInstant = (a: unknown, b: unknown) =>
   new Date(a as string).getTime() === new Date(b as string).getTime();
 
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
+  // Coworkers only list their own bookings; other users' occupancy is read through the
+  // masked coworking-space calendar. The injected key is ANDed with the client's filters
+  // and overwrites any `user` filter they carry.
+  async find(ctx) {
+    const user = ctx.state.user;
+
+    if (!user) {
+      return ctx.unauthorized();
+    }
+
+    if (user.role?.type !== ADMIN_ROLE_TYPE) {
+      const filters = ctx.query?.filters && typeof ctx.query.filters === 'object'
+        ? ctx.query.filters
+        : {};
+
+      ctx.query = {
+        ...ctx.query,
+        filters: {
+          ...filters,
+          user: user.id,
+        },
+      };
+    }
+
+    return await super.find(ctx);
+  },
+
   async bulkCreate(ctx) {
     const actorUser = ctx.state.user; // user authentifié (admin ou non)
     if (!actorUser) return ctx.unauthorized();
