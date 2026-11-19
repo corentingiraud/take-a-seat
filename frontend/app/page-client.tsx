@@ -9,6 +9,7 @@ import { BookingsList } from "@/components/bookings/list/list";
 import { PrepaidCardsList } from "@/components/prepaid-cards/list/list";
 import { UnpaidBookingsAlert } from "@/components/bookings/unpaid-alert";
 import { Section } from "@/components/ui/section";
+import { TodayPlanning } from "@/components/dashboard/today/today-planning";
 import { Button } from "@/components/ui/button";
 
 export default function HomePageClient() {
@@ -29,9 +30,13 @@ export default function HomePageClient() {
         Tableau de bord
       </h3>
 
-      <Section title="Mes cartes prépayées">
-        <PrepaidCardsList user={user} />
-      </Section>
+      <TodayPlanning />
+
+      <div id="prepaid-cards">
+        <Section title="Mes cartes prépayées">
+          <PrepaidCardsList user={user} />
+        </Section>
+      </div>
 
       <Section
         action={
