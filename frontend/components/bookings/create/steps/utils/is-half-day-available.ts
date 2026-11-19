@@ -11,9 +11,7 @@ export function isHalfDayAvailable(
   halfDay: HalfDay,
   unavailabilities: Unavailability[],
   service: Service,
-  canBookInPast = false,
 ): boolean {
-  const now = moment();
   const halfDayDuration = AVAILABLE_DURATION.HALF_DAY.getDuration()!;
 
   // Find availability covering the given date
@@ -54,19 +52,13 @@ export function isHalfDayAvailable(
 
   const end = start.clone().add(halfDayDuration);
 
-  // Rule 1: If the half-day is today and end is past, it's not available
-  // (admins may book in the past, same as shouldDisableDate)
-  if (!canBookInPast && date.isSame(now, "day") && now.isAfter(end)) {
-    return false;
-  }
-
-  // Rule 2: Must not overlap with unavailabilities
+  // Rule 1: Must not overlap with unavailabilities
   for (const u of unavailabilities) {
     if (start.isBefore(u.endDate) && end.isAfter(u.startDate)) {
       return false;
     }
   }
 
-  // Rule 3: Must be within the defined weekly slots
+  // Rule 2: Must be within the defined weekly slots
   return availability.includeSlot(start, halfDayDuration);
 }
