@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+import { People } from "./people";
 import { mergeRanges, remainingSlots, type Range } from "./remaining-slots";
 
 import moment from "@/lib/moment";
@@ -20,9 +21,24 @@ import { Booking } from "@/models/booking";
 import { BookingStatus } from "@/models/booking-status";
 import { CoworkingSpace } from "@/models/coworking-space";
 import { PrepaidCard } from "@/models/prepaid-card";
-import { groupBookingsByPerson } from "@/models/utils/booking-people";
+import { Service } from "@/models/service";
 import { Button } from "@/components/ui/button";
-import { Section } from "@/components/ui/section";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // 8h, 8h30
 const hour = (ms: number) => {
@@ -38,11 +54,20 @@ const toRange = (b: Booking): Range => ({
   end: b.endDate.valueOf(),
 });
 
+const SERVICE_KEY = "favoriteServiceId";
+
 export function TodayPlanning() {
   const { user } = useAuth();
   const confirm = useConfirm();
   const { fetchAll } = useStrapiAPI();
   const [busy, setBusy] = useState(false);
+  const [storedServiceId, setStoredServiceId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(SERVICE_KEY);
+    } catch {
+      return null;
+    }
+  });
 
   const today = moment();
   const now = today.valueOf();
@@ -51,7 +76,8 @@ export function TodayPlanning() {
     queryKey: ["coworking-spaces"],
     queryFn: () => fetchAll(CoworkingSpace.strapiAPIParams),
   });
-  const { selected, select } = useFavoriteCoworkingSpace(spaces);
+  const { selected, select, latestServiceId } =
+    useFavoriteCoworkingSpace(spaces);
 
   const { data: space, isLoading } = useCoworkingSpaceCalendar({
     coworkingSpaceId: selected?.documentId,
@@ -65,44 +91,64 @@ export function TodayPlanning() {
   });
   const { usablePrepaidCards } = usePrepaidCard({});
 
-  // Openspace = service with the most seats in today's availability.
-  const seatsOf = (s: NonNullable<typeof space>["services"][number]) =>
-    s.findAvailabilityForDate(today)?.numberOfSeats ?? 0;
-  const services = [...(space?.services ?? [])].sort((a, b) => seatsOf(b) - seatsOf(a));
-  const openspace = services[0] && seatsOf(services[0]) > 0 ? services[0] : null;
-  const availability = openspace?.findAvailabilityForDate(today) ?? null;
+  const slotsOf = (s: Service) => {
+    const av = s.findAvailabilityForDate(today);
 
-  const activeBookings = (openspace?.bookings ?? []).filter(
+    if (!av || !space) return [];
+
+    return s
+      .getTimeSlot(today)
+      .map((t) => {
+        const start = today
+          .clone()
+          .startOf("day")
+          .hour(t.hour)
+          .minute(t.minute);
+
+        return { start, end: start.clone().add(s.bookingDuration, "minutes") };
+      })
+      .filter(
+        (x) => !space.unavailabilities.some((u) => u.overlaps(x.start, x.end)),
+      )
+      .map((x) => ({
+        start: x.start.valueOf(),
+        end: x.end.valueOf(),
+        seats: av.numberOfSeats,
+      }));
+  };
+  const seatsOf = (s: Service) =>
+    s.findAvailabilityForDate(today)?.numberOfSeats ?? 0;
+  const allServices = space?.services ?? [];
+  // Services open today, most seats first.
+  const openServices = allServices
+    .filter((s) => slotsOf(s).length > 0)
+    .sort((a, b) => seatsOf(b) - seatsOf(a));
+  const known = (id?: string | null) =>
+    openServices.find((s) => s.documentId === id);
+  const chosen =
+    known(storedServiceId) ?? known(latestServiceId) ?? openServices[0] ?? null;
+  const availability = chosen?.findAvailabilityForDate(today) ?? null;
+  const daySlots = chosen ? slotsOf(chosen) : [];
+
+  function chooseService(id: string) {
+    setStoredServiceId(id);
+    try {
+      localStorage.setItem(SERVICE_KEY, id);
+    } catch {
+      // ignore: the choice just lasts for this page view
+    }
+  }
+
+  const activeBookings = (chosen?.bookings ?? []).filter(
     (b) => b.bookingStatus !== BookingStatus.CANCELLED,
   );
   const ownBookings = myBookings
     .filter(
       (b) =>
         b.bookingStatus !== BookingStatus.CANCELLED &&
-        b.service?.documentId === openspace?.documentId,
+        b.service?.documentId === chosen?.documentId,
     )
     .map(toRange);
-
-  // Opening slots of today, minus those inside a space unavailability.
-  const daySlots =
-    openspace && availability && space
-      ? openspace
-          .getTimeSlot(today)
-          .map((t) => {
-            const start = today.clone().startOf("day").hour(t.hour).minute(t.minute);
-
-            return {
-              start,
-              end: start.clone().add(openspace.bookingDuration, "minutes"),
-            };
-          })
-          .filter((s) => !space.unavailabilities.some((u) => u.overlaps(s.start, s.end)))
-          .map((s) => ({
-            start: s.start.valueOf(),
-            end: s.end.valueOf(),
-            seats: availability.numberOfSeats,
-          }))
-      : [];
 
   const lastOwnEnd = Math.max(0, ...ownBookings.map((r) => r.end));
   const remaining = remainingSlots({
@@ -112,7 +158,7 @@ export function TodayPlanning() {
     ownBookings,
   }).filter((s) => s.start >= lastOwnEnd);
 
-  const cost = openspace?.hoursFor(remaining.length) ?? 0;
+  const cost = chosen?.hoursFor(remaining.length) ?? 0;
   const card = PrepaidCard.best(usablePrepaidCards, cost);
   const cardCovers = !!card && card.remainingBalance >= cost;
   const blockedByCard = !!availability?.prepaidCardOnly && !cardCovers;
@@ -124,7 +170,7 @@ export function TodayPlanning() {
         new Booking({
           startDate: moment(s.start),
           endDate: moment(s.end),
-          service: openspace,
+          service: chosen,
           user,
         }),
     ),
@@ -133,7 +179,9 @@ export function TodayPlanning() {
   async function book() {
     const range = label(mergeRanges(remaining));
     const ok = await confirm({
-      title: extending ? "Prolonger la journée" : "Réserver le reste de la journée",
+      title: extending
+        ? "Prolonger la journée"
+        : "Réserver le reste de la journée",
       description: `${range} à ${selected?.name}${
         cardCovers
           ? `, ${hours(cost)} débitées de la carte « ${card!.name} ».`
@@ -153,144 +201,147 @@ export function TodayPlanning() {
     }
   }
 
-  // Unlike the calendar, names are masked to first name + initial: compare on that.
-  const people = (s: (typeof services)[number]) =>
-    groupBookingsByPerson(
-      s.bookings
-        .filter((b) => b.bookingStatus !== BookingStatus.CANCELLED && b.user)
-        .map((b) => ({
-          name: b.user!.firstNameWithInitial,
-          start: b.startDate.toDate(),
-          end: b.endDate.toDate(),
-        })),
-    );
-  const me = user?.firstNameWithInitial;
-  const withBookings = services.filter((s) => s.bookings.length > 0);
-  const shown = [
-    ...(openspace ? [openspace] : []),
-    ...withBookings.filter((s) => s !== openspace),
-  ];
-
-  const occupied = openspace
-    ? activeBookings.filter((b) => b.startDate.isSameOrBefore(today) && b.endDate.isAfter(today))
-        .length
-    : 0;
-  const open = daySlots.some((s) => s.start <= now && now < s.end);
-
   const name = selected?.name ?? "";
+  const isOpenNow = (s: Service) =>
+    slotsOf(s).some((x) => x.start <= now && now < x.end);
+  const note = "rounded-md bg-muted px-3 py-2 text-sm";
 
   return (
-    <Section>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Aujourd&apos;hui{name && ` à ${name}`}
-          </h4>
-          <p className="text-sm text-muted-foreground first-letter:uppercase">
-            {today.format("dddd D MMMM")}
-          </p>
-        </div>
-        {selected && (
-          <Link
-            className="text-sm underline"
-            href={`${siteConfig.path.calendar.href}?coworkingSpaceId=${selected.documentId}`}
-          >
-            Voir la semaine
-          </Link>
-        )}
-      </div>
-
-      {spaces.length > 1 && (
-        <div className="mb-4 flex gap-2">
-          {spaces.map((s) => (
-            <Button
-              key={s.documentId}
-              size="sm"
-              variant={s.documentId === selected?.documentId ? "default" : "outline"}
-              onClick={() => select(s.documentId)}
-            >
-              {s.name}
-            </Button>
-          ))}
-        </div>
-      )}
-
-      {isLoading || !space ? (
-        <p className="text-sm text-muted-foreground">Chargement...</p>
-      ) : (
-        <div className="space-y-4">
-          {openspace && open && (
-            <p className="text-sm font-medium">
-              {occupied}/{availability!.numberOfSeats} places occupées
-            </p>
-          )}
-
-          {withBookings.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              Personne n&apos;a encore réservé aujourd&apos;hui.
-            </p>
-          )}
-          {shown.map((s) => {
-            const list = people(s);
-
-            if (list.length === 0) return null;
-
-            return (
-              <div key={s.documentId}>
-                <h5 className="text-sm font-semibold">{s.name}</h5>
-                <ul className="text-sm">
-                  {list.map((p) => (
-                    <li key={p.name} className={p.name === me ? "font-semibold" : undefined}>
-                      {p.name} {p.label}
-                      {p.name === me && " (vous)"}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-
-          <div className="space-y-2 border-t pt-4">
-            {daySlots.length === 0 ? (
-              <p className="text-sm font-medium">Fermé aujourd&apos;hui</p>
-            ) : remaining.length === 0 ? (
-              extending && (
-                <p className="text-sm font-medium">
-                  Vous êtes inscrit aujourd&apos;hui {label(mergeRanges(ownBookings))}
-                </p>
-              )
-            ) : blockedByCard ? (
-              <p className="text-sm">
-                Votre carte prépayée n&apos;a pas assez de crédit pour réserver le reste de la
-                journée.{" "}
-                <a className="underline" href="#prepaid-cards">
-                  Voir mes cartes
-                </a>
-              </p>
-            ) : (
-              <>
-                <Button disabled={busy} onClick={book}>
-                  {extending
-                    ? `Prolonger jusqu'à ${hour(remaining[remaining.length - 1].end)}`
-                    : remaining.length === daySlots.length
-                      ? `Réserver ${label(mergeRanges(remaining))}`
-                      : `Réserver le reste de la journée (${label(mergeRanges(remaining))})`}
-                </Button>
-                <p className="text-sm text-muted-foreground">
-                  {cardCovers
-                    ? `${hours(cost)} débitées de la carte « ${card!.name} » (${hours(card!.remainingBalance)} restantes, puis ${hours(card!.remainingBalance - cost)})`
-                    : "Aucune carte utilisée, paiement sur place."}
-                </p>
-              </>
-            )}
-            <div>
-              <Link className="text-sm underline" href={siteConfig.path.book.href}>
-                Autre réservation
+    <Card className="mb-8">
+      <CardHeader className="space-y-3 p-4 sm:p-6">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <CardTitle className="text-lg">
+              Aujourd&apos;hui{name && ` à ${name}`}
+            </CardTitle>
+            <CardDescription className="mt-1 first-letter:uppercase">
+              {today.format("dddd D MMMM")}
+            </CardDescription>
+          </div>
+          {selected && (
+            <Button asChild size="sm" variant="outline" className="shrink-0">
+              <Link
+                href={`${siteConfig.path.calendar.href}?coworkingSpaceId=${selected.documentId}`}
+              >
+                Voir la semaine
               </Link>
+            </Button>
+          )}
+        </div>
+        {spaces.length > 1 && (
+          <div className="flex flex-wrap gap-2">
+            {spaces.map((s) => (
+              <Button
+                key={s.documentId}
+                size="sm"
+                variant={
+                  s.documentId === selected?.documentId ? "default" : "outline"
+                }
+                onClick={() => select(s.documentId)}
+              >
+                {s.name}
+              </Button>
+            ))}
+          </div>
+        )}
+      </CardHeader>
+      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+        {isLoading || !space ? (
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-9 w-48" />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <People
+              services={allServices}
+              chosenId={chosen?.documentId}
+              me={user?.firstNameWithInitial}
+              isOpenNow={isOpenNow}
+            />
+            <Separator />
+            <div className="space-y-3">
+              {openServices.length > 1 &&
+                (openServices.length <= 3 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {openServices.map((s) => (
+                      <Button
+                        key={s.documentId}
+                        size="sm"
+                        variant={
+                          s.documentId === chosen?.documentId
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => chooseService(s.documentId)}
+                      >
+                        {s.name}
+                      </Button>
+                    ))}
+                  </div>
+                ) : (
+                  <Select
+                    value={chosen?.documentId}
+                    onValueChange={chooseService}
+                  >
+                    <SelectTrigger className="w-full sm:w-64">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {openServices.map((s) => (
+                        <SelectItem key={s.documentId} value={s.documentId}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ))}
+              {daySlots.length === 0 ? (
+                <p className={note}>Fermé aujourd&apos;hui</p>
+              ) : remaining.length === 0 ? (
+                extending && (
+                  <p className={note}>
+                    Vous êtes inscrit aujourd&apos;hui{" "}
+                    {label(mergeRanges(ownBookings))}
+                  </p>
+                )
+              ) : blockedByCard ? (
+                <p className={note}>
+                  Votre carte prépayée n&apos;a pas assez de crédit pour
+                  réserver le reste de la journée.{" "}
+                  <a className="underline" href="#prepaid-cards">
+                    Voir mes cartes
+                  </a>
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    className="h-auto w-full whitespace-normal sm:w-auto"
+                    disabled={busy}
+                    onClick={book}
+                  >
+                    {extending
+                      ? `Prolonger jusqu'à ${hour(remaining[remaining.length - 1].end)}`
+                      : remaining.length === daySlots.length
+                        ? `Réserver ${label(mergeRanges(remaining))}`
+                        : `Réserver le reste de la journée (${label(mergeRanges(remaining))})`}
+                  </Button>
+                  <p className="text-sm text-muted-foreground">
+                    {cardCovers
+                      ? `${hours(cost)} débitées de la carte « ${card!.name} » (${hours(card!.remainingBalance)} restantes, puis ${hours(card!.remainingBalance - cost)})`
+                      : "Aucune carte utilisée, paiement sur place."}
+                  </p>
+                </div>
+              )}
+              <Button asChild variant="link" size="sm" className="h-auto p-0">
+                <Link href={siteConfig.path.book.href}>Autre réservation</Link>
+              </Button>
             </div>
           </div>
-        </div>
-      )}
-    </Section>
+        )}
+      </CardContent>
+    </Card>
   );
 }

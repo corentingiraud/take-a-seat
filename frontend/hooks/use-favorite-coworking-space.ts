@@ -26,7 +26,7 @@ export function useFavoriteCoworkingSpace(spaces: CoworkingSpace[]) {
     }
   });
 
-  const { data: latestSpaceId, isLoading } = useQuery({
+  const { data: latest, isLoading } = useQuery({
     queryKey: ["bookings", "latest-space", user?.documentId],
     enabled: !!user?.documentId,
     queryFn: async () => {
@@ -41,13 +41,18 @@ export function useFavoriteCoworkingSpace(spaces: CoworkingSpace[]) {
         },
       });
 
-      return res.data[0]?.service?.coworkingSpace?.documentId ?? null;
+      const service = res.data[0]?.service;
+
+      return {
+        spaceId: service?.coworkingSpace?.documentId ?? null,
+        serviceId: service?.documentId ?? null,
+      };
     },
   });
 
   const known = (id?: string | null) => spaces.find((s) => s.documentId === id);
   const selected =
-    known(stored) ?? known(latestSpaceId) ?? (isLoading ? undefined : spaces[0]);
+    known(stored) ?? known(latest?.spaceId) ?? (isLoading ? undefined : spaces[0]);
 
   function select(documentId: string) {
     setStored(documentId);
@@ -58,5 +63,9 @@ export function useFavoriteCoworkingSpace(spaces: CoworkingSpace[]) {
     }
   }
 
-  return { selected, select };
+  // Service of that latest booking, only meaningful when it belongs to the selected space.
+  const latestServiceId =
+    latest?.spaceId === selected?.documentId ? latest?.serviceId : null;
+
+  return { selected, select, latestServiceId };
 }
