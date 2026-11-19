@@ -142,11 +142,12 @@ export function TodayPlanning() {
   const activeBookings = (chosen?.bookings ?? []).filter(
     (b) => b.bookingStatus !== BookingStatus.CANCELLED,
   );
+  // Any service of the space counts: someone in the meeting room is already here.
   const ownBookings = myBookings
     .filter(
       (b) =>
         b.bookingStatus !== BookingStatus.CANCELLED &&
-        b.service?.documentId === chosen?.documentId,
+        !!space?.services.some((s) => s.documentId === b.service?.documentId),
     )
     .map(toRange);
 
