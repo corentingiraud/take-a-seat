@@ -113,7 +113,7 @@ export function TodayPlanning() {
   }).filter((s) => s.start >= lastOwnEnd);
 
   const cost = openspace?.hoursFor(remaining.length) ?? 0;
-  const card = PrepaidCard.withMostCredits(usablePrepaidCards);
+  const card = PrepaidCard.best(usablePrepaidCards, cost);
   const cardCovers = !!card && card.remainingBalance >= cost;
   const blockedByCard = !!availability?.prepaidCardOnly && !cardCovers;
   const extending = ownBookings.length > 0;

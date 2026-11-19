@@ -68,12 +68,10 @@ export function UserPrepaidCardDialog({
 
       return;
     }
-    const best = [...eligibleCards].sort(
-      (a, b) => (a.remainingBalance ?? 0) - (b.remainingBalance ?? 0),
-    )[0];
+    const best = PrepaidCard.best(eligibleCards, minCredits);
 
     setSelectedCard((prev) => prev ?? best);
-  }, [autoSelectBest, eligibleCards]);
+  }, [autoSelectBest, eligibleCards, minCredits]);
 
   const handleConfirm = async () => {
     if (!selectedCard) return;

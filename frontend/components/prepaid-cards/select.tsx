@@ -29,7 +29,7 @@ export default function PrepaidCardSelect({
   autoSelectBest = true,
 }: Props) {
   const bestCard = useMemo(() => {
-    return PrepaidCard.withMostCredits(cards ?? []);
+    return PrepaidCard.best(cards ?? []);
   }, [cards]);
 
   const [selectedId, setSelectedId] = useState<string>("");

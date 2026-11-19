@@ -151,11 +151,9 @@ export const BookingAvailabilities = ({
       return;
     }
 
-    const cardWithMostCredits = PrepaidCard.withMostCredits(prepaidCard);
-
     setUseCard(true);
-    setSelectedPrepaidCard(cardWithMostCredits);
-  }, [prepaidCard]);
+    setSelectedPrepaidCard(PrepaidCard.best(prepaidCard, requiredHours));
+  }, [prepaidCard, requiredHours]);
 
   async function createAvailableBookings() {
     if (!effectiveUser) return;
