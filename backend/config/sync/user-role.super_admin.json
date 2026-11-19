@@ -56,6 +56,11 @@
       "locale": null
     },
     {
+      "documentId": "xi0susn1gp4cq8ccla9kqjd7",
+      "action": "api::booking.booking.list",
+      "locale": null
+    },
+    {
       "documentId": "rdat7x7n86ngfbw8jo3a3nkx",
       "action": "api::booking.booking.update",
       "locale": null

@@ -7,10 +7,12 @@ const sameInstant = (a: unknown, b: unknown) =>
   new Date(a as string).getTime() === new Date(b as string).getTime();
 
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
-  // Coworkers only list their own bookings; other users' occupancy is read through the
-  // masked coworking-space calendar. The injected key is ANDed with the client's filters
-  // and overwrites any `user` filter they carry.
-  async find(ctx) {
+  // Serves GET /bookings (see routes/01-customs.ts). Coworkers only list their own bookings;
+  // other users' occupancy is read through the masked coworking-space calendar. The injected
+  // key is ANDed with the client's filters and overwrites any `user` filter they carry.
+  // Coworkers hold this action, not `find`: Strapi strips a populated relation whose target
+  // `find` the role lacks, so they cannot reach bookings through another content type.
+  async list(ctx) {
     const user = ctx.state.user;
 
     if (!user) {
