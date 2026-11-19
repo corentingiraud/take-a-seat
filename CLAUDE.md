@@ -79,7 +79,7 @@ Any new booking rule belongs here, not in a caller.
 
 `remainingBalance` is a stored number, not a derived one. It is debited in `bulkCreate` and adjusted in
 [lifecycles.ts](backend/src/api/booking/content-types/booking/lifecycles.ts) — refunded on cancel/delete,
-debited when a card is attached to a `PENDING` booking. That lifecycle path is reachable by any coworker
+debited when a card is attached to a booking whose `paymentStatus` is `PENDING`. That lifecycle path is reachable by any coworker
 through a plain `PUT /bookings/:id`, so it repeats the ownership, balance and validity checks itself.
 Changing the accounting means touching both, or balances drift.
 
@@ -136,7 +136,8 @@ To disable it locally both sides must agree: `HCAPTCHA_DISABLED=true` (backend) 
 EJS templates in `backend/emails/`, rendered by `src/utils/render-template.ts`. Nodemailer → mailcatcher in
 development, Mailgun in production (`config/env/*/plugins.ts`). A cron in
 [cron-tasks.ts](backend/config/cron-tasks.ts) runs every 15 minutes and mails an admin summary of bookings
-auto-cancelled for non-payment.
+cancelled by hand in the last 15 minutes that had no prepaid card (`bookingStatus` and `paymentStatus` both
+`CANCELLED`; the lifecycle sets `REFUNDED` instead when a card paid). Nothing auto-cancels.
 
 ## Frontend runtime env
 
