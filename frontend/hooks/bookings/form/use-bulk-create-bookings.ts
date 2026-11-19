@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { Booking } from "@/models/booking";
@@ -12,6 +13,7 @@ interface UseBulkCreateBookingsParams {
 
 export function useBulkCreateBookings({bookings, userDocumentId}: UseBulkCreateBookingsParams) {
   const { getJWT } = useAuth();
+  const qc = useQueryClient();
 
   async function bulkCreate(prepaidCard: PrepaidCard | null) {
     if (bookings.length === 0) {
@@ -58,6 +60,12 @@ export function useBulkCreateBookings({bookings, userDocumentId}: UseBulkCreateB
       if (!response.ok) {
         throw new Error("Échec de la création des réservations");
       }
+
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["calendar"] }),
+        qc.invalidateQueries({ queryKey: ["bookings"] }),
+        qc.invalidateQueries({ queryKey: ["prepaid-cards"] }),
+      ]);
 
       const message =
         bookings.length > 1

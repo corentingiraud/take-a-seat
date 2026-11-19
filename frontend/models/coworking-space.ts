@@ -1,3 +1,4 @@
+import { Booking } from "./booking";
 import { Service } from "./service";
 import { Unavailability } from "./unavailability";
 import { StrapiData } from "./utils/strapi-data";
@@ -136,5 +137,14 @@ export class CoworkingSpace implements StrapiData {
       start,
       end,
     ))
+  }
+
+  bookingsOverlapping(start: Moment, end: Moment, serviceId?: string): Booking[] {
+    return this.services
+      .filter((s) => !serviceId || s.documentId === serviceId)
+      .flatMap((s) => s.bookings)
+      .filter(
+        (b) => moment(b.startDate).isBefore(end) && moment(b.endDate).isAfter(start),
+      );
   }
 }

@@ -32,6 +32,7 @@ import { User } from "@/models/user";
 import { useStrapiAPI } from "@/hooks/use-strapi-api";
 import { UserSelect } from "@/components/users/select";
 import { useConfirm } from "@/contexts/confirm-dialog-context";
+import { AlreadyBooked } from "./already-booked";
 import { useBookingActions } from "@/hooks/bookings/use-booking-actions";
 
 interface BookingAvailabilitiesProps {
@@ -84,6 +85,8 @@ export const BookingAvailabilities = ({
     transferableBookings,
     prepaidCardRequired,
     bulkCreateAvailableBookings,
+    startDate,
+    endDate,
   } = useBookingAvailabilities({
     service,
     startDay,
@@ -148,13 +151,9 @@ export const BookingAvailabilities = ({
       return;
     }
 
-    const cardWithMostCredits = prepaidCard.reduce((max, card) =>
-      card.remainingBalance > max.remainingBalance ? card : max,
-    );
-
     setUseCard(true);
-    setSelectedPrepaidCard(cardWithMostCredits);
-  }, [prepaidCard]);
+    setSelectedPrepaidCard(PrepaidCard.best(prepaidCard, requiredHours));
+  }, [prepaidCard, requiredHours]);
 
   async function createAvailableBookings() {
     if (!effectiveUser) return;
@@ -334,6 +333,14 @@ export const BookingAvailabilities = ({
           </ScrollArea>
         </div>
       )}
+
+      <AlreadyBooked
+        coworkingSpaceId={coworkingSpace.documentId}
+        days={availableBookings.map((b) => b.startDate)}
+        endDate={endDate}
+        serviceId={service.documentId}
+        startDate={startDate}
+      />
 
       {/* Carte prépayée */}
       <div className="mt-6 space-y-3">

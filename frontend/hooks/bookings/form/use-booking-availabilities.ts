@@ -123,6 +123,8 @@ export function useBookingAvailabilities({
     transferableBookings,
     prepaidCardRequired,
     bulkCreateAvailableBookings,
+    startDate,
+    endDate,
     loading,
     error,
   };

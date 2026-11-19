@@ -82,6 +82,31 @@ export class PrepaidCard implements StrapiData {
     });
   }
 
+  /**
+   * The card to use by default everywhere: among cards covering `hoursNeeded`, the one
+   * expiring first (then the smallest balance), so credits are not lost to expiry.
+   * When none covers it, the one with the most credits.
+   */
+  static best(cards: PrepaidCard[], hoursNeeded = 0): PrepaidCard | null {
+    const covering = cards.filter((c) => c.remainingBalance >= hoursNeeded);
+
+    if (!covering.length) {
+      return cards.reduce<PrepaidCard | null>(
+        (max, c) => (!max || c.remainingBalance > max.remainingBalance ? c : max),
+        null,
+      );
+    }
+
+    const expiry = (c: PrepaidCard) => c.expirationDate?.valueOf() ?? Infinity;
+
+    return covering.reduce((best, c) =>
+      expiry(c) < expiry(best) ||
+      (expiry(c) === expiry(best) && c.remainingBalance < best.remainingBalance)
+        ? c
+        : best,
+    );
+  }
+
   static buildCardName(
     user: User,
     startDate: Moment,
