@@ -9,6 +9,7 @@ const sameInstant = (a: unknown, b: unknown) =>
 export default factories.createCoreController('api::booking.booking', ({ strapi }) => ({
   async bulkCreate(ctx) {
     const actorUser = ctx.state.user; // user authentifié (admin ou non)
+    if (!actorUser) return ctx.unauthorized();
     const isSuperAdmin = actorUser?.role?.type === ADMIN_ROLE_TYPE;
     const {
       prepaidCardDocumentId,
@@ -307,6 +308,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
   async update(ctx) {
     const { id } = ctx.params;
     const user = ctx.state.user;
+    if (!user) return ctx.unauthorized();
 
     // Fetch the booking
     const booking = await strapi.documents('api::booking.booking').findOne({
@@ -357,6 +359,7 @@ export default factories.createCoreController('api::booking.booking', ({ strapi 
   async findOne(ctx) {
     const { id } = ctx.params;
     const user = ctx.state.user;
+    if (!user) return ctx.unauthorized();
 
     const booking = await strapi.documents('api::booking.booking').findOne({
       documentId: id,
