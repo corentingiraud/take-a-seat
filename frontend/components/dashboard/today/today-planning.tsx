@@ -83,30 +83,34 @@ export function TodayPlanning() {
     )
     .map(toRange);
 
+  // Opening slots of today, minus those inside a space unavailability.
   const daySlots =
     openspace && availability && space
-      ? openspace.getTimeSlot(today).map((t) => {
-          const start = today.clone().startOf("day").hour(t.hour).minute(t.minute);
+      ? openspace
+          .getTimeSlot(today)
+          .map((t) => {
+            const start = today.clone().startOf("day").hour(t.hour).minute(t.minute);
 
-          return {
-            start: start.valueOf(),
-            end: start.clone().add(openspace.bookingDuration, "minutes").valueOf(),
+            return {
+              start,
+              end: start.clone().add(openspace.bookingDuration, "minutes"),
+            };
+          })
+          .filter((s) => !space.unavailabilities.some((u) => u.overlaps(s.start, s.end)))
+          .map((s) => ({
+            start: s.start.valueOf(),
+            end: s.end.valueOf(),
             seats: availability.numberOfSeats,
-          };
-        })
+          }))
       : [];
-  const closedByUnavailability = !!space?.findUnavailabilityForDate(today);
 
   const lastOwnEnd = Math.max(0, ...ownBookings.map((r) => r.end));
-  const remaining = closedByUnavailability
-    ? []
-    : remainingSlots({
-        slots: daySlots,
-        now,
-        serviceBookings: activeBookings.map(toRange),
-        ownBookings,
-        unavailabilities: [],
-      }).filter((s) => s.start >= lastOwnEnd);
+  const remaining = remainingSlots({
+    slots: daySlots,
+    now,
+    serviceBookings: activeBookings.map(toRange),
+    ownBookings,
+  }).filter((s) => s.start >= lastOwnEnd);
 
   const cost = openspace?.hoursFor(remaining.length) ?? 0;
   const card = PrepaidCard.withMostCredits(usablePrepaidCards);
@@ -229,7 +233,7 @@ export function TodayPlanning() {
           {shown.map((s) => {
             const list = people(s);
 
-            if (list.length === 0 && s !== openspace) return null;
+            if (list.length === 0) return null;
 
             return (
               <div key={s.documentId}>
@@ -247,7 +251,7 @@ export function TodayPlanning() {
           })}
 
           <div className="space-y-2 border-t pt-4">
-            {daySlots.length === 0 || closedByUnavailability ? (
+            {daySlots.length === 0 ? (
               <p className="text-sm font-medium">Fermé aujourd&apos;hui</p>
             ) : remaining.length === 0 ? (
               extending && (

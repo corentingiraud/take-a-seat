@@ -4,7 +4,7 @@ export type DaySlot = Range & { seats: number };
 
 /**
  * Slots still worth booking today: the in-progress slot and later ones, minus slots
- * inside an unavailability, full slots, and slots the user already holds.
+ * that are full, and slots the user already holds.
  * `serviceBookings` must be non-cancelled bookings of the service (all users, own included).
  */
 export function remainingSlots({
@@ -12,20 +12,17 @@ export function remainingSlots({
   now,
   serviceBookings,
   ownBookings,
-  unavailabilities,
 }: {
   slots: DaySlot[];
   now: number;
   serviceBookings: Range[];
   ownBookings: Range[];
-  unavailabilities: Range[];
 }): DaySlot[] {
   const overlaps = (a: Range, b: Range) => a.start < b.end && a.end > b.start;
 
   return slots.filter(
     (s) =>
       s.end > now &&
-      !unavailabilities.some((u) => overlaps(s, u)) &&
       !ownBookings.some((b) => overlaps(s, b)) &&
       serviceBookings.filter((b) => overlaps(s, b)).length < s.seats,
   );
