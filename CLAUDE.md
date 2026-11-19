@@ -89,7 +89,9 @@ There is no policy layer. Controllers override the core actions and compare
 `ctx.state.user.role.type` to `ADMIN_ROLE_TYPE`:
 
 - `booking.findOne` / `update`, `prepaid-card.findOne` — owner-or-admin, else `unauthorized`.
-- `booking.find`, `prepaid-card.find` — inject `filters.user = user.id` for non-admins before calling `super.find`.
+- `booking.list` (shadows `GET /bookings` from `01-customs.ts`), `prepaid-card.find` — inject `filters.user = user.id`
+  for non-admins before calling `super.find`. Coworkers hold `booking.list`, not `booking.find`, so Strapi strips any
+  populate of bookings from another content type. Do not grant `booking.find` back to the coworker role.
 - `coworking-space.calendar` — masks other users down to first name + last initial for non-admins.
 
 One rule is global instead: a `content-api.output` sanitizer registered in [index.ts](backend/src/index.ts)

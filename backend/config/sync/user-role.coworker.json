@@ -21,13 +21,13 @@
       "locale": null
     },
     {
-      "documentId": "cjsgmn4taprwvbs934gway7u",
-      "action": "api::booking.booking.find",
+      "documentId": "bva3ian7ci3oxayg5gbjfw0h",
+      "action": "api::booking.booking.findOne",
       "locale": null
     },
     {
-      "documentId": "bva3ian7ci3oxayg5gbjfw0h",
-      "action": "api::booking.booking.findOne",
+      "documentId": "3ywm9jnkdu9k8697j4ej2w1f",
+      "action": "api::booking.booking.list",
       "locale": null
     },
     {
