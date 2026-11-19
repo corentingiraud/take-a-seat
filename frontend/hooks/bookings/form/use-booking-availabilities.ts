@@ -6,6 +6,7 @@ import { useFetchBookings } from "./use-fetch-bookings";
 import { useBookingAvailability } from "./use-booking-availability";
 import { useBulkCreateBookings } from "./use-bulk-create-bookings";
 
+import { useCoworkingSpaceCalendar } from "@/hooks/use-coworking-space-calendar";
 import moment from "@/lib/moment";
 import { Service } from "@/models/service";
 import { HalfDaySelection } from "@/models/half-day";
@@ -65,7 +66,8 @@ export function useBookingAvailabilities({
     ? desiredBookings[desiredBookings.length - 1].endDate
     : moment();
 
-  // Step 3: Fetch existing bookings from API
+  // Step 3: Fetch existing bookings from API. GET /bookings only returns a coworker's own
+  // bookings: enough to spot a slot they already hold, not to count seats.
   const {
     bookings: existingBookings,
     loading,
@@ -75,6 +77,17 @@ export function useBookingAvailabilities({
     startDate,
     endDate,
   );
+
+  // Every user's confirmed bookings, masked, from the coworking-space calendar: seat count.
+  // The hook widens the range to whole days, matching its day-based query key.
+  const { data: calendar, isLoading: calendarLoading } = useCoworkingSpaceCalendar({
+    coworkingSpaceId: service.coworkingSpace?.documentId,
+    startDate,
+    endDate,
+  });
+  const seatBookings =
+    calendar?.services.find((s) => s.documentId === service.documentId)
+      ?.bookings ?? [];
 
   // The target user's bookings on the other services of this coworking space: the ones
   // overlapping a slot being booked are offered for transfer.
@@ -99,6 +112,7 @@ export function useBookingAvailabilities({
     useBookingAvailability({
       desiredBookings,
       existingBookings,
+      seatBookings,
       service,
       user: effectiveUser,
     });
@@ -125,7 +139,7 @@ export function useBookingAvailabilities({
     bulkCreateAvailableBookings,
     startDate,
     endDate,
-    loading,
+    loading: loading || calendarLoading,
     error,
   };
 }
