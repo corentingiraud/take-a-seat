@@ -4,6 +4,7 @@ import { ADMIN_ROLE_TYPE } from '../../constants';
 export default factories.createCoreController('api::prepaid-card.prepaid-card', ({ strapi }) => ({
   async find(ctx) {
     const user = ctx.state.user;
+    if (!user) return ctx.unauthorized();
 
     if (user?.role?.type !== ADMIN_ROLE_TYPE) {
       const filters = ctx.query?.filters && typeof ctx.query.filters === 'object'
@@ -25,6 +26,7 @@ export default factories.createCoreController('api::prepaid-card.prepaid-card', 
   async findOne(ctx) {
     const { id } = ctx.params;
     const user = ctx.state.user;
+    if (!user) return ctx.unauthorized();
 
     const card = await strapi.documents('api::prepaid-card.prepaid-card').findOne({
       documentId: id,
