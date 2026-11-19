@@ -148,9 +148,7 @@ export const BookingAvailabilities = ({
       return;
     }
 
-    const cardWithMostCredits = prepaidCard.reduce((max, card) =>
-      card.remainingBalance > max.remainingBalance ? card : max,
-    );
+    const cardWithMostCredits = PrepaidCard.withMostCredits(prepaidCard);
 
     setUseCard(true);
     setSelectedPrepaidCard(cardWithMostCredits);

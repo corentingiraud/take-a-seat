@@ -82,6 +82,14 @@ export class PrepaidCard implements StrapiData {
     });
   }
 
+  static withMostCredits(cards: PrepaidCard[]): PrepaidCard | null {
+    if (!cards.length) return null;
+
+    return cards.reduce((max, c) =>
+      c.remainingBalance > max.remainingBalance ? c : max,
+    );
+  }
+
   static buildCardName(
     user: User,
     startDate: Moment,

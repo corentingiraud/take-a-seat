@@ -1,13 +1,8 @@
 "use client";
 
 import { Moment } from "moment";
-import moment from '@/lib/moment';
-import { useQuery } from "@tanstack/react-query";
-import { CoworkingSpace } from "@/models/coworking-space";
-import { API_URL } from "@/config/site";
-import { useAuth } from "@/contexts/auth-context";
+import { useCoworkingSpaceCalendar } from "@/hooks/use-coworking-space-calendar";
 import { Time } from "@/models/time";
-import { Booking } from "@/models/booking";
 import { Availability } from "@/models/availability";
 
 type UseCalendarParams = {
@@ -17,39 +12,7 @@ type UseCalendarParams = {
 };
 
 export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalendarParams) {
-  const { getJWT } = useAuth();
-
-  const query = useQuery({
-    queryKey: [
-      "calendar",
-      coworkingSpaceId,
-      startDate.format("YYYY-MM-DD"),
-      endDate.format("YYYY-MM-DD"),
-    ],
-    enabled: !!coworkingSpaceId,
-    queryFn: async () => {
-      const queryParams = new URLSearchParams({
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      }).toString();
-
-      const token = getJWT();
-
-      const response = await fetch(
-        `${API_URL}/coworking-spaces/${coworkingSpaceId}/calendar?${queryParams}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        },
-      );
-
-      const json = await response.json();
-      return CoworkingSpace.fromJson(json);
-    },
-  });
+  const query = useCoworkingSpaceCalendar({ coworkingSpaceId, startDate, endDate });
 
   const coworkingSpace = query.data;
 
@@ -176,25 +139,7 @@ export function useCalendar({ coworkingSpaceId, startDate, endDate }: UseCalenda
   }
 
   function getBookings(start: Moment, end: Moment) {
-    if (!coworkingSpace) return [];
-
-    const out: Booking[] = [];
-
-    for (const service of coworkingSpace.services) {
-      for (const booking of service.bookings) {
-        const bStart = moment(booking.startDate);
-        const bEnd = moment(booking.endDate);
-
-        const overlap =
-          bStart.isBefore(end) && bEnd.isAfter(start);
-
-        if (overlap) {
-          out.push(booking);
-        }
-      }
-    }
-
-    return out;
+    return coworkingSpace?.bookingsOverlapping(start, end) ?? [];
   }
 
   const COLOR_LIST = ["blue", "green", "yellow", "purple", "red"];
