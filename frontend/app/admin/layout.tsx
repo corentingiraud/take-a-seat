@@ -8,6 +8,8 @@ import { useAuth } from "@/contexts/auth-context";
 
 // Single guard for every /admin/* page. Renders nothing until the user is
 // resolved and confirmed super admin, so there is no flash of admin UI.
+// `loading` only gates the redirect: the auth context sets it again during
+// account actions, and unmounting the page then would drop form state.
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { loading, user, isSuperAdmin } = useAuth();
   const router = useRouter();
@@ -18,5 +20,5 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     else if (!isSuperAdmin) router.replace(siteConfig.path.dashboard.href);
   }, [loading, user, isSuperAdmin, router]);
 
-  return !loading && user && isSuperAdmin ? <>{children}</> : null;
+  return user && isSuperAdmin ? <>{children}</> : null;
 }
