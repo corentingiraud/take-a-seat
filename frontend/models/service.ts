@@ -117,10 +117,11 @@ export class Service {
 
     const availability = this.findAvailabilityForDate(date);
 
-    if (!availability) return [];
+    const slotStart = availability?.getStartTimeFor(date);
+    const slotEnd = availability?.getEndTimeFor(date);
 
-    const slotStart = availability.getStartTimeFor(date)!;
-    const slotEnd = availability.getEndTimeFor(date)!;
+    // No opening hours that day (e.g. a weekend inside the availability range)
+    if (!availability || !slotStart || !slotEnd) return [];
 
     while (slotStart.isBefore(slotEnd)) {
       if (

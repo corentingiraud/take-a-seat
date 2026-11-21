@@ -35,16 +35,19 @@ export function useDesiredDates({
     for (const { date, halfDay } of halfDaySelections) {
       const availability = service.findAvailabilityForDate(date);
 
-      if (!availability) continue;
+      const opening = availability?.getStartTimeFor(date);
+      const closing = availability?.getEndTimeFor(date);
+
+      if (!opening || !closing) continue;
 
       let start: Moment;
       let end: Moment;
 
       if (halfDay === HalfDay.Morning) {
-        start = availability.getStartTimeFor(date)!;
+        start = opening;
         end = start.clone().add(halfDayDuration.getDuration());
       } else {
-        end = availability.getEndTimeFor(date)!;
+        end = closing;
         start = end.clone().subtract(halfDayDuration.getDuration());
       }
 
